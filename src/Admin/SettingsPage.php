@@ -145,7 +145,7 @@ class SettingsPage {
 			}
 		}
 
-		$views               = array( 'list', 'month', 'day', 'photo', 'summary' );
+		$views               = array( 'list', 'week', 'month', 'day', 'photo', 'summary' );
 		$out['default_view'] = ( isset( $input['default_view'] ) && in_array( $input['default_view'], $views, true ) )
 			? $input['default_view']
 			: $current['default_view'];
@@ -212,6 +212,7 @@ class SettingsPage {
 		$value = (string) Settings::get( 'default_view' );
 		$views = array(
 			'list'    => __( 'List', 'luma-viewer' ),
+			'week'    => __( 'Week', 'luma-viewer' ),
 			'month'   => __( 'Month', 'luma-viewer' ),
 			'day'     => __( 'Day', 'luma-viewer' ),
 			'photo'   => __( 'Photo', 'luma-viewer' ),

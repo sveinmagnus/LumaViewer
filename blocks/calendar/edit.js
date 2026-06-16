@@ -10,7 +10,7 @@ import ServerSideRender from '@wordpress/server-side-render';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { view, tag, count, date } = attributes;
+	const { view, tag, count, date, layout, group_by: groupBy } = attributes;
 
 	return (
 		<div { ...blockProps }>
@@ -22,6 +22,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ [
 							{ label: __( 'Site default', 'luma-viewer' ), value: '' },
 							{ label: __( 'List', 'luma-viewer' ), value: 'list' },
+							{ label: __( 'Week', 'luma-viewer' ), value: 'week' },
 							{ label: __( 'Month', 'luma-viewer' ), value: 'month' },
 							{ label: __( 'Day', 'luma-viewer' ), value: 'day' },
 							{ label: __( 'Photo', 'luma-viewer' ), value: 'photo' },
@@ -44,10 +45,32 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { count: value } ) }
 					/>
 					<TextControl
-						label={ __( 'Month (YYYY-MM)', 'luma-viewer' ) }
+						label={ __( 'Anchor date', 'luma-viewer' ) }
 						value={ date }
 						onChange={ ( value ) => setAttributes( { date: value } ) }
-						help={ __( 'Anchor month for the Month view.', 'luma-viewer' ) }
+						help={ __( 'YYYY-MM for Month, YYYY-MM-DD for Week/Day.', 'luma-viewer' ) }
+					/>
+					<SelectControl
+						label={ __( 'List layout', 'luma-viewer' ) }
+						value={ layout }
+						options={ [
+							{ label: __( 'Cards', 'luma-viewer' ), value: '' },
+							{ label: __( 'Compact', 'luma-viewer' ), value: 'compact' },
+							{ label: __( 'Minimal', 'luma-viewer' ), value: 'minimal' },
+						] }
+						help={ __( 'Applies to List, Week and Day views.', 'luma-viewer' ) }
+						onChange={ ( value ) => setAttributes( { layout: value } ) }
+					/>
+					<SelectControl
+						label={ __( 'Group list by', 'luma-viewer' ) }
+						value={ groupBy }
+						options={ [
+							{ label: __( 'Day', 'luma-viewer' ), value: '' },
+							{ label: __( 'Month', 'luma-viewer' ), value: 'month' },
+							{ label: __( 'No grouping', 'luma-viewer' ), value: 'none' },
+						] }
+						help={ __( 'Applies to the List view.', 'luma-viewer' ) }
+						onChange={ ( value ) => setAttributes( { group_by: value } ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

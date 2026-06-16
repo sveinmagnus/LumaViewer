@@ -62,21 +62,29 @@ class RestController {
 				'callback'            => array( $this, 'get_events' ),
 				'permission_callback' => array( $this, 'can_read' ),
 				'args'                => array(
-					'view'  => array(
+					'view'     => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'tag'   => array(
+					'tag'      => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'date'  => array(
+					'date'     => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'count' => array(
+					'count'    => array(
 						'type'              => 'integer',
 						'sanitize_callback' => 'absint',
+					),
+					'layout'   => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'group_by' => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
 					),
 				),
 			)
@@ -116,9 +124,11 @@ class RestController {
 	 */
 	public function get_events( \WP_REST_Request $request ) {
 		$atts = array(
-			'view' => (string) $request->get_param( 'view' ),
-			'tag'  => (string) $request->get_param( 'tag' ),
-			'date' => (string) $request->get_param( 'date' ),
+			'view'     => (string) $request->get_param( 'view' ),
+			'tag'      => (string) $request->get_param( 'tag' ),
+			'date'     => (string) $request->get_param( 'date' ),
+			'layout'   => (string) $request->get_param( 'layout' ),
+			'group_by' => (string) $request->get_param( 'group_by' ),
 		);
 
 		$count = $request->get_param( 'count' );

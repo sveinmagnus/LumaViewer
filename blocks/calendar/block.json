@@ -17,7 +17,9 @@
 		"view": { "type": "string", "default": "" },
 		"tag": { "type": "string", "default": "" },
 		"count": { "type": "number", "default": 0 },
-		"date": { "type": "string", "default": "" }
+		"date": { "type": "string", "default": "" },
+		"layout": { "type": "string", "default": "" },
+		"group_by": { "type": "string", "default": "" }
 	},
 	"editorScript": "file:./index.js"
 }

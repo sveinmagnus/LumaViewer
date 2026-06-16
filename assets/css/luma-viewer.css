@@ -368,6 +368,72 @@
 	font-style: italic;
 }
 
+/* Compact / minimal list layouts ----------------------------------------- */
+.luma-viewer__card--compact,
+.luma-viewer__card--minimal {
+	display: block;
+	padding: 0.5rem 0;
+	border: 0;
+	border-bottom: 1px solid var(--lv-border);
+	border-radius: 0;
+}
+
+.luma-viewer__card--compact .luma-viewer__card-body,
+.luma-viewer__card--minimal .luma-viewer__card-body {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: 0.75rem;
+	row-gap: 0.15rem;
+}
+
+.luma-viewer__card--compact .luma-viewer__card-title,
+.luma-viewer__card--minimal .luma-viewer__card-title {
+	margin: 0;
+	font-size: 1rem;
+}
+
+.luma-viewer__card--compact .luma-viewer__card-when,
+.luma-viewer__card--minimal .luma-viewer__card-when,
+.luma-viewer__card--compact .luma-viewer__card-where {
+	margin: 0;
+	font-size: 0.85em;
+}
+
+.luma-viewer__card--compact .luma-viewer__card-when {
+	min-width: 11rem;
+}
+
+.luma-viewer__card--compact .luma-viewer__card-cta {
+	margin: 0;
+}
+
+/* Week view --------------------------------------------------------------- */
+.luma-viewer__week {
+	display: grid;
+	gap: 1rem;
+}
+
+.luma-viewer__week-day {
+	padding-top: 0.5rem;
+	border-top: 2px solid var(--lv-border);
+}
+
+.luma-viewer__week-day--today {
+	border-top-color: var(--lv-accent);
+}
+
+.luma-viewer__week-day-title {
+	margin: 0 0 0.5rem;
+	font-size: 0.95rem;
+}
+
+.luma-viewer__week-empty {
+	margin: 0;
+	color: var(--lv-muted);
+	font-size: 0.85em;
+}
+
 /* Small screens ----------------------------------------------------------- */
 @media (max-width: 600px) {
 	.luma-viewer__card {

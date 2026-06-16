@@ -85,6 +85,7 @@ class CalendarWidget extends Widget_Base {
 				'options' => array(
 					''        => __( 'Site default', 'luma-viewer' ),
 					'list'    => __( 'List', 'luma-viewer' ),
+					'week'    => __( 'Week', 'luma-viewer' ),
 					'month'   => __( 'Month', 'luma-viewer' ),
 					'day'     => __( 'Day', 'luma-viewer' ),
 					'photo'   => __( 'Photo', 'luma-viewer' ),
@@ -110,8 +111,37 @@ class CalendarWidget extends Widget_Base {
 		$this->add_control(
 			'date',
 			array(
-				'label' => __( 'Month (YYYY-MM)', 'luma-viewer' ),
-				'type'  => Controls_Manager::TEXT,
+				'label'       => __( 'Anchor date', 'luma-viewer' ),
+				'type'        => Controls_Manager::TEXT,
+				'description' => __( 'YYYY-MM for Month, YYYY-MM-DD for Week/Day.', 'luma-viewer' ),
+			)
+		);
+		$this->add_control(
+			'layout',
+			array(
+				'label'       => __( 'List layout', 'luma-viewer' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''        => __( 'Cards', 'luma-viewer' ),
+					'compact' => __( 'Compact', 'luma-viewer' ),
+					'minimal' => __( 'Minimal', 'luma-viewer' ),
+				),
+				'description' => __( 'Applies to List, Week and Day views.', 'luma-viewer' ),
+			)
+		);
+		$this->add_control(
+			'group_by',
+			array(
+				'label'       => __( 'Group list by', 'luma-viewer' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''      => __( 'Day', 'luma-viewer' ),
+					'month' => __( 'Month', 'luma-viewer' ),
+					'none'  => __( 'No grouping', 'luma-viewer' ),
+				),
+				'description' => __( 'Applies to the List view.', 'luma-viewer' ),
 			)
 		);
 
@@ -130,9 +160,11 @@ class CalendarWidget extends Widget_Base {
 
 		$settings = $this->get_settings_for_display();
 		$atts     = array(
-			'view' => isset( $settings['view'] ) ? sanitize_key( (string) $settings['view'] ) : '',
-			'tag'  => isset( $settings['tag'] ) ? sanitize_text_field( (string) $settings['tag'] ) : '',
-			'date' => isset( $settings['date'] ) ? sanitize_text_field( (string) $settings['date'] ) : '',
+			'view'     => isset( $settings['view'] ) ? sanitize_key( (string) $settings['view'] ) : '',
+			'tag'      => isset( $settings['tag'] ) ? sanitize_text_field( (string) $settings['tag'] ) : '',
+			'date'     => isset( $settings['date'] ) ? sanitize_text_field( (string) $settings['date'] ) : '',
+			'layout'   => isset( $settings['layout'] ) ? sanitize_key( (string) $settings['layout'] ) : '',
+			'group_by' => isset( $settings['group_by'] ) ? sanitize_key( (string) $settings['group_by'] ) : '',
 		);
 		if ( ! empty( $settings['count'] ) ) {
 			$atts['count'] = absint( $settings['count'] );

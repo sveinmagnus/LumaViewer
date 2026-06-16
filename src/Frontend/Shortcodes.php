@@ -48,19 +48,23 @@ class Shortcodes {
 	public function calendar( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'view'  => '',
-				'tag'   => '',
-				'count' => '',
-				'date'  => '',
+				'view'     => '',
+				'tag'      => '',
+				'count'    => '',
+				'date'     => '',
+				'layout'   => '',
+				'group_by' => '',
 			),
 			$atts,
 			'luma_calendar'
 		);
 
 		$clean = array(
-			'view' => sanitize_key( $atts['view'] ),
-			'tag'  => sanitize_text_field( $atts['tag'] ),
-			'date' => sanitize_text_field( $atts['date'] ),
+			'view'     => sanitize_key( $atts['view'] ),
+			'tag'      => sanitize_text_field( $atts['tag'] ),
+			'date'     => sanitize_text_field( $atts['date'] ),
+			'layout'   => sanitize_key( $atts['layout'] ),
+			'group_by' => sanitize_key( $atts['group_by'] ),
 		);
 		if ( '' !== $atts['count'] ) {
 			$clean['count'] = absint( $atts['count'] );

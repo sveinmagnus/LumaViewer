@@ -75,9 +75,11 @@ class Blocks {
 		$attributes = (array) $attributes;
 
 		$atts = array(
-			'view' => isset( $attributes['view'] ) ? sanitize_key( (string) $attributes['view'] ) : '',
-			'tag'  => isset( $attributes['tag'] ) ? sanitize_text_field( (string) $attributes['tag'] ) : '',
-			'date' => isset( $attributes['date'] ) ? sanitize_text_field( (string) $attributes['date'] ) : '',
+			'view'     => isset( $attributes['view'] ) ? sanitize_key( (string) $attributes['view'] ) : '',
+			'tag'      => isset( $attributes['tag'] ) ? sanitize_text_field( (string) $attributes['tag'] ) : '',
+			'date'     => isset( $attributes['date'] ) ? sanitize_text_field( (string) $attributes['date'] ) : '',
+			'layout'   => isset( $attributes['layout'] ) ? sanitize_key( (string) $attributes['layout'] ) : '',
+			'group_by' => isset( $attributes['group_by'] ) ? sanitize_key( (string) $attributes['group_by'] ) : '',
 		);
 		if ( ! empty( $attributes['count'] ) ) {
 			$atts['count'] = absint( $attributes['count'] );

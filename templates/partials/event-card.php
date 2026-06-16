@@ -7,6 +7,7 @@
  * @var \LumaViewer\Model\Event     $event         Event to render.
  * @var \LumaViewer\View\Formatter  $formatter     Date formatter.
  * @var bool                        $teaser        Render as a gated teaser (no Luma link).
+ * @var string                      $layout        cards | compact | minimal.
  * @var string                      $gate_cta_text Teaser call-to-action label.
  * @var string                      $gate_cta_url  Teaser call-to-action URL.
  */
@@ -17,11 +18,16 @@ if ( ! isset( $event ) ) {
 	return;
 }
 
-$teaser   = ! empty( $teaser );
+$teaser  = ! empty( $teaser );
+$layout  = ( ! empty( $layout ) && in_array( $layout, array( 'cards', 'compact', 'minimal' ), true ) ) ? $layout : 'cards';
+$is_full = ( 'cards' === $layout );
+$is_min  = ( 'minimal' === $layout );
+
 $location = $event->location();
+$classes  = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
 ?>
-<article class="luma-viewer__card<?php echo $teaser ? ' luma-viewer__card--teaser' : ''; ?>">
-	<?php if ( '' !== $event->cover_url() ) : ?>
+<article class="<?php echo esc_attr( $classes ); ?>">
+	<?php if ( $is_full && '' !== $event->cover_url() ) : ?>
 		<?php if ( $teaser ) : ?>
 			<span class="luma-viewer__card-cover">
 				<img src="<?php echo esc_url( $event->cover_url() ); ?>" alt="" loading="lazy" />
@@ -52,13 +58,15 @@ $location = $event->location();
 			<?php endif; ?>
 		</h3>
 
-		<?php if ( $location->is_online() ) : ?>
-			<p class="luma-viewer__card-where luma-viewer__card-where--online"><?php esc_html_e( 'Online', 'luma-viewer' ); ?></p>
-		<?php elseif ( '' !== $location->label() ) : ?>
-			<p class="luma-viewer__card-where"><?php echo esc_html( $location->label() ); ?></p>
+		<?php if ( ! $is_min ) : ?>
+			<?php if ( $location->is_online() ) : ?>
+				<p class="luma-viewer__card-where luma-viewer__card-where--online"><?php esc_html_e( 'Online', 'luma-viewer' ); ?></p>
+			<?php elseif ( '' !== $location->label() ) : ?>
+				<p class="luma-viewer__card-where"><?php echo esc_html( $location->label() ); ?></p>
+			<?php endif; ?>
 		<?php endif; ?>
 
-		<?php if ( ! empty( $event->tags() ) ) : ?>
+		<?php if ( $is_full && ! empty( $event->tags() ) ) : ?>
 			<ul class="luma-viewer__tags">
 				<?php foreach ( $event->tags() as $tag ) : ?>
 					<?php
@@ -70,18 +78,20 @@ $location = $event->location();
 			</ul>
 		<?php endif; ?>
 
-		<?php if ( $teaser ) : ?>
-			<p class="luma-viewer__card-cta">
-				<a class="luma-viewer__button luma-viewer__button--gate" href="<?php echo esc_url( isset( $gate_cta_url ) ? $gate_cta_url : '' ); ?>">
-					<?php echo esc_html( ! empty( $gate_cta_text ) ? $gate_cta_text : __( 'Members only', 'luma-viewer' ) ); ?>
-				</a>
-			</p>
-		<?php elseif ( '' !== $event->luma_url() ) : ?>
-			<p class="luma-viewer__card-cta">
-				<a class="luma-viewer__button" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
-					<?php esc_html_e( 'View on Luma', 'luma-viewer' ); ?>
-				</a>
-			</p>
+		<?php if ( ! $is_min ) : ?>
+			<?php if ( $teaser ) : ?>
+				<p class="luma-viewer__card-cta">
+					<a class="luma-viewer__button luma-viewer__button--gate" href="<?php echo esc_url( isset( $gate_cta_url ) ? $gate_cta_url : '' ); ?>">
+						<?php echo esc_html( ! empty( $gate_cta_text ) ? $gate_cta_text : __( 'Members only', 'luma-viewer' ) ); ?>
+					</a>
+				</p>
+			<?php elseif ( '' !== $event->luma_url() ) : ?>
+				<p class="luma-viewer__card-cta">
+					<a class="luma-viewer__button" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
+						<?php esc_html_e( 'View on Luma', 'luma-viewer' ); ?>
+					</a>
+				</p>
+			<?php endif; ?>
 		<?php endif; ?>
 	</div>
 </article>

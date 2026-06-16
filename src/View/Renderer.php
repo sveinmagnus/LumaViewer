@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Renderer {
 
-	const VIEWS = array( 'list', 'month', 'day', 'photo', 'summary' );
+	const VIEWS = array( 'list', 'week', 'month', 'day', 'photo', 'summary' );
 
 	/** @var Repository */
 	private $repo;
@@ -68,6 +68,13 @@ class Renderer {
 		$count = isset( $atts['count'] ) ? (int) $atts['count'] : (int) Settings::get( 'per_page' );
 		$date  = isset( $atts['date'] ) ? (string) $atts['date'] : '';
 
+		$layout   = ( isset( $atts['layout'] ) && in_array( $atts['layout'], array( 'cards', 'compact', 'minimal' ), true ) )
+			? $atts['layout']
+			: 'cards';
+		$group_by = ( isset( $atts['group_by'] ) && in_array( $atts['group_by'], array( 'day', 'month', 'none' ), true ) )
+			? $atts['group_by']
+			: 'day';
+
 		$args   = array(
 			'count' => $count,
 			'tag'   => $tag,
@@ -92,6 +99,15 @@ class Renderer {
 			$nav                             = array(
 				'prev' => $anchor->modify( '-1 day' )->format( 'Y-m-d' ),
 				'next' => $anchor->modify( '+1 day' )->format( 'Y-m-d' ),
+			);
+		} elseif ( 'week' === $view ) {
+			list( $after, $before, $anchor ) = $this->week_bounds( $date );
+			$args['after']                   = $after;
+			$args['before']                  = $before;
+			$args['count']                   = 0;
+			$nav                             = array(
+				'prev' => $anchor->modify( '-7 days' )->format( 'Y-m-d' ),
+				'next' => $anchor->modify( '+7 days' )->format( 'Y-m-d' ),
 			);
 		}
 
@@ -135,13 +151,14 @@ class Renderer {
 		$cta_text  = (string) Settings::get( 'gate_cta_text' );
 		$cta_url   = $this->cta_url();
 
-		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url ) {
+		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url, $layout ) {
 			return $loader->capture(
 				'partials/event-card',
 				array(
 					'event'         => $event,
 					'formatter'     => $formatter,
 					'teaser'        => (bool) $teaser,
+					'layout'        => $layout,
 					'gate_cta_text' => $cta_text,
 					'gate_cta_url'  => $cta_url,
 				)
@@ -157,16 +174,20 @@ class Renderer {
 				'render_card' => $render_card,
 				'teaser_ids'  => $teaser_ids,
 				'anchor'      => $anchor,
+				'layout'      => $layout,
+				'group_by'    => $group_by,
 				'atts'        => $atts,
 			)
 		);
 
 		$data = sprintf(
-			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s"',
+			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s"',
 			esc_attr( $view ),
 			esc_attr( $tag ),
 			esc_attr( (string) $count ),
-			esc_attr( $date )
+			esc_attr( $date ),
+			esc_attr( $layout ),
+			esc_attr( $group_by )
 		);
 
 		return sprintf(
@@ -248,6 +269,7 @@ class Renderer {
 	private function toolbar( $view, $nav ) {
 		$labels = array(
 			'list'    => __( 'List', 'luma-viewer' ),
+			'week'    => __( 'Week', 'luma-viewer' ),
 			'month'   => __( 'Month', 'luma-viewer' ),
 			'day'     => __( 'Day', 'luma-viewer' ),
 			'photo'   => __( 'Photo', 'luma-viewer' ),
@@ -308,6 +330,23 @@ class Renderer {
 		$base  = $this->parse_anchor( $date );
 		$start = $base->setTime( 0, 0, 0 );
 		$end   = $base->setTime( 23, 59, 59 );
+
+		return array( $start->format( 'c' ), $end->format( 'c' ), $start );
+	}
+
+	/**
+	 * Compute the start/end of the week containing the anchor (honoring the
+	 * site's start-of-week), plus the week's first day.
+	 *
+	 * @param string $date Anchor (Y-m-d), or empty for the current week.
+	 * @return array{0:string,1:string,2:\DateTimeImmutable}
+	 */
+	private function week_bounds( $date ) {
+		$base       = $this->parse_anchor( $date );
+		$week_start = (int) get_option( 'start_of_week', 0 );
+		$offset     = ( (int) $base->format( 'w' ) - $week_start + 7 ) % 7;
+		$start      = $base->modify( '-' . $offset . ' days' )->setTime( 0, 0, 0 );
+		$end        = $start->modify( '+6 days' )->setTime( 23, 59, 59 );
 
 		return array( $start->format( 'c' ), $end->format( 'c' ), $start );
 	}

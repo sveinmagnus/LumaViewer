@@ -29,6 +29,8 @@
 			'';
 		var tag = container.getAttribute( 'data-lv-tag' ) || '';
 		var count = container.getAttribute( 'data-lv-count' ) || '';
+		var layout = container.getAttribute( 'data-lv-layout' ) || '';
+		var group = container.getAttribute( 'data-lv-group' ) || '';
 
 		if ( view ) {
 			url.searchParams.set( 'view', view );
@@ -42,6 +44,12 @@
 		}
 		if ( count && count !== '0' ) {
 			url.searchParams.set( 'count', count );
+		}
+		if ( layout && layout !== 'cards' ) {
+			url.searchParams.set( 'layout', layout );
+		}
+		if ( group && group !== 'day' ) {
+			url.searchParams.set( 'group_by', group );
 		}
 
 		return url.toString();
