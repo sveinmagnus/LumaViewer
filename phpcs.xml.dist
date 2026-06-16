@@ -9,8 +9,9 @@
 	<!-- Test scaffolding uses non-WP conventions (e.g. a WP_Error stand-in,
 	     native json_encode) and is exercised by PHPUnit, not shipped. -->
 	<exclude-pattern>/tests/*</exclude-pattern>
-	<!-- Tooling-only bootstrap consumed by PHPStan; not shipped. -->
+	<!-- Tooling-only files consumed by PHPStan; not shipped. -->
 	<exclude-pattern>/phpstan-bootstrap.php</exclude-pattern>
+	<exclude-pattern>/phpstan/*</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
 	<arg name="basepath" value="."/>

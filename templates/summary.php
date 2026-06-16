@@ -42,7 +42,11 @@ foreach ( $events as $event ) {
 						<?php if ( $event->has_start() ) : ?>
 							<time class="luma-viewer__summary-time" datetime="<?php echo esc_attr( $event->start()->format( 'c' ) ); ?>"><?php echo esc_html( $formatter->time( $event ) ); ?></time>
 						<?php endif; ?>
-						<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $event->name() ); ?></a>
+						<?php if ( ! empty( $teaser_ids[ $event->id() ] ) ) : ?>
+							<span class="luma-viewer__summary-teaser"><?php echo esc_html( $event->name() ); ?></span>
+						<?php else : ?>
+							<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $event->name() ); ?></a>
+						<?php endif; ?>
 					</li>
 				<?php endforeach; ?>
 			</ul>

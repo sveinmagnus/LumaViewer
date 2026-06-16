@@ -69,9 +69,11 @@ $today_key     = wp_date( 'Y-m-d', time(), $tz );
 					<ul class="luma-viewer__cell-events">
 						<?php foreach ( $by_day[ $key ] as $event ) : ?>
 							<li>
-								<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer" title="<?php echo esc_attr( $event->name() ); ?>">
-									<?php echo esc_html( $event->name() ); ?>
-								</a>
+								<?php if ( ! empty( $teaser_ids[ $event->id() ] ) ) : ?>
+									<span class="luma-viewer__cell-event luma-viewer__cell-event--teaser" title="<?php echo esc_attr__( 'Members only', 'luma-viewer' ); ?>"><?php echo esc_html( $event->name() ); ?></span>
+								<?php else : ?>
+									<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer" title="<?php echo esc_attr( $event->name() ); ?>"><?php echo esc_html( $event->name() ); ?></a>
+								<?php endif; ?>
 							</li>
 						<?php endforeach; ?>
 					</ul>

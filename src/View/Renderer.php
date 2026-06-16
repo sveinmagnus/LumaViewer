@@ -8,6 +8,7 @@
 namespace LumaViewer\View;
 
 use LumaViewer\Events\Repository;
+use LumaViewer\Membership\Gate;
 use LumaViewer\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -31,17 +32,22 @@ class Renderer {
 	/** @var Formatter */
 	private $formatter;
 
+	/** @var Gate */
+	private $gate;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param Repository     $repo      Event repository.
 	 * @param TemplateLoader $loader    Template loader.
 	 * @param Formatter      $formatter Date formatter.
+	 * @param Gate           $gate      Membership visibility gate.
 	 */
-	public function __construct( Repository $repo, TemplateLoader $loader, Formatter $formatter ) {
+	public function __construct( Repository $repo, TemplateLoader $loader, Formatter $formatter, Gate $gate ) {
 		$this->repo      = $repo;
 		$this->loader    = $loader;
 		$this->formatter = $formatter;
+		$this->gate      = $gate;
 	}
 
 	/**
@@ -90,18 +96,45 @@ class Renderer {
 		}
 
 		$result = $this->repo->get_events( $args );
+		$events = $result['events'];
+
+		$teaser_ids = array();
+		if ( $this->gate->is_enabled() ) {
+			$user_id = get_current_user_id();
+			$visible = array();
+			foreach ( $events as $event ) {
+				$decision = $this->gate->resolve( $event, $user_id );
+				if ( Gate::HIDDEN === $decision ) {
+					continue;
+				}
+				if ( Gate::TEASER === $decision ) {
+					$teaser_ids[ $event->id() ] = true;
+				}
+				$visible[] = $event;
+			}
+			$events = $visible;
+			if ( ! headers_sent() ) {
+				nocache_headers(); // Per-user content; keep it out of shared caches.
+			}
+		}
 
 		wp_enqueue_style( 'luma-viewer' );
 		wp_enqueue_script( 'luma-viewer' );
 
-		$loader      = $this->loader;
-		$formatter   = $this->formatter;
-		$render_card = static function ( $event ) use ( $loader, $formatter ) {
+		$loader    = $this->loader;
+		$formatter = $this->formatter;
+		$cta_text  = (string) Settings::get( 'gate_cta_text' );
+		$cta_url   = $this->cta_url();
+
+		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url ) {
 			return $loader->capture(
 				'partials/event-card',
 				array(
-					'event'     => $event,
-					'formatter' => $formatter,
+					'event'         => $event,
+					'formatter'     => $formatter,
+					'teaser'        => (bool) $teaser,
+					'gate_cta_text' => $cta_text,
+					'gate_cta_url'  => $cta_url,
 				)
 			);
 		};
@@ -109,10 +142,11 @@ class Renderer {
 		$body = $this->loader->capture(
 			$view,
 			array(
-				'events'      => $result['events'],
+				'events'      => $events,
 				'error'       => $result['error'],
 				'formatter'   => $this->formatter,
 				'render_card' => $render_card,
+				'teaser_ids'  => $teaser_ids,
 				'anchor'      => $anchor,
 				'atts'        => $atts,
 			)
@@ -148,19 +182,45 @@ class Renderer {
 		}
 
 		$result = $this->repo->get_event( $id );
+		$event  = $result['event'];
 
 		wp_enqueue_style( 'luma-viewer' );
+
+		$teaser  = false;
+		$blocked = false;
+		if ( $event && '' !== $event->id() && $this->gate->is_enabled() ) {
+			$decision = $this->gate->resolve( $event, get_current_user_id() );
+			$blocked  = Gate::HIDDEN === $decision;
+			$teaser   = Gate::TEASER === $decision;
+			if ( ( $blocked || $teaser ) && ! headers_sent() ) {
+				nocache_headers();
+			}
+		}
 
 		$body = $this->loader->capture(
 			'single',
 			array(
-				'event'     => $result['event'],
-				'error'     => $result['error'],
-				'formatter' => $this->formatter,
+				'event'         => $event,
+				'error'         => $result['error'],
+				'formatter'     => $this->formatter,
+				'teaser'        => $teaser,
+				'blocked'       => $blocked,
+				'gate_cta_text' => (string) Settings::get( 'gate_cta_text' ),
+				'gate_cta_url'  => $this->cta_url(),
 			)
 		);
 
 		return sprintf( '<div class="luma-viewer luma-viewer--single">%s</div>', $body );
+	}
+
+	/**
+	 * The URL for the "join / log in" call to action on gated events.
+	 *
+	 * @return string
+	 */
+	private function cta_url() {
+		$url = (string) Settings::get( 'gate_cta_url' );
+		return '' !== $url ? $url : wp_login_url();
 	}
 
 	/**

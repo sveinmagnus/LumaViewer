@@ -42,7 +42,7 @@ foreach ( $events as $event ) {
 				<?php
 				foreach ( $items as $event ) {
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- card markup is escaped inside the partial.
-					echo $render_card( $event );
+					echo $render_card( $event, ! empty( $teaser_ids[ $event->id() ] ) );
 				}
 				?>
 			</div>

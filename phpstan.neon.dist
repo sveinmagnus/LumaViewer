@@ -11,6 +11,10 @@ parameters:
     # Declares the plugin's runtime define()'d constants so analysis knows them.
     bootstrapFiles:
         - phpstan-bootstrap.php
+    # Stubs for third-party plugin classes (MemberPress, Elementor) not present
+    # in the analysis environment.
+    scanFiles:
+        - phpstan/stubs/memberpress.php
     excludePaths:
         - vendor/*
         - node_modules/*

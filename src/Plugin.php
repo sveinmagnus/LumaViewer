@@ -18,6 +18,8 @@ use LumaViewer\Frontend\Assets;
 use LumaViewer\Frontend\RestController;
 use LumaViewer\Frontend\Shortcodes;
 use LumaViewer\Frontend\SingleRoute;
+use LumaViewer\Membership\Gate;
+use LumaViewer\Membership\MemberPress;
 use LumaViewer\View\Formatter;
 use LumaViewer\View\Renderer;
 use LumaViewer\View\TemplateLoader;
@@ -71,9 +73,11 @@ final class Plugin {
 
 		$this->endpoints = new Endpoints( new Client( (string) Settings::get( 'api_key' ) ) );
 
-		$repository = new Repository( $this->endpoints, new Cache( (int) Settings::get( 'cache_ttl' ) ) );
-		$formatter  = new Formatter();
-		$renderer   = new Renderer( $repository, new TemplateLoader(), $formatter );
+		$repository  = new Repository( $this->endpoints, new Cache( (int) Settings::get( 'cache_ttl' ) ) );
+		$formatter   = new Formatter();
+		$memberpress = new MemberPress();
+		$gate        = new Gate( $memberpress );
+		$renderer    = new Renderer( $repository, new TemplateLoader(), $formatter, $gate );
 
 		( new Assets() )->register();
 		( new Shortcodes( $renderer ) )->register();
@@ -82,7 +86,7 @@ final class Plugin {
 		( new SingleRoute( $repository, $renderer, $formatter ) )->register();
 
 		if ( is_admin() ) {
-			( new SettingsPage( $this->endpoints ) )->register();
+			( new SettingsPage( $this->endpoints, $memberpress ) )->register();
 			( new Notices() )->register();
 		}
 	}

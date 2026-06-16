@@ -8,6 +8,7 @@
 namespace LumaViewer\Admin;
 
 use LumaViewer\Api\Endpoints;
+use LumaViewer\Membership\MemberPress;
 use LumaViewer\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -30,12 +31,21 @@ class SettingsPage {
 	private $endpoints;
 
 	/**
+	 * MemberPress adapter.
+	 *
+	 * @var MemberPress
+	 */
+	private $memberpress;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Endpoints $endpoints API endpoints.
+	 * @param Endpoints   $endpoints   API endpoints.
+	 * @param MemberPress $memberpress MemberPress adapter.
 	 */
-	public function __construct( Endpoints $endpoints ) {
-		$this->endpoints = $endpoints;
+	public function __construct( Endpoints $endpoints, MemberPress $memberpress ) {
+		$this->endpoints   = $endpoints;
+		$this->memberpress = $memberpress;
 	}
 
 	/**
@@ -88,6 +98,13 @@ class SettingsPage {
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'timezone_mode', __( 'Time zone', 'luma-viewer' ), array( $this, 'field_timezone_mode' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'cache_ttl', __( 'Cache lifetime', 'luma-viewer' ), array( $this, 'field_cache_ttl' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'single_base', __( 'Single-event URL base', 'luma-viewer' ), array( $this, 'field_single_base' ), self::MENU_SLUG, 'luma_viewer_display' );
+
+		add_settings_section( 'luma_viewer_membership', __( 'Membership access', 'luma-viewer' ), array( $this, 'membership_intro' ), self::MENU_SLUG );
+		add_settings_field( 'gating_behavior', __( 'For non-members', 'luma-viewer' ), array( $this, 'field_gating_behavior' ), self::MENU_SLUG, 'luma_viewer_membership' );
+		add_settings_field( 'gate_cta_text', __( 'Gate message', 'luma-viewer' ), array( $this, 'field_gate_cta_text' ), self::MENU_SLUG, 'luma_viewer_membership' );
+		add_settings_field( 'gate_cta_url', __( 'Gate button URL', 'luma-viewer' ), array( $this, 'field_gate_cta_url' ), self::MENU_SLUG, 'luma_viewer_membership' );
+		add_settings_field( 'category_map', __( 'Category → membership', 'luma-viewer' ), array( $this, 'field_category_map' ), self::MENU_SLUG, 'luma_viewer_membership' );
 	}
 
 	/**
@@ -123,6 +140,34 @@ class SettingsPage {
 		$out['timezone_mode'] = ( isset( $input['timezone_mode'] ) && in_array( $input['timezone_mode'], array( 'event', 'site' ), true ) )
 			? $input['timezone_mode']
 			: $current['timezone_mode'];
+
+		if ( isset( $input['single_base'] ) ) {
+			$base               = sanitize_title( $input['single_base'] );
+			$out['single_base'] = '' !== $base ? $base : 'events';
+		}
+
+		$out['gating_behavior'] = ( isset( $input['gating_behavior'] ) && in_array( $input['gating_behavior'], array( 'teaser', 'hide' ), true ) )
+			? $input['gating_behavior']
+			: $current['gating_behavior'];
+
+		$out['gate_cta_text'] = isset( $input['gate_cta_text'] ) ? sanitize_text_field( $input['gate_cta_text'] ) : $current['gate_cta_text'];
+		$out['gate_cta_url']  = isset( $input['gate_cta_url'] ) ? esc_url_raw( trim( (string) $input['gate_cta_url'] ) ) : $current['gate_cta_url'];
+
+		// Only rebuild the category map when its section was actually rendered
+		// (avoids wiping it when the mapping UI couldn't load).
+		if ( isset( $input['category_map_submitted'] ) ) {
+			$map = array();
+			if ( isset( $input['category_map'] ) && is_array( $input['category_map'] ) ) {
+				foreach ( $input['category_map'] as $tag_id => $level_ids ) {
+					$tag_id = sanitize_text_field( (string) $tag_id );
+					$ids    = array_values( array_unique( array_filter( array_map( 'absint', (array) $level_ids ) ) ) );
+					if ( '' !== $tag_id && ! empty( $ids ) ) {
+						$map[ $tag_id ] = $ids;
+					}
+				}
+			}
+			$out['category_map'] = $map;
+		}
 
 		return $out;
 	}
@@ -208,6 +253,174 @@ class SettingsPage {
 			esc_html__( 'seconds', 'luma-viewer' )
 		);
 		echo '<p class="description">' . esc_html__( 'How long fetched events are cached before refreshing from Luma.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Single-event URL base field.
+	 *
+	 * @return void
+	 */
+	public function field_single_base() {
+		printf(
+			'<code>%1$s/%2$s/&lt;id&gt;/</code><br /><input type="text" name="%3$s[single_base]" value="%2$s" class="regular-text" />',
+			esc_html( untrailingslashit( home_url() ) ),
+			esc_attr( (string) Settings::get( 'single_base' ) ),
+			esc_attr( Settings::OPTION )
+		);
+		echo '<p class="description">' . esc_html__( 'URL base for single-event pages. If links 404 after changing this, re-save Settings → Permalinks.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Membership section intro / status.
+	 *
+	 * @return void
+	 */
+	public function membership_intro() {
+		if ( ! $this->memberpress->is_active() ) {
+			echo '<p>' . esc_html__( 'MemberPress is not active — all events are shown to everyone until it is enabled.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+		echo '<p>' . esc_html__( 'Map Luma event categories (tags) to MemberPress memberships. Events with a mapped category are shown only to members who hold one of the mapped memberships.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Gating-behavior radios.
+	 *
+	 * @return void
+	 */
+	public function field_gating_behavior() {
+		$value = (string) Settings::get( 'gating_behavior' );
+		printf(
+			'<label><input type="radio" name="%1$s[gating_behavior]" value="teaser" %2$s /> %3$s</label><br />',
+			esc_attr( Settings::OPTION ),
+			checked( $value, 'teaser', false ),
+			esc_html__( 'Show a teaser with a join / log-in button', 'luma-viewer' )
+		);
+		printf(
+			'<label><input type="radio" name="%1$s[gating_behavior]" value="hide" %2$s /> %3$s</label>',
+			esc_attr( Settings::OPTION ),
+			checked( $value, 'hide', false ),
+			esc_html__( 'Hide the event entirely', 'luma-viewer' )
+		);
+	}
+
+	/**
+	 * Gate message field.
+	 *
+	 * @return void
+	 */
+	public function field_gate_cta_text() {
+		printf(
+			'<input type="text" name="%1$s[gate_cta_text]" value="%2$s" class="large-text" />',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'gate_cta_text' ) )
+		);
+	}
+
+	/**
+	 * Gate button URL field.
+	 *
+	 * @return void
+	 */
+	public function field_gate_cta_url() {
+		printf(
+			'<input type="url" name="%1$s[gate_cta_url]" value="%2$s" class="regular-text" placeholder="%3$s" />',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'gate_cta_url' ) ),
+			esc_attr__( 'Defaults to the login page', 'luma-viewer' )
+		);
+	}
+
+	/**
+	 * Category → membership mapping table.
+	 *
+	 * @return void
+	 */
+	public function field_category_map() {
+		printf( '<input type="hidden" name="%s[category_map_submitted]" value="1" />', esc_attr( Settings::OPTION ) );
+
+		if ( ! $this->memberpress->is_active() ) {
+			echo '<p class="description">' . esc_html__( 'Enable MemberPress to map categories.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+
+		$levels = $this->memberpress->levels();
+		if ( empty( $levels ) ) {
+			echo '<p class="description">' . esc_html__( 'No MemberPress memberships found — create one first.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+
+		$tags = $this->fetch_tags();
+		if ( empty( $tags ) ) {
+			echo '<p class="description">' . esc_html__( 'No Luma categories found. Add an API key and create event tags in Luma.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+
+		$map = (array) Settings::get( 'category_map' );
+
+		echo '<table class="widefat striped" style="max-width:640px"><thead><tr><th>'
+			. esc_html__( 'Luma category', 'luma-viewer' ) . '</th><th>'
+			. esc_html__( 'Required memberships', 'luma-viewer' ) . '</th></tr></thead><tbody>';
+
+		foreach ( $tags as $tag ) {
+			$selected = isset( $map[ $tag['id'] ] ) ? array_map( 'intval', (array) $map[ $tag['id'] ] ) : array();
+			echo '<tr><td>' . esc_html( $tag['name'] ) . '</td><td>';
+			printf( '<select multiple size="3" name="%1$s[category_map][%2$s][]" style="min-width:220px">', esc_attr( Settings::OPTION ), esc_attr( $tag['id'] ) );
+			foreach ( $levels as $level_id => $level_name ) {
+				printf(
+					'<option value="%1$d"%2$s>%3$s</option>',
+					(int) $level_id,
+					in_array( (int) $level_id, $selected, true ) ? ' selected="selected"' : '',
+					esc_html( $level_name )
+				);
+			}
+			echo '</select></td></tr>';
+		}
+
+		echo '</tbody></table>';
+		echo '<p class="description">' . esc_html__( 'Hold Ctrl/Cmd to select multiple memberships. Categories left empty stay public.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Fetch Luma event tags as id/name pairs (best-effort).
+	 *
+	 * @return array<int,array{id:string,name:string}>
+	 */
+	private function fetch_tags() {
+		if ( ! $this->endpoints->client()->has_key() ) {
+			return array();
+		}
+
+		$response = $this->endpoints->list_event_tags();
+		if ( is_wp_error( $response ) || ! is_array( $response ) ) {
+			return array();
+		}
+
+		$entries = array();
+		foreach ( array( 'entries', 'event_tags', 'tags' ) as $key ) {
+			if ( ! empty( $response[ $key ] ) && is_array( $response[ $key ] ) ) {
+				$entries = $response[ $key ];
+				break;
+			}
+		}
+		if ( empty( $entries ) && isset( $response[0] ) ) {
+			$entries = $response;
+		}
+
+		$tags = array();
+		foreach ( $entries as $entry ) {
+			if ( ! is_array( $entry ) ) {
+				continue;
+			}
+			$id = (string) ( $entry['api_id'] ?? ( $entry['id'] ?? '' ) );
+			if ( '' !== $id ) {
+				$tags[] = array(
+					'id'   => $id,
+					'name' => (string) ( $entry['name'] ?? $id ),
+				);
+			}
+		}
+		return $tags;
 	}
 
 	/**

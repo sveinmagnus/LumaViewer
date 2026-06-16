@@ -32,7 +32,7 @@ $day = ( $anchor instanceof \DateTimeImmutable ) ? $anchor : new \DateTimeImmuta
 		<?php
 		foreach ( $events as $event ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- card markup is escaped inside the partial.
-			echo $render_card( $event );
+			echo $render_card( $event, ! empty( $teaser_ids[ $event->id() ] ) );
 		}
 		?>
 	</div>

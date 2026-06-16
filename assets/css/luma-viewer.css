@@ -336,6 +336,34 @@
 	padding: 0 1rem;
 }
 
+/* Gated content ----------------------------------------------------------- */
+.luma-viewer__gate {
+	border: 1px solid var(--lv-border);
+	border-radius: var(--lv-radius);
+	padding: 1rem;
+	text-align: center;
+	background: rgba(0, 0, 0, 0.02);
+}
+
+.luma-viewer__gate-text {
+	margin: 0 0 0.75rem;
+	color: var(--lv-muted);
+}
+
+.luma-viewer__button--gate {
+	border-style: dashed;
+}
+
+.luma-viewer__card--teaser .luma-viewer__card-cover img {
+	filter: saturate(0.6);
+}
+
+.luma-viewer__cell-event--teaser,
+.luma-viewer__summary-teaser {
+	color: var(--lv-muted);
+	font-style: italic;
+}
+
 /* Small screens ----------------------------------------------------------- */
 @media (max-width: 600px) {
 	.luma-viewer__card {
