@@ -11,6 +11,7 @@ use LumaViewer\Admin\Notices;
 use LumaViewer\Admin\SettingsPage;
 use LumaViewer\Api\Client;
 use LumaViewer\Api\Endpoints;
+use LumaViewer\Blocks\Blocks;
 use LumaViewer\Cache\Cache;
 use LumaViewer\Events\Repository;
 use LumaViewer\Frontend\Assets;
@@ -73,6 +74,7 @@ final class Plugin {
 
 		( new Assets() )->register();
 		( new Shortcodes( $renderer ) )->register();
+		( new Blocks( $renderer ) )->register();
 
 		if ( is_admin() ) {
 			( new SettingsPage( $this->endpoints ) )->register();

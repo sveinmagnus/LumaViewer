@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "luma-viewer/event",
+	"version": "0.1.0",
+	"title": "Luma Event",
+	"category": "widgets",
+	"icon": "tickets-alt",
+	"description": "Display a single Lu.ma event by its ID.",
+	"keywords": [ "luma", "event" ],
+	"textdomain": "luma-viewer",
+	"supports": {
+		"html": false
+	},
+	"attributes": {
+		"id": { "type": "string", "default": "" }
+	},
+	"editorScript": "file:./index.js"
+}

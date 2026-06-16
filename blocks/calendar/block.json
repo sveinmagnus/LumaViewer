@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "luma-viewer/calendar",
+	"version": "0.1.0",
+	"title": "Luma Calendar",
+	"category": "widgets",
+	"icon": "calendar-alt",
+	"description": "Display your Lu.ma calendar in a list, month, day, photo, or summary view.",
+	"keywords": [ "luma", "calendar", "events" ],
+	"textdomain": "luma-viewer",
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ]
+	},
+	"attributes": {
+		"view": { "type": "string", "default": "" },
+		"tag": { "type": "string", "default": "" },
+		"count": { "type": "number", "default": 0 },
+		"date": { "type": "string", "default": "" }
+	},
+	"editorScript": "file:./index.js"
+}
