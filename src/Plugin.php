@@ -18,6 +18,7 @@ use LumaViewer\Cache\Webhook;
 use LumaViewer\Elementor\Module as ElementorModule;
 use LumaViewer\Events\Repository;
 use LumaViewer\Frontend\Assets;
+use LumaViewer\Frontend\RateLimiter;
 use LumaViewer\Frontend\RestController;
 use LumaViewer\Frontend\Shortcodes;
 use LumaViewer\Frontend\SingleRoute;
@@ -83,14 +84,16 @@ final class Plugin {
 		$gate        = new Gate( $memberpress );
 		$renderer    = new Renderer( $repository, new TemplateLoader(), $formatter, $gate );
 
+		$limiter = new RateLimiter();
+
 		( new Assets() )->register();
 		( new Shortcodes( $renderer ) )->register();
 		( new Blocks( $renderer ) )->register();
-		( new RestController( $renderer ) )->register();
+		( new RestController( $renderer, $limiter ) )->register();
 		( new SingleRoute( $repository, $renderer, $formatter, $gate ) )->register();
 		( new ElementorModule( $renderer ) )->register();
 		( new Cron( $repository ) )->register();
-		( new Webhook( $cache ) )->register();
+		( new Webhook( $cache, $limiter ) )->register();
 
 		if ( is_admin() ) {
 			( new SettingsPage( $this->endpoints, $memberpress, $cache ) )->register();

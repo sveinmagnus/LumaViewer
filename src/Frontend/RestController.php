@@ -25,13 +25,18 @@ class RestController {
 	/** @var Renderer */
 	private $renderer;
 
+	/** @var RateLimiter */
+	private $limiter;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param Renderer $renderer Shared renderer.
+	 * @param Renderer    $renderer Shared renderer.
+	 * @param RateLimiter $limiter  Rate limiter.
 	 */
-	public function __construct( Renderer $renderer ) {
+	public function __construct( Renderer $renderer, RateLimiter $limiter ) {
 		$this->renderer = $renderer;
+		$this->limiter  = $limiter;
 	}
 
 	/**
@@ -79,12 +84,28 @@ class RestController {
 	}
 
 	/**
-	 * Public, read-only: the same public calendar shown on the page.
+	 * Public, read-only access — but anonymous traffic is rate-limited per IP to
+	 * blunt scripted abuse / amplification. Logged-in users are exempt.
 	 *
-	 * @return bool
+	 * @return bool|\WP_Error
 	 */
 	public function can_read() {
-		return true;
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+
+		$limit  = (int) apply_filters( 'luma_viewer_rest_rate_limit', 60 );
+		$window = (int) apply_filters( 'luma_viewer_rest_rate_window', MINUTE_IN_SECONDS );
+
+		if ( $this->limiter->allow( 'rest_' . RateLimiter::client_ip(), $limit, $window ) ) {
+			return true;
+		}
+
+		return new \WP_Error(
+			'luma_viewer_rate_limited',
+			__( 'Too many requests. Please slow down and try again shortly.', 'luma-viewer' ),
+			array( 'status' => 429 )
+		);
 	}
 
 	/**

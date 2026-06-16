@@ -7,6 +7,7 @@
 
 namespace LumaViewer\Cache;
 
+use LumaViewer\Frontend\RateLimiter;
 use LumaViewer\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -26,13 +27,18 @@ class Webhook {
 	/** @var Cache */
 	private $cache;
 
+	/** @var RateLimiter */
+	private $limiter;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param Cache $cache Response cache.
+	 * @param Cache       $cache   Response cache.
+	 * @param RateLimiter $limiter Rate limiter.
 	 */
-	public function __construct( Cache $cache ) {
-		$this->cache = $cache;
+	public function __construct( Cache $cache, RateLimiter $limiter ) {
+		$this->cache   = $cache;
+		$this->limiter = $limiter;
 	}
 
 	/**
@@ -65,9 +71,19 @@ class Webhook {
 	 * Verify the shared secret (constant-time) before doing anything.
 	 *
 	 * @param \WP_REST_Request $request Request.
-	 * @return bool
+	 * @return bool|\WP_Error
 	 */
 	public function verify( \WP_REST_Request $request ) {
+		// Throttle by IP first so a bad actor can't hammer the endpoint or
+		// brute-force the token.
+		if ( ! $this->limiter->allow( 'webhook_' . RateLimiter::client_ip(), 30, MINUTE_IN_SECONDS ) ) {
+			return new \WP_Error(
+				'luma_viewer_rate_limited',
+				__( 'Too many requests.', 'luma-viewer' ),
+				array( 'status' => 429 )
+			);
+		}
+
 		$secret = (string) Settings::get( 'webhook_secret' );
 		if ( '' === $secret ) {
 			return false;
