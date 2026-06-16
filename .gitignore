@@ -5,6 +5,10 @@
 # Build output
 /build/
 
+# Release staging
+/dist/
+/luma-viewer.zip
+
 # Local env
 /.wp-env-home/
 *.log

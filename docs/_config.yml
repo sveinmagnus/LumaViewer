@@ -1,0 +1,5 @@
+title: Luma Viewer
+description: Display a Lu.ma organization calendar on WordPress.
+theme: jekyll-theme-cayman
+# To publish these docs: repo Settings → Pages → Source = "Deploy from a branch",
+# branch = main, folder = /docs.

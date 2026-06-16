@@ -1,0 +1,38 @@
+# Files excluded from the distributed plugin zip (built by the release workflow).
+# Patterns are anchored to the repository root (rsync --exclude-from).
+
+/.git
+/.github
+/.gitignore
+/.gitattributes
+/.distignore
+/.editorconfig
+/.claude
+/.wp-env.json
+/blueprint.json
+/dist
+
+# Dev tooling / config
+/composer.json
+/composer.lock
+/package.json
+/package-lock.json
+/node_modules
+/phpcs.xml.dist
+/phpstan.neon.dist
+/phpstan.neon
+/phpstan-bootstrap.php
+/phpstan
+/phpunit.xml.dist
+/phpunit.xml
+/.phpunit.result.cache
+/tests
+
+# Block sources (the compiled output in build/ is what ships)
+/blocks
+
+# Repo docs (readme.txt + LICENSE ship; these don't)
+/README.md
+/CONTRIBUTING.md
+/CHANGELOG.md
+/docs

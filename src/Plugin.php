@@ -24,6 +24,7 @@ use LumaViewer\Frontend\Shortcodes;
 use LumaViewer\Frontend\SingleRoute;
 use LumaViewer\Membership\Gate;
 use LumaViewer\Membership\MemberPress;
+use LumaViewer\Update\Updater;
 use LumaViewer\View\Formatter;
 use LumaViewer\View\Renderer;
 use LumaViewer\View\TemplateLoader;
@@ -94,6 +95,7 @@ final class Plugin {
 		( new ElementorModule( $renderer ) )->register();
 		( new Cron( $repository ) )->register();
 		( new Webhook( $cache, $limiter ) )->register();
+		( new Updater() )->register();
 
 		if ( is_admin() ) {
 			( new SettingsPage( $this->endpoints, $memberpress, $cache ) )->register();
