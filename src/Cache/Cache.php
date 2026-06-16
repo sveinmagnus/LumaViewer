@@ -16,7 +16,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Cache {
 
-	const PREFIX = 'luma_viewer_';
+	const PREFIX         = 'luma_viewer_';
+	const VERSION_OPTION = 'luma_viewer_cache_version';
 
 	/**
 	 * Default TTL in seconds.
@@ -41,7 +42,10 @@ class Cache {
 	 * @return string
 	 */
 	public function key( array $args ) {
-		return self::PREFIX . md5( (string) wp_json_encode( $args ) );
+		// The version salt lets flush() invalidate every key at once, which
+		// works even when a persistent object cache backs the transients.
+		$version = (int) get_option( self::VERSION_OPTION, 1 );
+		return self::PREFIX . md5( (string) wp_json_encode( array( $version, $args ) ) );
 	}
 
 	/**
@@ -78,13 +82,15 @@ class Cache {
 	}
 
 	/**
-	 * Flush all of the plugin's transients (DB-backed fallback). With a
-	 * persistent object cache this is a best-effort no-op for non-DB stores;
-	 * prefer targeted {@see Cache::delete()} on webhook invalidation.
+	 * Invalidate every cached entry by bumping the version salt (effective for
+	 * both DB transients and a persistent object cache), then sweep the now-orphan
+	 * DB transient rows so the options table doesn't grow unbounded.
 	 *
 	 * @return void
 	 */
 	public function flush() {
+		update_option( self::VERSION_OPTION, (int) get_option( self::VERSION_OPTION, 1 ) + 1 );
+
 		global $wpdb;
 
 		$like = $wpdb->esc_like( '_transient_' . self::PREFIX ) . '%';

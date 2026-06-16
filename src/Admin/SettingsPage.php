@@ -352,8 +352,6 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function field_category_map() {
-		printf( '<input type="hidden" name="%s[category_map_submitted]" value="1" />', esc_attr( Settings::OPTION ) );
-
 		if ( ! $this->memberpress->is_active() ) {
 			echo '<p class="description">' . esc_html__( 'Enable MemberPress to map categories.', 'luma-viewer' ) . '</p>';
 			return;
@@ -370,6 +368,10 @@ class SettingsPage {
 			echo '<p class="description">' . esc_html__( 'No Luma categories found. Add an API key and create event tags in Luma.', 'luma-viewer' ) . '</p>';
 			return;
 		}
+
+		// Marker only when the real mapping UI renders, so a save can't wipe the
+		// stored map when the table couldn't be shown.
+		printf( '<input type="hidden" name="%s[category_map_submitted]" value="1" />', esc_attr( Settings::OPTION ) );
 
 		$map = (array) Settings::get( 'category_map' );
 

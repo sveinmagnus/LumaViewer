@@ -64,6 +64,12 @@
 
 		event.preventDefault();
 		container.classList.add( 'is-loading' );
+		container.setAttribute( 'aria-busy', 'true' );
+
+		function reset() {
+			container.classList.remove( 'is-loading' );
+			container.setAttribute( 'aria-busy', 'false' );
+		}
 
 		var headers = { Accept: 'application/json' };
 		if ( config().nonce ) {
@@ -75,14 +81,25 @@
 				return response.json();
 			} )
 			.then( function ( data ) {
-				if ( data && data.html ) {
-					container.outerHTML = data.html;
-				} else {
-					container.classList.remove( 'is-loading' );
+				if ( ! data || ! data.html ) {
+					reset();
+					return;
+				}
+				var tmp = document.createElement( 'div' );
+				tmp.innerHTML = data.html.trim();
+				var next = tmp.firstElementChild;
+				if ( ! next ) {
+					reset();
+					return;
+				}
+				container.replaceWith( next );
+				next.setAttribute( 'aria-busy', 'false' );
+				// Move focus to the refreshed region so keyboard and screen-reader
+				// users follow the content change instead of losing their place.
+				if ( typeof next.focus === 'function' ) {
+					next.focus();
 				}
 			} )
-			.catch( function () {
-				container.classList.remove( 'is-loading' );
-			} );
+			.catch( reset );
 	} );
 } )();

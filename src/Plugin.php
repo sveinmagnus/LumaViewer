@@ -87,7 +87,7 @@ final class Plugin {
 		( new Shortcodes( $renderer ) )->register();
 		( new Blocks( $renderer ) )->register();
 		( new RestController( $renderer ) )->register();
-		( new SingleRoute( $repository, $renderer, $formatter ) )->register();
+		( new SingleRoute( $repository, $renderer, $formatter, $gate ) )->register();
 		( new ElementorModule( $renderer ) )->register();
 		( new Cron( $repository ) )->register();
 		( new Webhook( $cache ) )->register();

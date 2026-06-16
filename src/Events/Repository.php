@@ -20,6 +20,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Repository {
 
+	const NOT_FOUND = '__luma_not_found__';
+
 	/** @var Endpoints */
 	private $endpoints;
 
@@ -131,9 +133,21 @@ class Repository {
 		$cache_key = $this->cache->key( array( 'event', $id ) );
 		$data      = $this->cache->get( $cache_key );
 
+		if ( self::NOT_FOUND === $data ) {
+			return array(
+				'event' => null,
+				'error' => null,
+			);
+		}
+
 		if ( null === $data ) {
 			$resp = $this->endpoints->get_event( $id );
 			if ( is_wp_error( $resp ) ) {
+				// Negative-cache a definitive 404 so junk ids can't hammer the API.
+				$error_data = $resp->get_error_data();
+				if ( is_array( $error_data ) && isset( $error_data['status'] ) && 404 === (int) $error_data['status'] ) {
+					$this->cache->set( $cache_key, self::NOT_FOUND, 5 * MINUTE_IN_SECONDS );
+				}
 				return array(
 					'event' => null,
 					'error' => $resp,

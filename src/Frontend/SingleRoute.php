@@ -8,6 +8,7 @@
 namespace LumaViewer\Frontend;
 
 use LumaViewer\Events\Repository;
+use LumaViewer\Membership\Gate;
 use LumaViewer\Settings;
 use LumaViewer\View\Formatter;
 use LumaViewer\View\Renderer;
@@ -33,17 +34,22 @@ class SingleRoute {
 	/** @var Formatter */
 	private $formatter;
 
+	/** @var Gate */
+	private $gate;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param Repository $repo      Event repository.
 	 * @param Renderer   $renderer  Shared renderer.
 	 * @param Formatter  $formatter Date formatter.
+	 * @param Gate       $gate      Membership visibility gate.
 	 */
-	public function __construct( Repository $repo, Renderer $renderer, Formatter $formatter ) {
+	public function __construct( Repository $repo, Renderer $renderer, Formatter $formatter, Gate $gate ) {
 		$this->repo      = $repo;
 		$this->renderer  = $renderer;
 		$this->formatter = $formatter;
+		$this->gate      = $gate;
 	}
 
 	/**
@@ -104,31 +110,43 @@ class SingleRoute {
 			return;
 		}
 
-		$id     = sanitize_text_field( (string) $id );
+		$id = sanitize_text_field( (string) $id );
+
+		// Reject obviously malformed ids before spending an API call on them.
+		if ( ! preg_match( '/^[A-Za-z0-9_-]{1,64}$/', $id ) ) {
+			$this->set_404();
+			return;
+		}
+
 		$result = $this->repo->get_event( $id );
 		$event  = $result['event'];
 
 		if ( ! $event || '' === $event->id() ) {
-			global $wp_query;
-			$wp_query->set_404();
-			status_header( 404 );
+			$this->set_404();
 			return;
 		}
 
-		add_filter(
-			'document_title_parts',
-			static function ( $parts ) use ( $event ) {
-				$parts['title'] = $event->name();
-				return $parts;
-			}
-		);
+		$decision = $this->gate->resolve( $event, get_current_user_id() );
 
-		add_action(
-			'wp_head',
-			function () use ( $event ) {
-				$this->print_json_ld( $event );
-			}
-		);
+		// Never leak a gated event's details via the document title or JSON-LD
+		// in the <head>; the body is already gated by the renderer.
+		if ( Gate::HIDDEN !== $decision ) {
+			add_filter(
+				'document_title_parts',
+				static function ( $parts ) use ( $event ) {
+					$parts['title'] = $event->name();
+					return $parts;
+				}
+			);
+
+			$hide_description = ( Gate::TEASER === $decision );
+			add_action(
+				'wp_head',
+				function () use ( $event, $hide_description ) {
+					$this->print_json_ld( $event, $hide_description );
+				}
+			);
+		}
 
 		$html = $this->renderer->event( array( 'id' => $id ) );
 
@@ -140,12 +158,25 @@ class SingleRoute {
 	}
 
 	/**
-	 * Print JSON-LD Event schema for the event.
+	 * Send a 404 for the current request.
 	 *
-	 * @param \LumaViewer\Model\Event $event Event.
 	 * @return void
 	 */
-	private function print_json_ld( $event ) {
+	private function set_404() {
+		global $wp_query;
+		$wp_query->set_404();
+		status_header( 404 );
+		nocache_headers();
+	}
+
+	/**
+	 * Print JSON-LD Event schema for the event.
+	 *
+	 * @param \LumaViewer\Model\Event $event            Event.
+	 * @param bool                    $hide_description Omit the description (teaser).
+	 * @return void
+	 */
+	private function print_json_ld( $event, $hide_description = false ) {
 		$location = $event->location();
 
 		$schema = array(
@@ -185,7 +216,7 @@ class SingleRoute {
 		}
 
 		$description = wp_strip_all_tags( $event->description() );
-		if ( '' !== $description ) {
+		if ( ! $hide_description && '' !== $description ) {
 			$schema['description'] = $description;
 		}
 

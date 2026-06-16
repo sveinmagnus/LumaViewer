@@ -161,8 +161,9 @@ class Renderer {
 		);
 
 		return sprintf(
-			'<div class="luma-viewer luma-viewer--%s"%s>%s%s</div>',
+			'<div class="luma-viewer luma-viewer--%1$s" role="region" aria-label="%2$s" tabindex="-1" aria-busy="false"%3$s>%4$s%5$s</div>',
 			esc_attr( $view ),
+			esc_attr__( 'Events', 'luma-viewer' ),
 			$data,
 			$this->toolbar( $view, $nav ),
 			$body
@@ -298,7 +299,9 @@ class Renderer {
 	}
 
 	/**
-	 * Parse an anchor date string in the site time zone, falling back to now.
+	 * Parse an anchor date string in the site time zone, falling back to now and
+	 * clamping to a sane window so date navigation can't be used to enumerate
+	 * unbounded cache entries / API calls.
 	 *
 	 * @param string $date Date string.
 	 * @return \DateTimeImmutable
@@ -306,9 +309,19 @@ class Renderer {
 	private function parse_anchor( $date ) {
 		$tz = wp_timezone();
 		try {
-			return '' !== $date ? new \DateTimeImmutable( $date, $tz ) : new \DateTimeImmutable( 'now', $tz );
+			$base = '' !== $date ? new \DateTimeImmutable( $date, $tz ) : new \DateTimeImmutable( 'now', $tz );
 		} catch ( \Exception $e ) {
-			return new \DateTimeImmutable( 'now', $tz );
+			$base = new \DateTimeImmutable( 'now', $tz );
 		}
+
+		$min = new \DateTimeImmutable( '-5 years', $tz );
+		$max = new \DateTimeImmutable( '+5 years', $tz );
+		if ( $base < $min ) {
+			$base = $min;
+		} elseif ( $base > $max ) {
+			$base = $max;
+		}
+
+		return $base;
 	}
 }

@@ -143,14 +143,16 @@
 	text-align: center;
 }
 
-.luma-viewer__grid {
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	gap: 1px;
-	background: var(--lv-border);
+.luma-viewer__month-table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.luma-viewer__month-table th,
+.luma-viewer__month-table td {
 	border: 1px solid var(--lv-border);
-	border-radius: var(--lv-radius);
-	overflow: hidden;
+	vertical-align: top;
 }
 
 .luma-viewer__dow {
@@ -158,14 +160,14 @@
 	padding: 0.4rem;
 	text-align: center;
 	font-size: 0.75em;
+	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
 	color: var(--lv-muted);
 }
 
 .luma-viewer__cell {
-	background: #fff;
-	min-height: 92px;
+	height: 92px;
 	padding: 0.35rem;
 }
 
@@ -179,6 +181,7 @@
 }
 
 .luma-viewer__cell-day {
+	display: block;
 	font-size: 0.8em;
 	font-weight: 600;
 	margin-bottom: 0.25rem;
@@ -192,7 +195,8 @@
 	gap: 2px;
 }
 
-.luma-viewer__cell-events a {
+.luma-viewer__cell-events a,
+.luma-viewer__cell-events .luma-viewer__cell-event {
 	display: block;
 	font-size: 0.75em;
 	padding: 0.1rem 0.3rem;
@@ -376,10 +380,11 @@
 	}
 
 	.luma-viewer__cell {
-		min-height: 64px;
+		height: 64px;
 	}
 
-	.luma-viewer__cell-events a {
+	.luma-viewer__cell-events a,
+	.luma-viewer__cell-events .luma-viewer__cell-event {
 		font-size: 0.65em;
 	}
 }

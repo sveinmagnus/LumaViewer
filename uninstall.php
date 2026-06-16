@@ -9,6 +9,7 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 delete_option( 'luma_viewer_settings' );
 delete_option( 'luma_viewer_flush_needed' );
+delete_option( 'luma_viewer_cache_version' );
 
 wp_clear_scheduled_hook( 'luma_viewer_refresh_cache' );
 
