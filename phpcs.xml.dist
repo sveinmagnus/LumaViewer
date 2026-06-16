@@ -33,13 +33,19 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="luma-viewer"/>
+			<property name="text_domain" type="array">
+				<element value="luma-viewer"/>
+			</property>
 		</properties>
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="luma_viewer,LumaViewer,LUMA_VIEWER"/>
+			<property name="prefixes" type="array">
+				<element value="luma_viewer"/>
+				<element value="LumaViewer"/>
+				<element value="LUMA_VIEWER"/>
+			</property>
 		</properties>
 		<!-- View templates are included within a function scope by
 		     TemplateLoader::capture(), so their variables are not globals. -->

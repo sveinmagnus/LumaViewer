@@ -13,6 +13,8 @@ use LumaViewer\Api\Client;
 use LumaViewer\Api\Endpoints;
 use LumaViewer\Blocks\Blocks;
 use LumaViewer\Cache\Cache;
+use LumaViewer\Cache\Cron;
+use LumaViewer\Cache\Webhook;
 use LumaViewer\Elementor\Module as ElementorModule;
 use LumaViewer\Events\Repository;
 use LumaViewer\Frontend\Assets;
@@ -74,7 +76,8 @@ final class Plugin {
 
 		$this->endpoints = new Endpoints( new Client( (string) Settings::get( 'api_key' ) ) );
 
-		$repository  = new Repository( $this->endpoints, new Cache( (int) Settings::get( 'cache_ttl' ) ) );
+		$cache       = new Cache( (int) Settings::get( 'cache_ttl' ) );
+		$repository  = new Repository( $this->endpoints, $cache );
 		$formatter   = new Formatter();
 		$memberpress = new MemberPress();
 		$gate        = new Gate( $memberpress );
@@ -86,9 +89,11 @@ final class Plugin {
 		( new RestController( $renderer ) )->register();
 		( new SingleRoute( $repository, $renderer, $formatter ) )->register();
 		( new ElementorModule( $renderer ) )->register();
+		( new Cron( $repository ) )->register();
+		( new Webhook( $cache ) )->register();
 
 		if ( is_admin() ) {
-			( new SettingsPage( $this->endpoints, $memberpress ) )->register();
+			( new SettingsPage( $this->endpoints, $memberpress, $cache ) )->register();
 			( new Notices() )->register();
 		}
 	}
@@ -117,9 +122,15 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function activate() {
-		if ( false === get_option( Settings::OPTION ) ) {
-			add_option( Settings::OPTION, Settings::defaults() );
+		$settings = get_option( Settings::OPTION );
+		if ( ! is_array( $settings ) ) {
+			$settings = Settings::defaults();
 		}
+		if ( empty( $settings['webhook_secret'] ) ) {
+			$settings['webhook_secret'] = wp_generate_password( 40, false );
+		}
+		update_option( Settings::OPTION, $settings );
+
 		// Defer the rewrite flush to `init`, once SingleRoute has registered its
 		// rule (see SingleRoute::add_rewrite()).
 		update_option( SingleRoute::FLUSH_FLAG, '1' );

@@ -8,6 +8,7 @@
 namespace LumaViewer\Admin;
 
 use LumaViewer\Api\Endpoints;
+use LumaViewer\Cache\Cache;
 use LumaViewer\Membership\MemberPress;
 use LumaViewer\Settings;
 
@@ -38,14 +39,23 @@ class SettingsPage {
 	private $memberpress;
 
 	/**
+	 * Response cache.
+	 *
+	 * @var Cache
+	 */
+	private $cache;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Endpoints   $endpoints   API endpoints.
 	 * @param MemberPress $memberpress MemberPress adapter.
+	 * @param Cache       $cache       Response cache.
 	 */
-	public function __construct( Endpoints $endpoints, MemberPress $memberpress ) {
+	public function __construct( Endpoints $endpoints, MemberPress $memberpress, Cache $cache ) {
 		$this->endpoints   = $endpoints;
 		$this->memberpress = $memberpress;
+		$this->cache       = $cache;
 	}
 
 	/**
@@ -57,6 +67,7 @@ class SettingsPage {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'wp_ajax_luma_viewer_test_connection', array( $this, 'ajax_test_connection' ) );
+		add_action( 'admin_post_luma_viewer_clear_cache', array( $this, 'handle_clear_cache' ) );
 	}
 
 	/**
@@ -105,6 +116,10 @@ class SettingsPage {
 		add_settings_field( 'gate_cta_text', __( 'Gate message', 'luma-viewer' ), array( $this, 'field_gate_cta_text' ), self::MENU_SLUG, 'luma_viewer_membership' );
 		add_settings_field( 'gate_cta_url', __( 'Gate button URL', 'luma-viewer' ), array( $this, 'field_gate_cta_url' ), self::MENU_SLUG, 'luma_viewer_membership' );
 		add_settings_field( 'category_map', __( 'Category → membership', 'luma-viewer' ), array( $this, 'field_category_map' ), self::MENU_SLUG, 'luma_viewer_membership' );
+
+		add_settings_section( 'luma_viewer_sync', __( 'Cache and sync', 'luma-viewer' ), array( $this, 'sync_intro' ), self::MENU_SLUG );
+		add_settings_field( 'webhook', __( 'Luma webhook URL', 'luma-viewer' ), array( $this, 'field_webhook' ), self::MENU_SLUG, 'luma_viewer_sync' );
+		add_settings_field( 'clear_cache', __( 'Cached events', 'luma-viewer' ), array( $this, 'field_clear_cache' ), self::MENU_SLUG, 'luma_viewer_sync' );
 	}
 
 	/**
@@ -424,6 +439,57 @@ class SettingsPage {
 	}
 
 	/**
+	 * Cache/sync section intro.
+	 *
+	 * @return void
+	 */
+	public function sync_intro() {
+		echo '<p>' . esc_html__( 'Events are cached and refreshed automatically every 15 minutes. Use the webhook for instant updates, or clear the cache manually.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Webhook URL field (read-only).
+	 *
+	 * @return void
+	 */
+	public function field_webhook() {
+		$secret = (string) Settings::get( 'webhook_secret' );
+		$url    = '' !== $secret ? add_query_arg( 'token', rawurlencode( $secret ), rest_url( 'lumaviewer/v1/webhook' ) ) : '';
+		printf(
+			'<input type="text" class="large-text code" readonly value="%s" />',
+			esc_attr( $url )
+		);
+		echo '<p class="description">' . esc_html__( 'Add this as a webhook in Luma (Event Created / Updated / Canceled) to refresh the cache instantly. Treat it as a secret.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Clear-cache button.
+	 *
+	 * @return void
+	 */
+	public function field_clear_cache() {
+		$url = wp_nonce_url( admin_url( 'admin-post.php?action=luma_viewer_clear_cache' ), 'luma_viewer_clear_cache' );
+		printf( '<a href="%s" class="button">%s</a>', esc_url( $url ), esc_html__( 'Clear cached events', 'luma-viewer' ) );
+	}
+
+	/**
+	 * Handle the clear-cache action.
+	 *
+	 * @return void
+	 */
+	public function handle_clear_cache() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Permission denied.', 'luma-viewer' ) );
+		}
+		check_admin_referer( 'luma_viewer_clear_cache' );
+
+		$this->cache->flush();
+
+		wp_safe_redirect( add_query_arg( 'luma_viewer_cache', 'cleared', admin_url( 'options-general.php?page=' . self::MENU_SLUG ) ) );
+		exit;
+	}
+
+	/**
 	 * Render the "Test connection" button + inline script.
 	 *
 	 * @return void
@@ -479,6 +545,12 @@ class SettingsPage {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Luma Viewer', 'luma-viewer' ); ?></h1>
+			<?php
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only flag set by a nonce-verified redirect.
+			if ( isset( $_GET['luma_viewer_cache'] ) && 'cleared' === sanitize_key( wp_unslash( $_GET['luma_viewer_cache'] ) ) ) :
+				?>
+				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Cache cleared.', 'luma-viewer' ); ?></p></div>
+			<?php endif; ?>
 			<form action="options.php" method="post">
 				<?php
 				settings_fields( self::GROUP );

@@ -6,10 +6,11 @@ single event), available as **shortcodes, Gutenberg blocks, and Elementor
 widgets**, with **MemberPress-aware access**: map Luma event categories (tags) to
 membership levels and the plugin decides what each visitor can see.
 
-> Status: **early development.** P0 (scaffold, API client, settings, connection
-> test) is in place. See `.claude/plans/` for the full build plan and
-> `.claude/skills/luma-api` + `.claude/skills/wordpress-plugin` for the
-> reference material this plugin is built against.
+> Status: **functional, pre-release.** All core features are implemented (views,
+> shortcodes, blocks, Elementor widgets, MemberPress gating, single-event pages,
+> webhooks/cron). Field names from the Luma API are isolated in `Model\Event` and
+> should be confirmed against a live key. See `.claude/skills/luma-api` and
+> `.claude/skills/luma-viewer` for the reference material this is built against.
 
 ## How it works
 
@@ -20,6 +21,29 @@ membership levels and the plugin decides what each visitor can see.
   request so gated content is never cached per user.
 - **Single calendar.** Configured with one Luma **Calendar API key** (requires
   Luma Plus; 200 requests/minute).
+- **Fresh automatically.** WP-Cron pre-warms the cache every 15 minutes; an
+  optional Luma webhook (URL shown in settings) invalidates it instantly.
+
+## Usage
+
+Place a calendar with the **Luma Calendar** block, the **Luma Calendar**
+Elementor widget, or the shortcode:
+
+```
+[luma_calendar view="month" tag="" count="10" date="2026-07"]
+[luma_event id="evt-xxxxxxxx"]
+```
+
+`view` is one of `list` (default), `month`, `day`, `photo`, `summary`. Single
+events also get their own page at `/<base>/<event-id>/` (base configurable in
+settings). Views can be switched and navigated client-side without a reload.
+
+### MemberPress access by category
+
+Under **Settings → Luma Viewer → Membership access**, map Luma event categories
+(tags) to MemberPress memberships. Events with a mapped category are shown only
+to members holding one of those memberships; others see a teaser (or nothing,
+your choice). Events without a mapped category stay public.
 
 ## Requirements
 
