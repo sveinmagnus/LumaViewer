@@ -113,8 +113,17 @@ class Renderer {
 				$visible[] = $event;
 			}
 			$events = $visible;
-			if ( ! headers_sent() ) {
-				nocache_headers(); // Per-user content; keep it out of shared caches.
+			// Visibility varies per logged-in user, so keep those responses out of
+			// shared / full-page caches. Anonymous visitors all see the same
+			// teaser/public result, which stays cacheable.
+			if ( is_user_logged_in() ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- standard cache-plugin bypass constant.
+				if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+					define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+				}
+				if ( ! headers_sent() ) {
+					nocache_headers();
+				}
 			}
 		}
 
@@ -193,8 +202,13 @@ class Renderer {
 			$decision = $this->gate->resolve( $event, get_current_user_id() );
 			$blocked  = Gate::HIDDEN === $decision;
 			$teaser   = Gate::TEASER === $decision;
-			if ( ( $blocked || $teaser ) && ! headers_sent() ) {
-				nocache_headers();
+			if ( ( $blocked || $teaser ) && is_user_logged_in() ) {
+				if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+					define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+				}
+				if ( ! headers_sent() ) {
+					nocache_headers();
+				}
 			}
 		}
 
