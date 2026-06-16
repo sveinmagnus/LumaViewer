@@ -1,0 +1,144 @@
+<?php
+/**
+ * Elementor "Luma Calendar" widget.
+ *
+ * @package LumaViewer
+ */
+
+namespace LumaViewer\Elementor\Widgets;
+
+use Elementor\Controls_Manager;
+use Elementor\Widget_Base;
+use LumaViewer\View\Renderer;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Thin Elementor wrapper around the shared {@see Renderer}, so its output
+ * matches the shortcode and block. The renderer is injected statically because
+ * Elementor re-instantiates widgets on its own during rendering.
+ */
+class CalendarWidget extends Widget_Base {
+
+	/** @var Renderer|null */
+	private static $renderer = null;
+
+	/**
+	 * Inject the shared renderer.
+	 *
+	 * @param Renderer $renderer Renderer.
+	 * @return void
+	 */
+	public static function set_renderer( Renderer $renderer ) {
+		self::$renderer = $renderer;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_name() {
+		return 'luma_calendar';
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_title() {
+		return __( 'Luma Calendar', 'luma-viewer' );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_icon() {
+		return 'eicon-calendar';
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_categories() {
+		return array( 'general' );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_keywords() {
+		return array( 'luma', 'calendar', 'events' );
+	}
+
+	/**
+	 * Register Elementor controls.
+	 *
+	 * @return void
+	 */
+	protected function register_controls() {
+		$this->start_controls_section( 'content', array( 'label' => __( 'Calendar', 'luma-viewer' ) ) );
+
+		$this->add_control(
+			'view',
+			array(
+				'label'   => __( 'View', 'luma-viewer' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => '',
+				'options' => array(
+					''        => __( 'Site default', 'luma-viewer' ),
+					'list'    => __( 'List', 'luma-viewer' ),
+					'month'   => __( 'Month', 'luma-viewer' ),
+					'day'     => __( 'Day', 'luma-viewer' ),
+					'photo'   => __( 'Photo', 'luma-viewer' ),
+					'summary' => __( 'Summary', 'luma-viewer' ),
+				),
+			)
+		);
+		$this->add_control(
+			'tag',
+			array(
+				'label' => __( 'Category (tag)', 'luma-viewer' ),
+				'type'  => Controls_Manager::TEXT,
+			)
+		);
+		$this->add_control(
+			'count',
+			array(
+				'label'   => __( 'Number of events', 'luma-viewer' ),
+				'type'    => Controls_Manager::NUMBER,
+				'default' => 0,
+			)
+		);
+		$this->add_control(
+			'date',
+			array(
+				'label' => __( 'Month (YYYY-MM)', 'luma-viewer' ),
+				'type'  => Controls_Manager::TEXT,
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
+	/**
+	 * Render the widget.
+	 *
+	 * @return void
+	 */
+	protected function render() {
+		if ( ! self::$renderer instanceof Renderer ) {
+			return;
+		}
+
+		$settings = $this->get_settings_for_display();
+		$atts     = array(
+			'view' => isset( $settings['view'] ) ? sanitize_key( (string) $settings['view'] ) : '',
+			'tag'  => isset( $settings['tag'] ) ? sanitize_text_field( (string) $settings['tag'] ) : '',
+			'date' => isset( $settings['date'] ) ? sanitize_text_field( (string) $settings['date'] ) : '',
+		);
+		if ( ! empty( $settings['count'] ) ) {
+			$atts['count'] = absint( $settings['count'] );
+		}
+
+		// Renderer output is escaped within its templates.
+		echo self::$renderer->calendar( $atts ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+}

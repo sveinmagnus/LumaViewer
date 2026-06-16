@@ -13,6 +13,7 @@ use LumaViewer\Api\Client;
 use LumaViewer\Api\Endpoints;
 use LumaViewer\Blocks\Blocks;
 use LumaViewer\Cache\Cache;
+use LumaViewer\Elementor\Module as ElementorModule;
 use LumaViewer\Events\Repository;
 use LumaViewer\Frontend\Assets;
 use LumaViewer\Frontend\RestController;
@@ -84,6 +85,7 @@ final class Plugin {
 		( new Blocks( $renderer ) )->register();
 		( new RestController( $renderer ) )->register();
 		( new SingleRoute( $repository, $renderer, $formatter ) )->register();
+		( new ElementorModule( $renderer ) )->register();
 
 		if ( is_admin() ) {
 			( new SettingsPage( $this->endpoints, $memberpress ) )->register();
