@@ -1,0 +1,41 @@
+{
+    "name": "lumaviewer/luma-viewer",
+    "description": "Display a Lu.ma organization calendar on WordPress with The Events Calendar–style views, Gutenberg & Elementor blocks, and MemberPress-aware access by event category.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.9",
+        "wp-coding-standards/wpcs": "^3.1",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpstan/phpstan": "^1.11",
+        "szepeviktor/phpstan-wordpress": "^1.3",
+        "phpunit/phpunit": "^9.6",
+        "brain/monkey": "^2.6",
+        "yoast/phpunit-polyfills": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "LumaViewer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LumaViewer\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "phpcs": "phpcs",
+        "phpcbf": "phpcbf",
+        "phpstan": "phpstan analyse",
+        "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

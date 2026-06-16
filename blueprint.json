@@ -1,0 +1,25 @@
+{
+    "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+    "meta": {
+        "title": "Luma Viewer dev",
+        "author": "luma-viewer"
+    },
+    "landingPage": "/events/",
+    "preferredVersions": { "php": "8.3", "wp": "latest" },
+    "login": true,
+    "siteOptions": {
+        "blogname": "Luma Viewer Dev"
+    },
+    "constants": {
+        "WP_DEBUG": true,
+        "WP_DEBUG_LOG": true,
+        "SCRIPT_DEBUG": true
+    },
+    "steps": [
+        { "step": "wp-cli", "command": "wp rewrite structure '/%postname%/' --hard" },
+        {
+            "step": "wp-cli",
+            "command": "wp post create --post_type=page --post_title='Events' --post_name='events' --post_status='publish' --post_content='[luma_calendar]'"
+        }
+    ]
+}

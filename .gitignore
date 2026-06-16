@@ -1,0 +1,27 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build output
+/build/
+
+# Local env
+/.wp-env-home/
+*.log
+
+# Tests / tooling caches
+.phpunit.result.cache
+.phpcs.cache
+tests/e2e/__pycache__/
+.pytest_cache/
+
+# Local config overrides (committed *.dist files are the source of truth)
+/phpunit.xml
+/phpstan.neon
+/phpcs.xml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,16 @@
+{
+    "name": "luma-viewer",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Build tooling for Luma Viewer blocks and front-end assets.",
+    "scripts": {
+        "build": "wp-scripts build",
+        "start": "wp-scripts start",
+        "format": "wp-scripts format",
+        "lint:js": "wp-scripts lint-js",
+        "lint:css": "wp-scripts lint-style"
+    },
+    "devDependencies": {
+        "@wordpress/scripts": "^27.0.0"
+    }
+}

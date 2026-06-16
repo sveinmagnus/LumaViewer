@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php-quality:
+    name: PHP lint, static analysis, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: PHPCS (WordPress Coding Standards)
+        run: composer run phpcs
+
+      - name: PHPStan (static analysis)
+        run: composer run phpstan
+
+      - name: PHPUnit (unit tests)
+        run: composer run test
+
+  js-build:
+    name: Block / asset build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      # Blocks are added in P2; build/lint become meaningful then. Keep the job
+      # present (and non-blocking) so the pipeline is wired end-to-end now.
+      - name: Lint JS (if any)
+        run: npm run lint:js --if-present
+        continue-on-error: true
+
+  e2e:
+    name: E2E smoke (Playground + Playwright)
+    # Manual until the front-end views land (P1+); then add push/pull_request.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Playwright
+        run: |
+          pip install -r tests/e2e/requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Boot WordPress Playground
+        run: |
+          npx --yes @wp-playground/cli@latest server \
+            --auto-mount --blueprint=./blueprint.json --port=9400 &
+          npx --yes wait-on http://127.0.0.1:9400 -t 120000
+
+      - name: Run E2E smoke
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:9400
+        run: pytest -q tests/e2e

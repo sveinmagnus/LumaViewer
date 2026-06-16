@@ -1,0 +1,20 @@
+includes:
+    # Pulls in WordPress core stubs + WP-aware rules (php-stubs/wordpress-stubs).
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - luma-viewer.php
+        - uninstall.php
+        - src
+    excludePaths:
+        - vendor/*
+        - node_modules/*
+        - build/*
+    # When P4 (MemberPress) and P5 (Elementor) land, the analysis will see
+    # Mepr* / \Elementor\* classes. Add their stubs or narrow ignores then —
+    # see the wp-phpstan skill (references/third-party-classes.md). Example:
+    #   bootstrapFiles:
+    #       - tests/stubs/memberpress.php
+    # or a documented, narrow ignoreErrors entry for the specific class.
