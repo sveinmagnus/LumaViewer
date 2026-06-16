@@ -9,6 +9,8 @@
 	<!-- Test scaffolding uses non-WP conventions (e.g. a WP_Error stand-in,
 	     native json_encode) and is exercised by PHPUnit, not shipped. -->
 	<exclude-pattern>/tests/*</exclude-pattern>
+	<!-- Tooling-only bootstrap consumed by PHPStan; not shipped. -->
+	<exclude-pattern>/phpstan-bootstrap.php</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
 	<arg name="basepath" value="."/>
@@ -18,7 +20,14 @@
 	<config name="testVersion" value="7.4-"/>
 	<config name="minimum_wp_version" value="6.4"/>
 
-	<rule ref="WordPress"/>
+	<rule ref="WordPress">
+		<!-- This plugin uses Composer PSR-4 autoloading, so class files are
+		     PascalCase (Client.php), not WordPress's class-client.php scheme. -->
+		<exclude name="WordPress.Files.FileName"/>
+		<!-- Allow terse @var-only property docblocks. Function and class
+		     documentation stays enforced via Squiz.Commenting.* sniffs. -->
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+	</rule>
 	<rule ref="PHPCompatibilityWP"/>
 
 	<rule ref="WordPress.WP.I18n">
@@ -31,5 +40,13 @@
 		<properties>
 			<property name="prefixes" type="array" value="luma_viewer,LumaViewer,LUMA_VIEWER"/>
 		</properties>
+		<!-- View templates are included within a function scope by
+		     TemplateLoader::capture(), so their variables are not globals. -->
+		<exclude-pattern>/templates/*</exclude-pattern>
+	</rule>
+
+	<!-- Same rationale: template variables look global to PHPCS but are not. -->
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>/templates/*</exclude-pattern>
 	</rule>
 </ruleset>

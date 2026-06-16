@@ -54,13 +54,13 @@ class Settings {
 	/**
 	 * Get one setting.
 	 *
-	 * @param string $key     Setting key.
-	 * @param mixed  $default Fallback if the key is unknown.
+	 * @param string $key      Setting key.
+	 * @param mixed  $fallback Value to return if the key is unknown.
 	 * @return mixed
 	 */
-	public static function get( $key, $default = null ) {
+	public static function get( $key, $fallback = null ) {
 		$all = self::all();
-		return array_key_exists( $key, $all ) ? $all[ $key ] : $default;
+		return array_key_exists( $key, $all ) ? $all[ $key ] : $fallback;
 	}
 
 	/**

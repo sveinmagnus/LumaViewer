@@ -47,7 +47,10 @@ $location = $event->location();
 		<?php if ( ! empty( $event->tags() ) ) : ?>
 			<ul class="luma-viewer__tags">
 				<?php foreach ( $event->tags() as $tag ) : ?>
-					<?php if ( '' === $tag['name'] ) { continue; } ?>
+					<?php
+					if ( '' === $tag['name'] ) {
+						continue; }
+					?>
 					<li class="luma-viewer__tag"><?php echo esc_html( $tag['name'] ); ?></li>
 				<?php endforeach; ?>
 			</ul>

@@ -8,6 +8,9 @@ parameters:
         - luma-viewer.php
         - uninstall.php
         - src
+    # Declares the plugin's runtime define()'d constants so analysis knows them.
+    bootstrapFiles:
+        - phpstan-bootstrap.php
     excludePaths:
         - vendor/*
         - node_modules/*

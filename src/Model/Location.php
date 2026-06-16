@@ -99,6 +99,24 @@ class Location {
 	}
 
 	/**
+	 * Latitude, if known.
+	 *
+	 * @return float|null
+	 */
+	public function lat() {
+		return $this->lat;
+	}
+
+	/**
+	 * Longitude, if known.
+	 *
+	 * @return float|null
+	 */
+	public function lng() {
+		return $this->lng;
+	}
+
+	/**
 	 * Best single-line label for display.
 	 *
 	 * @return string

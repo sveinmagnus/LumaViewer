@@ -33,13 +33,13 @@ if ( is_readable( $luma_viewer_autoload ) ) {
 	require $luma_viewer_autoload;
 } else {
 	spl_autoload_register(
-		static function ( $class ) {
+		static function ( $class_name ) {
 			$prefix = 'LumaViewer\\';
 			$len    = strlen( $prefix );
-			if ( 0 !== strncmp( $prefix, $class, $len ) ) {
+			if ( 0 !== strncmp( $prefix, $class_name, $len ) ) {
 				return;
 			}
-			$relative = substr( $class, $len );
+			$relative = substr( $class_name, $len );
 			$path     = LUMA_VIEWER_DIR . 'src/' . str_replace( '\\', '/', $relative ) . '.php';
 			if ( is_readable( $path ) ) {
 				require $path;

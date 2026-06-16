@@ -22,8 +22,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Renderer {
 
-	const VIEWS           = array( 'list', 'month', 'day', 'photo', 'summary' );
-	const IMPLEMENTED     = array( 'list', 'month' );
+	const VIEWS       = array( 'list', 'month', 'day', 'photo', 'summary' );
+	const IMPLEMENTED = array( 'list', 'month' );
 
 	/** @var Repository */
 	private $repo;
@@ -50,12 +50,7 @@ class Renderer {
 	/**
 	 * Render a calendar in the requested view.
 	 *
-	 * @param array $atts {
-	 *     @type string $view  One of self::VIEWS.
-	 *     @type string $tag   Filter by tag.
-	 *     @type int    $count Max events (list-style views).
-	 *     @type string $date  Anchor date for the month view (Y-m or Y-m-d).
-	 * }
+	 * @param array $atts Display attributes: `view`, `tag`, `count`, `date`.
 	 * @return string
 	 */
 	public function calendar( array $atts ) {
@@ -115,7 +110,7 @@ class Renderer {
 	/**
 	 * Render a single event detail.
 	 *
-	 * @param array $atts { @type string $id Event api_id. }
+	 * @param array $atts Attributes: `id` (the event api_id).
 	 * @return string
 	 */
 	public function event( array $atts ) {

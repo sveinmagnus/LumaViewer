@@ -15,10 +15,10 @@ global $wpdb;
 
 // Remove our transients (and their timeouts) from the options table. Object
 // caches are cleared on their own TTL; this covers the DB-backed fallback.
-$like = $wpdb->esc_like( '_transient_luma_viewer_' ) . '%';
+$luma_viewer_like = $wpdb->esc_like( '_transient_luma_viewer_' ) . '%';
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $like ) );
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $luma_viewer_like ) );
 
-$like = $wpdb->esc_like( '_transient_timeout_luma_viewer_' ) . '%';
+$luma_viewer_like = $wpdb->esc_like( '_transient_timeout_luma_viewer_' ) . '%';
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $like ) );
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $luma_viewer_like ) );

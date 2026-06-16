@@ -36,7 +36,7 @@ class Notices {
 			return;
 		}
 
-		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		$screen           = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 		$on_settings_page = $screen && 'settings_page_' . SettingsPage::MENU_SLUG === $screen->id;
 
 		if ( '' === trim( (string) Settings::get( 'api_key' ) ) && ! $on_settings_page ) {
