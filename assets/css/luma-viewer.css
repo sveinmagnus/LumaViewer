@@ -223,6 +223,119 @@
 	margin: 1rem 0;
 }
 
+/* Toolbar ----------------------------------------------------------------- */
+.luma-viewer__toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+}
+
+.luma-viewer__views {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+}
+
+.luma-viewer__view-tab {
+	border: 1px solid var(--lv-border);
+	background: transparent;
+	border-radius: 999px;
+	padding: 0.3rem 0.75rem;
+	font-size: 0.8em;
+	cursor: pointer;
+	color: inherit;
+}
+
+.luma-viewer__view-tab.is-active {
+	background: var(--lv-accent);
+	color: #fff;
+	border-color: var(--lv-accent);
+}
+
+.luma-viewer__nav {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.luma-viewer__nav button {
+	border: 1px solid var(--lv-border);
+	background: transparent;
+	border-radius: 6px;
+	width: 2rem;
+	height: 2rem;
+	cursor: pointer;
+	font-size: 1.1em;
+	line-height: 1;
+	color: inherit;
+}
+
+.luma-viewer.is-loading {
+	opacity: 0.55;
+	pointer-events: none;
+	transition: opacity 0.15s ease;
+}
+
+/* Photo view -------------------------------------------------------------- */
+.luma-viewer__photo-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: var(--lv-gap);
+}
+
+.luma-viewer--photo .luma-viewer__card {
+	flex-direction: column;
+}
+
+.luma-viewer--photo .luma-viewer__card-cover {
+	width: 100%;
+	height: 150px;
+}
+
+/* Summary view ------------------------------------------------------------ */
+.luma-viewer__summary {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.luma-viewer__summary-group {
+	display: grid;
+	grid-template-columns: minmax(7rem, 9rem) 1fr;
+	gap: 0.5rem 1rem;
+	padding: 0.5rem 0;
+	border-top: 1px solid var(--lv-border);
+}
+
+.luma-viewer__summary-date {
+	font-weight: 600;
+	font-size: 0.85em;
+	color: var(--lv-muted);
+}
+
+.luma-viewer__summary-items {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 0.35rem;
+}
+
+.luma-viewer__summary-time {
+	color: var(--lv-muted);
+	font-variant-numeric: tabular-nums;
+	margin-right: 0.4rem;
+}
+
+/* Single event page ------------------------------------------------------- */
+.luma-viewer-single-page {
+	max-width: 760px;
+	margin: 2rem auto;
+	padding: 0 1rem;
+}
+
 /* Small screens ----------------------------------------------------------- */
 @media (max-width: 600px) {
 	.luma-viewer__card {

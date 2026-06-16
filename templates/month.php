@@ -7,7 +7,7 @@
  * @var \LumaViewer\Model\Event[]      $events    Events within the month.
  * @var \WP_Error|null                 $error     API error, if any.
  * @var \LumaViewer\View\Formatter     $formatter Date formatter.
- * @var \DateTimeImmutable|null        $month     Anchor date (first of month).
+ * @var \DateTimeImmutable|null        $anchor    Anchor date (first of month).
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -23,7 +23,7 @@ if ( $error ) {
 global $wp_locale;
 
 $tz    = wp_timezone();
-$first = ( $month instanceof \DateTimeImmutable ) ? $month : new \DateTimeImmutable( 'now', $tz );
+$first = ( $anchor instanceof \DateTimeImmutable ) ? $anchor : new \DateTimeImmutable( 'now', $tz );
 $first = $first->setTime( 0, 0, 0 );
 
 // Map events to their day in the site time zone.

@@ -36,5 +36,22 @@ class Assets {
 			array(),
 			LUMA_VIEWER_VERSION
 		);
+
+		wp_register_script(
+			'luma-viewer',
+			LUMA_VIEWER_URL . 'assets/js/luma-viewer.js',
+			array(),
+			LUMA_VIEWER_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'luma-viewer',
+			'lumaViewer',
+			array(
+				'rest'  => esc_url_raw( rest_url( 'lumaviewer/v1/events' ) ),
+				'nonce' => wp_create_nonce( 'wp_rest' ),
+			)
+		);
 	}
 }

@@ -15,15 +15,12 @@ defined( 'ABSPATH' ) || exit;
 /**
  * The single render path used by shortcodes, blocks, and Elementor widgets.
  * Takes display args, pulls events from the {@see Repository}, and renders the
- * chosen (theme-overridable) view template.
- *
- * P1 implements `list` and `month`; `day`/`photo`/`summary` fall back to `list`
- * until later phases add their templates.
+ * chosen (theme-overridable) view template, wrapped with a toolbar that the
+ * front-end script uses for AJAX view-switching and date navigation.
  */
 class Renderer {
 
-	const VIEWS       = array( 'list', 'month', 'day', 'photo', 'summary' );
-	const IMPLEMENTED = array( 'list', 'month' );
+	const VIEWS = array( 'list', 'month', 'day', 'photo', 'summary' );
 
 	/** @var Repository */
 	private $repo;
@@ -61,24 +58,41 @@ class Renderer {
 			$view = 'list';
 		}
 
-		$template = in_array( $view, self::IMPLEMENTED, true ) ? $view : 'list';
+		$tag   = isset( $atts['tag'] ) ? (string) $atts['tag'] : '';
+		$count = isset( $atts['count'] ) ? (int) $atts['count'] : (int) Settings::get( 'per_page' );
+		$date  = isset( $atts['date'] ) ? (string) $atts['date'] : '';
 
-		$args = array(
-			'count' => isset( $atts['count'] ) ? (int) $atts['count'] : (int) Settings::get( 'per_page' ),
-			'tag'   => isset( $atts['tag'] ) ? (string) $atts['tag'] : '',
+		$args   = array(
+			'count' => $count,
+			'tag'   => $tag,
 		);
+		$anchor = null;
+		$nav    = null;
 
-		$month = null;
-		if ( 'month' === $template ) {
-			list( $after, $before, $month ) = $this->month_bounds( isset( $atts['date'] ) ? (string) $atts['date'] : '' );
-			$args['after']                  = $after;
-			$args['before']                 = $before;
-			$args['count']                  = 0;
+		if ( 'month' === $view ) {
+			list( $after, $before, $anchor ) = $this->month_bounds( $date );
+			$args['after']                   = $after;
+			$args['before']                  = $before;
+			$args['count']                   = 0;
+			$nav                             = array(
+				'prev' => $anchor->modify( '-1 month' )->format( 'Y-m' ),
+				'next' => $anchor->modify( '+1 month' )->format( 'Y-m' ),
+			);
+		} elseif ( 'day' === $view ) {
+			list( $after, $before, $anchor ) = $this->day_bounds( $date );
+			$args['after']                   = $after;
+			$args['before']                  = $before;
+			$args['count']                   = 0;
+			$nav                             = array(
+				'prev' => $anchor->modify( '-1 day' )->format( 'Y-m-d' ),
+				'next' => $anchor->modify( '+1 day' )->format( 'Y-m-d' ),
+			);
 		}
 
 		$result = $this->repo->get_events( $args );
 
 		wp_enqueue_style( 'luma-viewer' );
+		wp_enqueue_script( 'luma-viewer' );
 
 		$loader      = $this->loader;
 		$formatter   = $this->formatter;
@@ -93,18 +107,32 @@ class Renderer {
 		};
 
 		$body = $this->loader->capture(
-			$template,
+			$view,
 			array(
 				'events'      => $result['events'],
 				'error'       => $result['error'],
 				'formatter'   => $this->formatter,
 				'render_card' => $render_card,
-				'month'       => $month,
+				'anchor'      => $anchor,
 				'atts'        => $atts,
 			)
 		);
 
-		return sprintf( '<div class="luma-viewer luma-viewer--%s">%s</div>', esc_attr( $view ), $body );
+		$data = sprintf(
+			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s"',
+			esc_attr( $view ),
+			esc_attr( $tag ),
+			esc_attr( (string) $count ),
+			esc_attr( $date )
+		);
+
+		return sprintf(
+			'<div class="luma-viewer luma-viewer--%s"%s>%s%s</div>',
+			esc_attr( $view ),
+			$data,
+			$this->toolbar( $view, $nav ),
+			$body
+		);
 	}
 
 	/**
@@ -136,22 +164,91 @@ class Renderer {
 	}
 
 	/**
+	 * Build the toolbar (view tabs + optional prev/next navigation).
+	 *
+	 * @param string     $view Current view.
+	 * @param array|null $nav  Navigation targets ('prev'/'next'), or null.
+	 * @return string
+	 */
+	private function toolbar( $view, $nav ) {
+		$labels = array(
+			'list'    => __( 'List', 'luma-viewer' ),
+			'month'   => __( 'Month', 'luma-viewer' ),
+			'day'     => __( 'Day', 'luma-viewer' ),
+			'photo'   => __( 'Photo', 'luma-viewer' ),
+			'summary' => __( 'Summary', 'luma-viewer' ),
+		);
+
+		$tabs = '';
+		foreach ( $labels as $key => $label ) {
+			$tabs .= sprintf(
+				'<button type="button" class="luma-viewer__view-tab%1$s" data-lv-action="view" data-lv-view="%2$s"%3$s>%4$s</button>',
+				$key === $view ? ' is-active' : '',
+				esc_attr( $key ),
+				$key === $view ? ' aria-pressed="true"' : '',
+				esc_html( $label )
+			);
+		}
+
+		$nav_html = '';
+		if ( is_array( $nav ) ) {
+			$nav_html = sprintf(
+				'<div class="luma-viewer__nav"><button type="button" class="luma-viewer__nav-prev" data-lv-action="nav" data-lv-date="%1$s" aria-label="%2$s">&#8249;</button><button type="button" class="luma-viewer__nav-next" data-lv-action="nav" data-lv-date="%3$s" aria-label="%4$s">&#8250;</button></div>',
+				esc_attr( $nav['prev'] ),
+				esc_attr__( 'Previous', 'luma-viewer' ),
+				esc_attr( $nav['next'] ),
+				esc_attr__( 'Next', 'luma-viewer' )
+			);
+		}
+
+		return sprintf(
+			'<div class="luma-viewer__toolbar"><nav class="luma-viewer__views" aria-label="%1$s">%2$s</nav>%3$s</div>',
+			esc_attr__( 'Calendar views', 'luma-viewer' ),
+			$tabs,
+			$nav_html
+		);
+	}
+
+	/**
 	 * Compute first/last instants of a month plus the anchor date.
 	 *
 	 * @param string $date Anchor (Y-m or Y-m-d), or empty for the current month.
 	 * @return array{0:string,1:string,2:\DateTimeImmutable}
 	 */
 	private function month_bounds( $date ) {
-		$tz = wp_timezone();
-		try {
-			$base = '' !== $date ? new \DateTimeImmutable( $date, $tz ) : new \DateTimeImmutable( 'now', $tz );
-		} catch ( \Exception $e ) {
-			$base = new \DateTimeImmutable( 'now', $tz );
-		}
-
+		$base  = $this->parse_anchor( $date );
 		$first = $base->modify( 'first day of this month' )->setTime( 0, 0, 0 );
 		$last  = $base->modify( 'last day of this month' )->setTime( 23, 59, 59 );
 
 		return array( $first->format( 'c' ), $last->format( 'c' ), $first );
+	}
+
+	/**
+	 * Compute start/end instants of a single day plus the anchor date.
+	 *
+	 * @param string $date Anchor (Y-m-d), or empty for today.
+	 * @return array{0:string,1:string,2:\DateTimeImmutable}
+	 */
+	private function day_bounds( $date ) {
+		$base  = $this->parse_anchor( $date );
+		$start = $base->setTime( 0, 0, 0 );
+		$end   = $base->setTime( 23, 59, 59 );
+
+		return array( $start->format( 'c' ), $end->format( 'c' ), $start );
+	}
+
+	/**
+	 * Parse an anchor date string in the site time zone, falling back to now.
+	 *
+	 * @param string $date Date string.
+	 * @return \DateTimeImmutable
+	 */
+	private function parse_anchor( $date ) {
+		$tz = wp_timezone();
+		try {
+			return '' !== $date ? new \DateTimeImmutable( $date, $tz ) : new \DateTimeImmutable( 'now', $tz );
+		} catch ( \Exception $e ) {
+			return new \DateTimeImmutable( 'now', $tz );
+		}
 	}
 }

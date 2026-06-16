@@ -15,7 +15,9 @@ use LumaViewer\Blocks\Blocks;
 use LumaViewer\Cache\Cache;
 use LumaViewer\Events\Repository;
 use LumaViewer\Frontend\Assets;
+use LumaViewer\Frontend\RestController;
 use LumaViewer\Frontend\Shortcodes;
+use LumaViewer\Frontend\SingleRoute;
 use LumaViewer\View\Formatter;
 use LumaViewer\View\Renderer;
 use LumaViewer\View\TemplateLoader;
@@ -70,11 +72,14 @@ final class Plugin {
 		$this->endpoints = new Endpoints( new Client( (string) Settings::get( 'api_key' ) ) );
 
 		$repository = new Repository( $this->endpoints, new Cache( (int) Settings::get( 'cache_ttl' ) ) );
-		$renderer   = new Renderer( $repository, new TemplateLoader(), new Formatter() );
+		$formatter  = new Formatter();
+		$renderer   = new Renderer( $repository, new TemplateLoader(), $formatter );
 
 		( new Assets() )->register();
 		( new Shortcodes( $renderer ) )->register();
 		( new Blocks( $renderer ) )->register();
+		( new RestController( $renderer ) )->register();
+		( new SingleRoute( $repository, $renderer, $formatter ) )->register();
 
 		if ( is_admin() ) {
 			( new SettingsPage( $this->endpoints ) )->register();
@@ -109,14 +114,18 @@ final class Plugin {
 		if ( false === get_option( Settings::OPTION ) ) {
 			add_option( Settings::OPTION, Settings::defaults() );
 		}
+		// Defer the rewrite flush to `init`, once SingleRoute has registered its
+		// rule (see SingleRoute::add_rewrite()).
+		update_option( SingleRoute::FLUSH_FLAG, '1' );
 	}
 
 	/**
-	 * Deactivation: clear scheduled work.
+	 * Deactivation: clear scheduled work and rewrite rules.
 	 *
 	 * @return void
 	 */
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'luma_viewer_refresh_cache' );
+		flush_rewrite_rules();
 	}
 }

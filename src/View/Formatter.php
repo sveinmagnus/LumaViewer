@@ -66,6 +66,19 @@ class Formatter {
 	}
 
 	/**
+	 * The start time only (site time format), in the display zone.
+	 *
+	 * @param Event $event Event.
+	 * @return string
+	 */
+	public function time( Event $event ) {
+		if ( ! $event->has_start() ) {
+			return '';
+		}
+		return wp_date( (string) get_option( 'time_format' ), $event->start()->getTimestamp(), $this->display_tz( $event ) );
+	}
+
+	/**
 	 * A human start–end range, collapsing the end date when it's the same day.
 	 *
 	 * @param Event $event Event.
