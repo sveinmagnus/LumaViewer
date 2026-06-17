@@ -143,6 +143,7 @@ class SingleRoute {
 			add_action(
 				'wp_head',
 				function () use ( $event, $hide_description ) {
+					$this->print_meta_tags( $event, $hide_description );
 					$this->print_json_ld( $event, $hide_description );
 				}
 			);
@@ -167,6 +168,33 @@ class SingleRoute {
 		$wp_query->set_404();
 		status_header( 404 );
 		nocache_headers();
+	}
+
+	/**
+	 * Print Open Graph / Twitter Card meta for the event.
+	 *
+	 * @param \LumaViewer\Model\Event $event            Event.
+	 * @param bool                    $hide_description Omit the description (teaser).
+	 * @return void
+	 */
+	private function print_meta_tags( $event, $hide_description ) {
+		echo '<meta property="og:type" content="website" />' . "\n";
+		printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $event->name() ) );
+
+		if ( '' !== $event->luma_url() ) {
+			printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $event->luma_url() ) );
+		}
+		if ( '' !== $event->cover_url() ) {
+			printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $event->cover_url() ) );
+		}
+		if ( ! $hide_description ) {
+			$desc = wp_strip_all_tags( $event->description() );
+			if ( '' !== $desc ) {
+				printf( '<meta property="og:description" content="%s" />' . "\n", esc_attr( wp_html_excerpt( $desc, 200, '…' ) ) );
+			}
+		}
+
+		printf( '<meta name="twitter:card" content="%s" />' . "\n", esc_attr( '' !== $event->cover_url() ? 'summary_large_image' : 'summary' ) );
 	}
 
 	/**

@@ -481,6 +481,31 @@
 	font-size: 0.85em;
 }
 
+/* Relative date hint ------------------------------------------------------ */
+.luma-viewer__card-rel {
+	margin-left: 0.4rem;
+	font-size: 0.85em;
+	color: var(--lv-muted);
+}
+
+/* Performance: let the browser skip rendering off-screen cards in long lists. */
+.luma-viewer__card {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 140px;
+}
+
+/* RTL: lay the prev/next controls out right-to-left. */
+[dir="rtl"] .luma-viewer__nav {
+	flex-direction: row-reverse;
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+	.luma-viewer.is-loading {
+		transition: none;
+	}
+}
+
 /* Small screens ----------------------------------------------------------- */
 @media (max-width: 600px) {
 	.luma-viewer__card {

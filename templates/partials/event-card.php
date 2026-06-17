@@ -47,6 +47,10 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 				<time datetime="<?php echo esc_attr( $event->start()->format( 'c' ) ); ?>">
 					<?php echo esc_html( $formatter->range( $event ) ); ?>
 				</time>
+				<?php $relative = $formatter->relative( $event ); ?>
+				<?php if ( '' !== $relative ) : ?>
+					<span class="luma-viewer__card-rel"><?php echo esc_html( $relative ); ?></span>
+				<?php endif; ?>
 			</p>
 		<?php endif; ?>
 

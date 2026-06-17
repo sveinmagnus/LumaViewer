@@ -9,6 +9,7 @@ namespace LumaViewer\View;
 
 use LumaViewer\Events\Repository;
 use LumaViewer\Membership\Gate;
+use LumaViewer\Model\Event;
 use LumaViewer\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -191,6 +192,8 @@ class Renderer {
 			)
 		);
 
+		$body .= $this->itemlist_jsonld( $events, $teaser_ids );
+
 		$data = sprintf(
 			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s" data-lv-calendar="%s"',
 			esc_attr( $view ),
@@ -325,6 +328,60 @@ class Renderer {
 			$tabs,
 			$nav_html
 		);
+	}
+
+	/**
+	 * Build an ItemList JSON-LD block for the visible (non-teaser) events.
+	 *
+	 * @param Event[]            $events     Events.
+	 * @param array<string,bool> $teaser_ids Teaser event ids to exclude.
+	 * @return string
+	 */
+	private function itemlist_jsonld( array $events, array $teaser_ids ) {
+		/**
+		 * Filters whether to emit ItemList JSON-LD for calendar listings.
+		 *
+		 * @param bool $enabled Default true.
+		 */
+		if ( ! apply_filters( 'luma_viewer_itemlist_schema', true ) ) {
+			return '';
+		}
+
+		$items    = array();
+		$position = 1;
+		foreach ( $events as $event ) {
+			if ( ! $event->has_start() || ! empty( $teaser_ids[ $event->id() ] ) ) {
+				continue;
+			}
+			$items[] = array(
+				'@type'    => 'ListItem',
+				'position' => $position,
+				'item'     => array_filter(
+					array(
+						'@type'     => 'Event',
+						'name'      => $event->name(),
+						'startDate' => wp_date( 'c', $event->start()->getTimestamp(), $this->formatter->display_tz( $event ) ),
+						'url'       => $event->luma_url(),
+					)
+				),
+			);
+			++$position;
+			if ( $position > 50 ) {
+				break;
+			}
+		}
+
+		if ( empty( $items ) ) {
+			return '';
+		}
+
+		$schema = array(
+			'@context'        => 'https://schema.org',
+			'@type'           => 'ItemList',
+			'itemListElement' => $items,
+		);
+
+		return '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE ) . '</script>';
 	}
 
 	/**

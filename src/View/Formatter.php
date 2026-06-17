@@ -79,6 +79,26 @@ class Formatter {
 	}
 
 	/**
+	 * A relative phrase like "in 3 days" or "2 hours ago".
+	 *
+	 * @param Event $event Event.
+	 * @return string
+	 */
+	public function relative( Event $event ) {
+		if ( ! $event->has_start() ) {
+			return '';
+		}
+		$start = $event->start()->getTimestamp();
+		$now   = time();
+		if ( $start >= $now ) {
+			/* translators: %s: human time difference, e.g. "3 days". */
+			return sprintf( __( 'in %s', 'luma-viewer' ), human_time_diff( $now, $start ) );
+		}
+		/* translators: %s: human time difference, e.g. "2 hours". */
+		return sprintf( __( '%s ago', 'luma-viewer' ), human_time_diff( $start, $now ) );
+	}
+
+	/**
 	 * A human start–end range, collapsing the end date when it's the same day.
 	 *
 	 * @param Event $event Event.

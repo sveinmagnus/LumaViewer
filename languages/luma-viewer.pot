@@ -1,20 +1,594 @@
-# Copyright (C) 2026 Luma Viewer contributors
-# This file is distributed under the GPL-2.0-or-later license.
-#
-# Translation template for the Luma Viewer plugin.
-# Regenerate the complete catalogue from source with WP-CLI:
-#
-#   wp i18n make-pot . languages/luma-viewer.pot
-#
+# Copyright (C) 2026 Svein
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
 "Project-Id-Version: Luma Viewer 0.1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/sveins/luma-viewer/issues\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/LumaViewer\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-17T08:22:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: manual\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: luma-viewer\n"
+
+#. Plugin Name of the plugin
+#: luma-viewer.php
+#: src/Admin/SettingsPage.php:82
+#: src/Admin/SettingsPage.php:83
+#: src/Admin/SettingsPage.php:686
+#: src/Blocks/Patterns.php:37
+msgid "Luma Viewer"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: luma-viewer.php
+msgid "https://github.com/sveins/luma-viewer"
+msgstr ""
+
+#. Description of the plugin
+#: luma-viewer.php
+msgid "Display your Lu.ma organization calendar on WordPress with The Events Calendar–style views, Gutenberg & Elementor blocks, and MemberPress-aware access by event category."
+msgstr ""
+
+#. Author of the plugin
+#: luma-viewer.php
+msgid "Svein"
+msgstr ""
+
+#: src/Admin/Notices.php:46
+msgid "Luma Viewer needs a Luma API key before it can show events."
+msgstr ""
+
+#: src/Admin/Notices.php:48
+msgid "Add your key"
+msgstr ""
+
+#: src/Admin/Notices.php:56
+msgid "Luma Viewer has category-based access rules, but MemberPress is not active — all events are shown to everyone until it is enabled."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:106
+msgid "Luma connection"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:107
+msgid "API key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:108
+msgid "Key type"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:109
+msgid "Default calendar"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:111
+msgid "Display"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:112
+msgid "Default view"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:113
+msgid "Events per page"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:114
+msgid "Time zone"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:115
+msgid "Accent color"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:116
+msgid "Cache lifetime"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:117
+msgid "Single-event URL base"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:119
+msgid "Membership access"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:120
+msgid "For non-members"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:121
+msgid "Gate message"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:122
+msgid "Gate button URL"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:123
+msgid "Category → membership"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:125
+msgid "Cache and sync"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:126
+msgid "Status"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:127
+msgid "Luma webhook URL"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:128
+msgid "Cached events"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:212
+msgid "A key is saved — leave blank to keep it"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:212
+msgid "Paste your Luma calendar API key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:214
+msgid "From your Luma calendar: Settings → Developer → API Keys. Requires Luma Plus. Save changes, then test the connection."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:226
+msgid "Calendar key (one calendar)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:227
+msgid "Organization key (multiple calendars)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:234
+msgid "Use an Organization key to show events from several calendars."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:244
+msgid "Used only with an Organization key."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:250
+msgid "No calendars found yet — save your Organization key, then reload this page."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:256
+msgid "All calendars"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:261
+msgid "Blocks and shortcodes can override this with a calendar attribute."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:300
+#: src/Elementor/Widgets/CalendarWidget.php:87
+#: src/View/Renderer.php:295
+msgid "List"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:301
+#: src/Elementor/Widgets/CalendarWidget.php:88
+#: src/View/Renderer.php:296
+msgid "Week"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:302
+#: src/Elementor/Widgets/CalendarWidget.php:89
+#: src/Elementor/Widgets/CalendarWidget.php:141
+#: src/View/Renderer.php:297
+msgid "Month"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:303
+#: src/Elementor/Widgets/CalendarWidget.php:90
+#: src/Elementor/Widgets/CalendarWidget.php:140
+#: src/View/Renderer.php:298
+msgid "Day"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:304
+#: src/Elementor/Widgets/CalendarWidget.php:91
+#: src/View/Renderer.php:299
+msgid "Photo"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:305
+#: src/Elementor/Widgets/CalendarWidget.php:92
+#: src/View/Renderer.php:300
+msgid "Summary"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:335
+msgid "Each event's own time zone"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:336
+msgid "The site time zone"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:356
+msgid "Hex color for buttons, the active view tab and highlights. Leave blank to inherit the theme."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:369
+msgid "seconds"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:371
+msgid "How long fetched events are cached before refreshing from Luma."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:386
+msgid "URL base for single-event pages. If links 404 after changing this, re-save Settings → Permalinks."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:396
+msgid "MemberPress is not active — all events are shown to everyone until it is enabled."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:399
+msgid "Map Luma event categories (tags) to MemberPress memberships. Events with a mapped category are shown only to members who hold one of the mapped memberships."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:413
+msgid "Show a teaser with a join / log-in button"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:419
+msgid "Hide the event entirely"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:446
+msgid "Defaults to the login page"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:457
+msgid "Enable MemberPress to map categories."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:463
+msgid "No MemberPress memberships found — create one first."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:469
+msgid "No Luma categories found. Add an API key and create event tags in Luma."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:480
+msgid "Luma category"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:481
+msgid "Required memberships"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:499
+msgid "Hold Ctrl/Cmd to select multiple memberships. Categories left empty stay public."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:550
+msgid "Events are cached and refreshed automatically every 15 minutes. Use the webhook for instant updates, or clear the cache manually."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:565
+msgid "Add this as a webhook in Luma (Event Created / Updated / Canceled) to refresh the cache instantly. Treat it as a secret."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:575
+msgid "Clear cached events"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:585
+#: src/Admin/SettingsPage.php:620
+#: src/Admin/SettingsPage.php:715
+msgid "Permission denied."
+msgstr ""
+
+#. translators: %s: human-readable time difference, e.g. "5 mins".
+#: src/Admin/SettingsPage.php:604
+#, php-format
+msgid "Events last refreshed %s ago."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:606
+msgid "Events have not been refreshed yet."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:610
+msgid "Refresh now"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:640
+msgid "Test connection"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:649
+msgid "Testing…"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:666
+msgid "Request failed."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:691
+msgid "Events refreshed."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:691
+msgid "Cache cleared."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:719
+msgid "Save an API key first, then test."
+msgstr ""
+
+#. translators: %d: number of calendars.
+#: src/Admin/SettingsPage.php:732
+#, php-format
+msgid "Connected — %d calendar found."
+msgid_plural "Connected — %d calendars found."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: calendar name.
+#: src/Admin/SettingsPage.php:753
+#, php-format
+msgid "Connected to “%s”."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:754
+msgid "Connected successfully."
+msgstr ""
+
+#: src/Api/Client.php:87
+msgid "No Luma API key is configured."
+msgstr ""
+
+#: src/Api/Client.php:145
+msgid "The Luma API request failed."
+msgstr ""
+
+#: src/Api/Client.php:151
+msgid "Could not parse the Luma API response."
+msgstr ""
+
+#: src/Blocks/Patterns.php:42
+msgid "Upcoming events (list)"
+msgstr ""
+
+#: src/Blocks/Patterns.php:46
+msgid "This month"
+msgstr ""
+
+#: src/Blocks/Patterns.php:50
+msgid "Event photo grid"
+msgstr ""
+
+#: src/Blocks/Patterns.php:54
+msgid "Compact sidebar list"
+msgstr ""
+
+#: src/Cache/Cron.php:56
+msgid "Every 15 minutes (Luma Viewer)"
+msgstr ""
+
+#: src/Cache/Webhook.php:82
+msgid "Too many requests."
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:47
+msgid "Luma Calendar"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:77
+msgid "Calendar"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:82
+msgid "View"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:86
+msgid "Site default"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:99
+msgid "Category (tag)"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:106
+msgid "Number of events"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:114
+msgid "Anchor date"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:116
+msgid "YYYY-MM for Month, YYYY-MM-DD for Week/Day."
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:122
+msgid "List layout"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:126
+msgid "Cards"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:127
+msgid "Compact"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:128
+msgid "Minimal"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:130
+msgid "Applies to List, Week and Day views."
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:136
+msgid "Group list by"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:142
+msgid "No grouping"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:144
+msgid "Applies to the List view."
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:150
+msgid "Calendar ID"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:152
+msgid "Organization mode only: limit to one calendar (its api_id)."
+msgstr ""
+
+#: src/Elementor/Widgets/EventWidget.php:45
+msgid "Luma Event"
+msgstr ""
+
+#: src/Elementor/Widgets/EventWidget.php:75
+msgid "Event"
+msgstr ""
+
+#: src/Elementor/Widgets/EventWidget.php:79
+msgid "Event ID"
+msgstr ""
+
+#: src/Elementor/Widgets/EventWidget.php:81
+msgid "The Luma event api_id (e.g. evt-…)."
+msgstr ""
+
+#: src/Frontend/RestController.php:118
+msgid "Too many requests. Please slow down and try again shortly."
+msgstr ""
+
+#. translators: %s: formatted price.
+#: src/Model/Event.php:211
+#, php-format
+msgid "From %s"
+msgstr ""
+
+#: src/Settings.php:36
+#: templates/single.php:34
+msgid "This event is for members. Join or log in to see the details."
+msgstr ""
+
+#. translators: %s: human time difference, e.g. "3 days".
+#: src/View/Formatter.php:95
+#, php-format
+msgid "in %s"
+msgstr ""
+
+#. translators: %s: human time difference, e.g. "2 hours".
+#: src/View/Formatter.php:98
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: src/View/Renderer.php:211
+msgid "Events"
+msgstr ""
+
+#: src/View/Renderer.php:319
+msgid "Previous"
+msgstr ""
+
+#: src/View/Renderer.php:321
+msgid "Next"
+msgstr ""
+
+#: src/View/Renderer.php:327
+msgid "Calendar views"
+msgstr ""
+
+#: templates/day.php:17
+#: templates/list.php:18
+#: templates/month.php:17
+#: templates/photo.php:16
+#: templates/summary.php:15
+#: templates/week.php:18
+msgid "Events are temporarily unavailable."
+msgstr ""
+
+#: templates/day.php:29
+msgid "No events on this day."
+msgstr ""
+
+#: templates/list.php:26
+#: templates/photo.php:24
+#: templates/summary.php:23
+msgid "No upcoming events."
+msgstr ""
+
+#: templates/month.php:84
+#: templates/partials/event-card.php:125
+msgid "Members only"
+msgstr ""
+
+#: templates/partials/event-card.php:70
+#: templates/single.php:68
+msgid "Cancelled"
+msgstr ""
+
+#: templates/partials/event-card.php:73
+#: templates/single.php:71
+msgid "Sold out"
+msgstr ""
+
+#: templates/partials/event-card.php:76
+#: templates/single.php:74
+msgid "Free"
+msgstr ""
+
+#: templates/partials/event-card.php:83
+#: templates/single.php:80
+msgid "Online"
+msgstr ""
+
+#. translators: %s: comma-separated host names.
+#: templates/partials/event-card.php:93
+#: templates/single.php:89
+#, php-format
+msgid "Hosted by %s"
+msgstr ""
+
+#: templates/partials/event-card.php:131
+msgid "View on Luma"
+msgstr ""
+
+#: templates/single.php:22
+msgid "This event is temporarily unavailable."
+msgstr ""
+
+#: templates/single.php:30
+msgid "Event not found."
+msgstr ""
+
+#: templates/single.php:42
+#: templates/single.php:100
+msgid "Join or log in"
+msgstr ""
+
+#: templates/single.php:115
+msgid "Register on Luma"
+msgstr ""
+
+#: templates/week.php:50
+msgid "No events."
+msgstr ""
