@@ -28,7 +28,7 @@ $has_price  = $event->is_free() || '' !== $event->price_label();
 $has_badges = $event->is_cancelled() || $event->is_sold_out() || $has_price;
 $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
 ?>
-<article class="<?php echo esc_attr( $classes ); ?>">
+<article class="<?php echo esc_attr( $classes ); ?>" data-lv-title="<?php echo esc_attr( strtolower( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( strtolower( implode( ' ', wp_list_pluck( $event->tags(), 'name' ) ) ) ); ?>">
 	<?php if ( $is_full && '' !== $event->cover_url() ) : ?>
 		<?php if ( $teaser ) : ?>
 			<span class="luma-viewer__card-cover">

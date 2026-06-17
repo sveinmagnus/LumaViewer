@@ -11,9 +11,10 @@
 namespace Elementor;
 
 class Controls_Manager {
-	const TEXT   = 'text';
-	const SELECT = 'select';
-	const NUMBER = 'number';
+	const TEXT     = 'text';
+	const SELECT   = 'select';
+	const NUMBER   = 'number';
+	const SWITCHER = 'switcher';
 }
 
 abstract class Widget_Base {

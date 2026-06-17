@@ -32,6 +32,7 @@
 		var layout = container.getAttribute( 'data-lv-layout' ) || '';
 		var group = container.getAttribute( 'data-lv-group' ) || '';
 		var calendar = container.getAttribute( 'data-lv-calendar' ) || '';
+		var filters = container.getAttribute( 'data-lv-filters' ) || '';
 
 		if ( view ) {
 			url.searchParams.set( 'view', view );
@@ -55,9 +56,72 @@
 		if ( calendar ) {
 			url.searchParams.set( 'calendar', calendar );
 		}
+		if ( filters ) {
+			url.searchParams.set( 'filters', filters );
+		}
 
 		return url.toString();
 	}
+
+	// Client-side search + category filtering over the rendered cards.
+	function applyFilter( container ) {
+		var searchEl = container.querySelector( '.luma-viewer__search' );
+		var query = searchEl ? searchEl.value.trim().toLowerCase() : '';
+		var activeChip = container.querySelector( '.luma-viewer__chip.is-active' );
+		var tag = activeChip ? activeChip.getAttribute( 'data-lv-chip' ) : '';
+
+		container.querySelectorAll( '.luma-viewer__card' ).forEach( function ( card ) {
+			var title = card.getAttribute( 'data-lv-title' ) || '';
+			var tags = card.getAttribute( 'data-lv-tags' ) || '';
+			var match =
+				( ! query || title.indexOf( query ) !== -1 ) &&
+				( ! tag || tags.indexOf( tag ) !== -1 );
+			card.style.display = match ? '' : 'none';
+		} );
+
+		// Hide group/day sections that no longer have any visible cards.
+		container
+			.querySelectorAll( '.luma-viewer__group, .luma-viewer__week-day' )
+			.forEach( function ( section ) {
+				var visible = Array.prototype.some.call(
+					section.querySelectorAll( '.luma-viewer__card' ),
+					function ( card ) {
+						return card.style.display !== 'none';
+					}
+				);
+				section.style.display = visible ? '' : 'none';
+			} );
+	}
+
+	document.addEventListener( 'input', function ( event ) {
+		if ( ! event.target.classList.contains( 'luma-viewer__search' ) ) {
+			return;
+		}
+		var container = event.target.closest( '.luma-viewer' );
+		if ( container ) {
+			applyFilter( container );
+		}
+	} );
+
+	document.addEventListener( 'click', function ( event ) {
+		var chip = event.target.closest( '.luma-viewer__chip' );
+		if ( ! chip ) {
+			return;
+		}
+		var container = chip.closest( '.luma-viewer' );
+		if ( ! container ) {
+			return;
+		}
+		event.preventDefault();
+		var wasActive = chip.classList.contains( 'is-active' );
+		container.querySelectorAll( '.luma-viewer__chip' ).forEach( function ( other ) {
+			other.classList.remove( 'is-active' );
+		} );
+		if ( ! wasActive ) {
+			chip.classList.add( 'is-active' );
+		}
+		applyFilter( container );
+	} );
 
 	document.addEventListener( 'click', function ( event ) {
 		var trigger = event.target.closest( '[data-lv-action]' );

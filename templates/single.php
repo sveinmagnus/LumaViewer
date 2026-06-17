@@ -103,16 +103,20 @@ $location = $event->location();
 			<?php endif; ?>
 		</div>
 	<?php else : ?>
-		<?php if ( '' !== $event->description() ) : ?>
-			<div class="luma-viewer__single-desc">
-				<?php echo wp_kses_post( wpautop( $event->description() ) ); ?>
-			</div>
+		<?php
+		// A short summary only — the full description, attendee list, live
+		// capacity, discussion and registration all live on Luma, so we link
+		// out rather than cloning (and risking stale) content.
+		$summary = $event->excerpt( 55 );
+		?>
+		<?php if ( '' !== $summary ) : ?>
+			<p class="luma-viewer__single-summary"><?php echo esc_html( $summary ); ?></p>
 		<?php endif; ?>
 
 		<?php if ( '' !== $event->luma_url() ) : ?>
 			<p class="luma-viewer__single-cta">
 				<a class="luma-viewer__button luma-viewer__button--primary" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
-					<?php esc_html_e( 'Register on Luma', 'luma-viewer' ); ?>
+					<?php esc_html_e( 'Full details &amp; register on Luma', 'luma-viewer' ); ?>
 				</a>
 			</p>
 		<?php endif; ?>

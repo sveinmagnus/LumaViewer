@@ -55,6 +55,7 @@ class Shortcodes {
 				'layout'   => '',
 				'group_by' => '',
 				'calendar' => '',
+				'filters'  => '',
 			),
 			$atts,
 			'luma_calendar'
@@ -67,6 +68,7 @@ class Shortcodes {
 			'layout'   => sanitize_key( $atts['layout'] ),
 			'group_by' => sanitize_key( $atts['group_by'] ),
 			'calendar' => sanitize_text_field( $atts['calendar'] ),
+			'filters'  => sanitize_text_field( $atts['filters'] ),
 		);
 		if ( '' !== $atts['count'] ) {
 			$clean['count'] = absint( $atts['count'] );

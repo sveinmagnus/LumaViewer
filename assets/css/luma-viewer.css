@@ -270,7 +270,8 @@
 	margin: 0 0 0.5rem;
 }
 
-.luma-viewer__single-desc {
+.luma-viewer__single-desc,
+.luma-viewer__single-summary {
 	margin: 1rem 0;
 }
 
@@ -504,6 +505,45 @@
 	.luma-viewer.is-loading {
 		transition: none;
 	}
+}
+
+/* Filter bar -------------------------------------------------------------- */
+.luma-viewer__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.luma-viewer__search {
+	flex: 1 1 12rem;
+	min-width: 10rem;
+	padding: 0.4rem 0.6rem;
+	border: 1px solid var(--lv-border);
+	border-radius: var(--lv-radius);
+}
+
+.luma-viewer__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.luma-viewer__chip {
+	border: 1px solid var(--lv-border);
+	background: transparent;
+	border-radius: 999px;
+	padding: 0.25rem 0.7rem;
+	font-size: 0.8em;
+	cursor: pointer;
+	color: inherit;
+}
+
+.luma-viewer__chip.is-active {
+	background: var(--lv-accent);
+	color: #fff;
+	border-color: var(--lv-accent);
 }
 
 /* Small screens ----------------------------------------------------------- */

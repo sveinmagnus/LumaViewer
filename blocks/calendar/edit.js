@@ -5,12 +5,22 @@ import {
 	SelectControl,
 	TextControl,
 	RangeControl,
+	ToggleControl,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { view, tag, count, date, layout, group_by: groupBy, calendar } = attributes;
+	const {
+		view,
+		tag,
+		count,
+		date,
+		layout,
+		group_by: groupBy,
+		calendar,
+		filters,
+	} = attributes;
 
 	return (
 		<div { ...blockProps }>
@@ -77,6 +87,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ calendar }
 						onChange={ ( value ) => setAttributes( { calendar: value } ) }
 						help={ __( 'Organization mode only: limit to one calendar (its api_id).', 'luma-viewer' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Show search & category filters', 'luma-viewer' ) }
+						checked={ !! filters }
+						onChange={ ( value ) => setAttributes( { filters: value } ) }
+						help={ __( 'Adds a search box and category chips above list-style views.', 'luma-viewer' ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

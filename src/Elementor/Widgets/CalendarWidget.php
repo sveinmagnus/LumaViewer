@@ -152,6 +152,14 @@ class CalendarWidget extends Widget_Base {
 				'description' => __( 'Organization mode only: limit to one calendar (its api_id).', 'luma-viewer' ),
 			)
 		);
+		$this->add_control(
+			'filters',
+			array(
+				'label'       => __( 'Search & category filters', 'luma-viewer' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'description' => __( 'Adds a search box and category chips to list-style views.', 'luma-viewer' ),
+			)
+		);
 
 		$this->end_controls_section();
 	}
@@ -174,6 +182,7 @@ class CalendarWidget extends Widget_Base {
 			'layout'   => isset( $settings['layout'] ) ? sanitize_key( (string) $settings['layout'] ) : '',
 			'group_by' => isset( $settings['group_by'] ) ? sanitize_key( (string) $settings['group_by'] ) : '',
 			'calendar' => isset( $settings['calendar'] ) ? sanitize_text_field( (string) $settings['calendar'] ) : '',
+			'filters'  => ( isset( $settings['filters'] ) && 'yes' === $settings['filters'] ) ? 'true' : '',
 		);
 		if ( ! empty( $settings['count'] ) ) {
 			$atts['count'] = absint( $settings['count'] );

@@ -20,7 +20,8 @@
 		"date": { "type": "string", "default": "" },
 		"layout": { "type": "string", "default": "" },
 		"group_by": { "type": "string", "default": "" },
-		"calendar": { "type": "string", "default": "" }
+		"calendar": { "type": "string", "default": "" },
+		"filters": { "type": "boolean", "default": false }
 	},
 	"editorScript": "file:./index.js"
 }

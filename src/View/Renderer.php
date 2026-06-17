@@ -76,7 +76,8 @@ class Renderer {
 			? $atts['group_by']
 			: 'day';
 
-		$calendar = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
+		$calendar     = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
+		$show_filters = isset( $atts['filters'] ) && in_array( (string) $atts['filters'], array( '1', 'true', 'yes', 'on' ), true );
 
 		$args   = array(
 			'count'    => $count,
@@ -192,17 +193,22 @@ class Renderer {
 			)
 		);
 
+		if ( $show_filters && in_array( $view, array( 'list', 'week', 'day', 'photo', 'summary' ), true ) ) {
+			$body = $this->filter_bar( $events ) . $body;
+		}
+
 		$body .= $this->itemlist_jsonld( $events, $teaser_ids );
 
 		$data = sprintf(
-			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s" data-lv-calendar="%s"',
+			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s" data-lv-calendar="%s" data-lv-filters="%s"',
 			esc_attr( $view ),
 			esc_attr( $tag ),
 			esc_attr( (string) $count ),
 			esc_attr( $date ),
 			esc_attr( $layout ),
 			esc_attr( $group_by ),
-			esc_attr( $calendar )
+			esc_attr( $calendar ),
+			esc_attr( $show_filters ? '1' : '' )
 		);
 
 		$html = sprintf(
@@ -303,10 +309,10 @@ class Renderer {
 		$tabs = '';
 		foreach ( $labels as $key => $label ) {
 			$tabs .= sprintf(
-				'<button type="button" class="luma-viewer__view-tab%1$s" data-lv-action="view" data-lv-view="%2$s"%3$s>%4$s</button>',
+				'<button type="button" role="tab" class="luma-viewer__view-tab%1$s" data-lv-action="view" data-lv-view="%2$s" aria-selected="%3$s">%4$s</button>',
 				$key === $view ? ' is-active' : '',
 				esc_attr( $key ),
-				$key === $view ? ' aria-pressed="true"' : '',
+				$key === $view ? 'true' : 'false',
 				esc_html( $label )
 			);
 		}
@@ -323,11 +329,50 @@ class Renderer {
 		}
 
 		return sprintf(
-			'<div class="luma-viewer__toolbar"><nav class="luma-viewer__views" aria-label="%1$s">%2$s</nav>%3$s</div>',
+			'<div class="luma-viewer__toolbar"><nav class="luma-viewer__views" role="tablist" aria-label="%1$s">%2$s</nav>%3$s</div>',
 			esc_attr__( 'Calendar views', 'luma-viewer' ),
 			$tabs,
 			$nav_html
 		);
+	}
+
+	/**
+	 * Build the optional filter bar (search + category chips). Filtering is done
+	 * client-side over the already-rendered cards.
+	 *
+	 * @param Event[] $events Events in the current result set.
+	 * @return string
+	 */
+	private function filter_bar( array $events ) {
+		$names = array();
+		foreach ( $events as $event ) {
+			foreach ( $event->tags() as $tag ) {
+				if ( '' !== $tag['name'] ) {
+					$names[ $tag['name'] ] = true;
+				}
+			}
+		}
+		$names = array_keys( $names );
+		sort( $names );
+
+		$search = sprintf(
+			'<input type="search" class="luma-viewer__search" placeholder="%1$s" aria-label="%1$s" />',
+			esc_attr__( 'Search events…', 'luma-viewer' )
+		);
+
+		$chips = '';
+		foreach ( $names as $name ) {
+			$chips .= sprintf(
+				'<button type="button" class="luma-viewer__chip" data-lv-chip="%1$s">%2$s</button>',
+				esc_attr( strtolower( $name ) ),
+				esc_html( $name )
+			);
+		}
+		if ( '' !== $chips ) {
+			$chips = sprintf( '<div class="luma-viewer__chips">%s</div>', $chips );
+		}
+
+		return sprintf( '<div class="luma-viewer__filters">%s%s</div>', $search, $chips );
 	}
 
 	/**
