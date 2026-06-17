@@ -24,9 +24,11 @@
 /phpstan-bootstrap.php
 /phpstan
 /phpunit.xml.dist
+/phpunit-integration.xml.dist
 /phpunit.xml
 /.phpunit.result.cache
 /tests
+/.wordpress-org
 
 # Block sources (the compiled output in build/ is what ships)
 /blocks

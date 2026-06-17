@@ -89,6 +89,6 @@ members-only events, updates, and FAQ. Found a bug or have an idea? Please
 ---
 
 <sub>Building or contributing? See **[CONTRIBUTING.md](CONTRIBUTING.md)**.
-Licensed under [GPL-2.0-or-later](https://www.gnu.org/licenses/gpl-2.0.html).
+Licensed under [GPL-2.0-or-later](LICENSE).
 "Lu.ma"/"Luma" and "MemberPress" are trademarks of their respective owners; this
 is an independent integration, not affiliated with or endorsed by them.</sub>

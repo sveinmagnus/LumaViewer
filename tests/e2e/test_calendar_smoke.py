@@ -26,13 +26,11 @@ def test_events_page_loads():
         page = browser.new_page()
         page.goto(f"{BASE_URL}/events/", wait_until="networkidle")
 
-        # Smoke: the page resolves and is the Events page.
-        assert "Events" in page.title()
-
-        # TODO(P1+): once the List/Month views render, assert the calendar
-        # container and that at least one event card (or the empty-state) shows:
-        #   page.wait_for_selector(".luma-viewer", timeout=10_000)
-        #   assert page.locator(".luma-viewer__event, .luma-viewer__empty").count() >= 1
+        # The Events page contains [luma_calendar]. With no API key configured it
+        # renders the wrapper around an empty/error state, which is enough to prove
+        # the render path is wired end-to-end.
+        page.wait_for_selector(".luma-viewer", timeout=15000)
+        assert page.locator(".luma-viewer").count() >= 1
 
         browser.close()
 

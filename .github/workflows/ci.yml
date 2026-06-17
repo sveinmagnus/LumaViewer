@@ -57,8 +57,6 @@ jobs:
 
   e2e:
     name: E2E smoke (Playground + Playwright)
-    # Manual until the front-end views land (P1+); then add push/pull_request.
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -88,3 +86,36 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:9400
         run: pytest -q tests/e2e
+
+  integration:
+    name: WordPress integration tests (wp-env)
+    # Manual: spins up the Docker-based wp-env test database. The plugin mount
+    # path below assumes the checkout dir is "luma-viewer"; adjust if it differs.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Start wp-env
+        run: npx --yes @wordpress/env start
+
+      - name: Run integration tests
+        run: >-
+          npx --yes @wordpress/env run tests-cli
+          --env-cwd=wp-content/plugins/luma-viewer
+          vendor/bin/phpunit -c phpunit-integration.xml.dist
