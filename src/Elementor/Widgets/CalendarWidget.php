@@ -144,6 +144,14 @@ class CalendarWidget extends Widget_Base {
 				'description' => __( 'Applies to the List view.', 'luma-viewer' ),
 			)
 		);
+		$this->add_control(
+			'calendar',
+			array(
+				'label'       => __( 'Calendar ID', 'luma-viewer' ),
+				'type'        => Controls_Manager::TEXT,
+				'description' => __( 'Organization mode only: limit to one calendar (its api_id).', 'luma-viewer' ),
+			)
+		);
 
 		$this->end_controls_section();
 	}
@@ -165,6 +173,7 @@ class CalendarWidget extends Widget_Base {
 			'date'     => isset( $settings['date'] ) ? sanitize_text_field( (string) $settings['date'] ) : '',
 			'layout'   => isset( $settings['layout'] ) ? sanitize_key( (string) $settings['layout'] ) : '',
 			'group_by' => isset( $settings['group_by'] ) ? sanitize_key( (string) $settings['group_by'] ) : '',
+			'calendar' => isset( $settings['calendar'] ) ? sanitize_text_field( (string) $settings['calendar'] ) : '',
 		);
 		if ( ! empty( $settings['count'] ) ) {
 			$atts['count'] = absint( $settings['count'] );

@@ -86,6 +86,10 @@ class RestController {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
 					),
+					'calendar' => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 				),
 			)
 		);
@@ -129,6 +133,7 @@ class RestController {
 			'date'     => (string) $request->get_param( 'date' ),
 			'layout'   => (string) $request->get_param( 'layout' ),
 			'group_by' => (string) $request->get_param( 'group_by' ),
+			'calendar' => (string) $request->get_param( 'calendar' ),
 		);
 
 		$count = $request->get_param( 'count' );

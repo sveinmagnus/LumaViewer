@@ -70,33 +70,7 @@ class Endpoints {
 	 * @return array|\WP_Error Array of raw entries, or error if the first page fails.
 	 */
 	public function list_all_events( array $args = array(), $max_pages = 20 ) {
-		$entries = array();
-		$cursor  = null;
-		$page    = 0;
-
-		do {
-			$query = $args;
-			if ( $cursor ) {
-				$query['pagination_cursor'] = $cursor;
-			}
-
-			$resp = $this->list_events( $query );
-			if ( is_wp_error( $resp ) ) {
-				if ( empty( $entries ) ) {
-					return $resp;
-				}
-				break;
-			}
-
-			if ( ! empty( $resp['entries'] ) && is_array( $resp['entries'] ) ) {
-				$entries = array_merge( $entries, $resp['entries'] );
-			}
-
-			$cursor = ! empty( $resp['has_more'] ) && isset( $resp['next_cursor'] ) ? $resp['next_cursor'] : null;
-			++$page;
-		} while ( $cursor && $page < $max_pages );
-
-		return $entries;
+		return $this->paginate( array( $this, 'list_events' ), $args, $max_pages );
 	}
 
 	/**
@@ -126,5 +100,74 @@ class Endpoints {
 	 */
 	public function list_ticket_types( $event_api_id ) {
 		return $this->client->get( '/v1/events/ticket-types/list', array( 'event_api_id' => $event_api_id ) );
+	}
+
+	/**
+	 * List the calendars in the organization (Organization API key).
+	 *
+	 * @return array|\WP_Error
+	 */
+	public function list_calendars() {
+		return $this->client->get( '/v1/organizations/calendars/list' );
+	}
+
+	/**
+	 * List one page of organization events (across all calendars).
+	 *
+	 * @param array $args Query args.
+	 * @return array|\WP_Error
+	 */
+	public function list_org_events( array $args = array() ) {
+		$args = wp_parse_args( $args, array( 'pagination_limit' => 50 ) );
+		return $this->client->get( '/v1/organizations/events/list', $args );
+	}
+
+	/**
+	 * List every organization event across all pages.
+	 *
+	 * @param array $args      Query args.
+	 * @param int   $max_pages Safety cap.
+	 * @return array|\WP_Error
+	 */
+	public function list_all_org_events( array $args = array(), $max_pages = 20 ) {
+		return $this->paginate( array( $this, 'list_org_events' ), $args, $max_pages );
+	}
+
+	/**
+	 * Loop a cursor-paginated list endpoint, merging the `entries` arrays.
+	 *
+	 * @param callable $fetch     Callable( array $query ): array|\WP_Error.
+	 * @param array    $args      Base query args (without pagination_cursor).
+	 * @param int      $max_pages Safety cap on page count.
+	 * @return array|\WP_Error Merged entries, or error if the first page fails.
+	 */
+	private function paginate( callable $fetch, array $args, $max_pages ) {
+		$entries = array();
+		$cursor  = null;
+		$page    = 0;
+
+		do {
+			$query = $args;
+			if ( $cursor ) {
+				$query['pagination_cursor'] = $cursor;
+			}
+
+			$resp = call_user_func( $fetch, $query );
+			if ( is_wp_error( $resp ) ) {
+				if ( empty( $entries ) ) {
+					return $resp;
+				}
+				break;
+			}
+
+			if ( ! empty( $resp['entries'] ) && is_array( $resp['entries'] ) ) {
+				$entries = array_merge( $entries, $resp['entries'] );
+			}
+
+			$cursor = ! empty( $resp['has_more'] ) && isset( $resp['next_cursor'] ) ? $resp['next_cursor'] : null;
+			++$page;
+		} while ( $cursor && $page < $max_pages );
+
+		return $entries;
 	}
 }

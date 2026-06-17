@@ -31,6 +31,7 @@
 		var count = container.getAttribute( 'data-lv-count' ) || '';
 		var layout = container.getAttribute( 'data-lv-layout' ) || '';
 		var group = container.getAttribute( 'data-lv-group' ) || '';
+		var calendar = container.getAttribute( 'data-lv-calendar' ) || '';
 
 		if ( view ) {
 			url.searchParams.set( 'view', view );
@@ -50,6 +51,9 @@
 		}
 		if ( group && group !== 'day' ) {
 			url.searchParams.set( 'group_by', group );
+		}
+		if ( calendar ) {
+			url.searchParams.set( 'calendar', calendar );
 		}
 
 		return url.toString();

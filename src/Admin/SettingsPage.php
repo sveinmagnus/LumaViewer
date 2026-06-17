@@ -103,6 +103,8 @@ class SettingsPage {
 
 		add_settings_section( 'luma_viewer_connection', __( 'Luma connection', 'luma-viewer' ), '__return_false', self::MENU_SLUG );
 		add_settings_field( 'api_key', __( 'API key', 'luma-viewer' ), array( $this, 'field_api_key' ), self::MENU_SLUG, 'luma_viewer_connection' );
+		add_settings_field( 'api_mode', __( 'Key type', 'luma-viewer' ), array( $this, 'field_api_mode' ), self::MENU_SLUG, 'luma_viewer_connection' );
+		add_settings_field( 'default_calendar', __( 'Default calendar', 'luma-viewer' ), array( $this, 'field_default_calendar' ), self::MENU_SLUG, 'luma_viewer_connection' );
 
 		add_settings_section( 'luma_viewer_display', __( 'Display', 'luma-viewer' ), '__return_false', self::MENU_SLUG );
 		add_settings_field( 'default_view', __( 'Default view', 'luma-viewer' ), array( $this, 'field_default_view' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -144,6 +146,11 @@ class SettingsPage {
 				$out['api_key'] = sanitize_text_field( $submitted );
 			}
 		}
+
+		$out['api_mode']         = ( isset( $input['api_mode'] ) && in_array( $input['api_mode'], array( 'calendar', 'organization' ), true ) )
+			? $input['api_mode']
+			: $current['api_mode'];
+		$out['default_calendar'] = isset( $input['default_calendar'] ) ? sanitize_text_field( $input['default_calendar'] ) : $current['default_calendar'];
 
 		$views               = array( 'list', 'week', 'month', 'day', 'photo', 'summary' );
 		$out['default_view'] = ( isset( $input['default_view'] ) && in_array( $input['default_view'], $views, true ) )
@@ -201,6 +208,80 @@ class SettingsPage {
 		);
 		echo '<p class="description">' . esc_html__( 'From your Luma calendar: Settings → Developer → API Keys. Requires Luma Plus. Save changes, then test the connection.', 'luma-viewer' ) . '</p>';
 		$this->render_test_button();
+	}
+
+	/**
+	 * Key-type (calendar vs organization) selector.
+	 *
+	 * @return void
+	 */
+	public function field_api_mode() {
+		$value = (string) Settings::get( 'api_mode' );
+		$modes = array(
+			'calendar'     => __( 'Calendar key (one calendar)', 'luma-viewer' ),
+			'organization' => __( 'Organization key (multiple calendars)', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[api_mode]">';
+		foreach ( $modes as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'Use an Organization key to show events from several calendars.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Default calendar selector (Organization mode).
+	 *
+	 * @return void
+	 */
+	public function field_default_calendar() {
+		if ( 'organization' !== (string) Settings::get( 'api_mode' ) ) {
+			echo '<p class="description">' . esc_html__( 'Used only with an Organization key.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+
+		$calendars = $this->fetch_calendars();
+		if ( empty( $calendars ) ) {
+			echo '<p class="description">' . esc_html__( 'No calendars found yet — save your Organization key, then reload this page.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+
+		$value = (string) Settings::get( 'default_calendar' );
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[default_calendar]">';
+		printf( '<option value="">%s</option>', esc_html__( 'All calendars', 'luma-viewer' ) );
+		foreach ( $calendars as $id => $name ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $id ), selected( $value, (string) $id, false ), esc_html( $name ) );
+		}
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'Blocks and shortcodes can override this with a calendar attribute.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Fetch organization calendars as id => name (best-effort).
+	 *
+	 * @return array<string,string>
+	 */
+	private function fetch_calendars() {
+		if ( ! $this->endpoints->client()->has_key() ) {
+			return array();
+		}
+		$resp = $this->endpoints->list_calendars();
+		if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+			return array();
+		}
+		$entries = ( isset( $resp['entries'] ) && is_array( $resp['entries'] ) ) ? $resp['entries'] : $resp;
+		$out     = array();
+		foreach ( $entries as $entry ) {
+			if ( ! is_array( $entry ) ) {
+				continue;
+			}
+			$cal = isset( $entry['calendar'] ) && is_array( $entry['calendar'] ) ? $entry['calendar'] : $entry;
+			$id  = (string) ( $cal['api_id'] ?? '' );
+			if ( '' !== $id ) {
+				$out[ $id ] = (string) ( $cal['name'] ?? $id );
+			}
+		}
+		return $out;
 	}
 
 	/**
@@ -579,6 +660,21 @@ class SettingsPage {
 
 		if ( ! $this->endpoints->client()->has_key() ) {
 			wp_send_json_error( array( 'message' => __( 'Save an API key first, then test.', 'luma-viewer' ) ) );
+		}
+
+		if ( 'organization' === (string) Settings::get( 'api_mode' ) ) {
+			$result = $this->endpoints->list_calendars();
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+			}
+			$entries = ( isset( $result['entries'] ) && is_array( $result['entries'] ) ) ? $result['entries'] : $result;
+			$count   = count( $entries );
+			wp_send_json_success(
+				array(
+					/* translators: %d: number of calendars. */
+					'message' => sprintf( _n( 'Connected — %d calendar found.', 'Connected — %d calendars found.', $count, 'luma-viewer' ), $count ),
+				)
+			);
 		}
 
 		$result = $this->endpoints->get_calendar();

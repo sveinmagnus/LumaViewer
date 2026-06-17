@@ -19,7 +19,8 @@
 		"count": { "type": "number", "default": 0 },
 		"date": { "type": "string", "default": "" },
 		"layout": { "type": "string", "default": "" },
-		"group_by": { "type": "string", "default": "" }
+		"group_by": { "type": "string", "default": "" },
+		"calendar": { "type": "string", "default": "" }
 	},
 	"editorScript": "file:./index.js"
 }

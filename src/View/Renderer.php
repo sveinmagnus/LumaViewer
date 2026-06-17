@@ -75,9 +75,12 @@ class Renderer {
 			? $atts['group_by']
 			: 'day';
 
+		$calendar = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
+
 		$args   = array(
-			'count' => $count,
-			'tag'   => $tag,
+			'count'    => $count,
+			'tag'      => $tag,
+			'calendar' => $calendar,
 		);
 		$anchor = null;
 		$nav    = null;
@@ -181,13 +184,14 @@ class Renderer {
 		);
 
 		$data = sprintf(
-			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s"',
+			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s" data-lv-calendar="%s"',
 			esc_attr( $view ),
 			esc_attr( $tag ),
 			esc_attr( (string) $count ),
 			esc_attr( $date ),
 			esc_attr( $layout ),
-			esc_attr( $group_by )
+			esc_attr( $group_by ),
+			esc_attr( $calendar )
 		);
 
 		return sprintf(

@@ -10,7 +10,7 @@ import ServerSideRender from '@wordpress/server-side-render';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
-	const { view, tag, count, date, layout, group_by: groupBy } = attributes;
+	const { view, tag, count, date, layout, group_by: groupBy, calendar } = attributes;
 
 	return (
 		<div { ...blockProps }>
@@ -71,6 +71,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						help={ __( 'Applies to the List view.', 'luma-viewer' ) }
 						onChange={ ( value ) => setAttributes( { group_by: value } ) }
+					/>
+					<TextControl
+						label={ __( 'Calendar ID', 'luma-viewer' ) }
+						value={ calendar }
+						onChange={ ( value ) => setAttributes( { calendar: value } ) }
+						help={ __( 'Organization mode only: limit to one calendar (its api_id).', 'luma-viewer' ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

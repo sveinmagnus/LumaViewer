@@ -22,6 +22,9 @@ class Event {
 	/** @var string */
 	private $id = '';
 
+	/** @var string Owning calendar api_id (organization mode). */
+	private $calendar_id = '';
+
 	/** @var string */
 	private $name = '';
 
@@ -82,6 +85,7 @@ class Event {
 
 		$self              = new self();
 		$self->id          = (string) ( $ev['api_id'] ?? '' );
+		$self->calendar_id = (string) ( $ev['calendar_api_id'] ?? '' );
 		$self->name        = (string) ( $ev['name'] ?? '' );
 		$self->start       = self::parse_date( $ev['start_at'] ?? null );
 		$self->end         = self::parse_date( $ev['end_at'] ?? null );
@@ -211,6 +215,11 @@ class Event {
 	/** @return string */
 	public function id() {
 		return $this->id;
+	}
+
+	/** @return string */
+	public function calendar_id() {
+		return $this->calendar_id;
 	}
 
 	/** @return string */
