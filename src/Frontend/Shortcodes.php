@@ -56,6 +56,10 @@ class Shortcodes {
 				'group_by' => '',
 				'calendar' => '',
 				'filters'  => '',
+				'offset'   => '',
+				'past'     => '',
+				'from'     => '',
+				'to'       => '',
 			),
 			$atts,
 			'luma_calendar'
@@ -69,6 +73,10 @@ class Shortcodes {
 			'group_by' => sanitize_key( $atts['group_by'] ),
 			'calendar' => sanitize_text_field( $atts['calendar'] ),
 			'filters'  => sanitize_text_field( $atts['filters'] ),
+			'offset'   => absint( $atts['offset'] ),
+			'past'     => sanitize_text_field( $atts['past'] ),
+			'from'     => sanitize_text_field( $atts['from'] ),
+			'to'       => sanitize_text_field( $atts['to'] ),
 		);
 		if ( '' !== $atts['count'] ) {
 			$clean['count'] = absint( $atts['count'] );

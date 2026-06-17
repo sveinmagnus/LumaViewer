@@ -20,6 +20,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		group_by: groupBy,
 		calendar,
 		filters,
+		past,
 	} = attributes;
 
 	return (
@@ -94,6 +95,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={ !! filters }
 						onChange={ ( value ) => setAttributes( { filters: value } ) }
 						help={ __( 'Adds a search box and category chips above list-style views.', 'luma-viewer' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Include past events', 'luma-viewer' ) }
+						checked={ !! past }
+						onChange={ ( value ) => setAttributes( { past: value } ) }
+						help={ __( 'Show recent past events as well as upcoming ones.', 'luma-viewer' ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -79,10 +79,19 @@ class Renderer {
 		$calendar     = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
 		$show_filters = isset( $atts['filters'] ) && in_array( (string) $atts['filters'], array( '1', 'true', 'yes', 'on' ), true );
 
+		$offset = isset( $atts['offset'] ) ? max( 0, (int) $atts['offset'] ) : 0;
+		$past   = isset( $atts['past'] ) ? (string) $atts['past'] : '';
+		$from   = isset( $atts['from'] ) ? (string) $atts['from'] : '';
+		$to     = isset( $atts['to'] ) ? (string) $atts['to'] : '';
+
 		$args   = array(
 			'count'    => $count,
 			'tag'      => $tag,
 			'calendar' => $calendar,
+			'offset'   => $offset,
+			'past'     => $past,
+			'from'     => $from,
+			'to'       => $to,
 		);
 		$anchor = null;
 		$nav    = null;
@@ -199,14 +208,24 @@ class Renderer {
 			)
 		);
 
-		if ( $show_filters && in_array( $view, array( 'list', 'week', 'day', 'photo', 'summary' ), true ) ) {
-			$body = $this->filter_bar( $events ) . $body;
+		$list_style = in_array( $view, array( 'list', 'week', 'day', 'photo', 'summary' ), true );
+
+		if ( $show_filters && $list_style ) {
+			$body = $this->filter_bar( $events, $past, $from, $to ) . $body;
+		}
+
+		$total = (int) $result['total'];
+		if ( $list_style && $count > 0 && ( $offset + $count ) < $total ) {
+			$body .= sprintf(
+				'<div class="luma-viewer__more-wrap"><button type="button" class="luma-viewer__button luma-viewer__more" data-lv-action="more">%s</button></div>',
+				esc_html__( 'Load more', 'luma-viewer' )
+			);
 		}
 
 		$body .= $this->itemlist_jsonld( $events, $teaser_ids );
 
 		$data = sprintf(
-			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s" data-lv-calendar="%s" data-lv-filters="%s"',
+			' data-lv-view="%s" data-lv-tag="%s" data-lv-count="%s" data-lv-date="%s" data-lv-layout="%s" data-lv-group="%s" data-lv-calendar="%s" data-lv-filters="%s" data-lv-offset="%s" data-lv-past="%s" data-lv-from="%s" data-lv-to="%s" data-lv-step="%s"',
 			esc_attr( $view ),
 			esc_attr( $tag ),
 			esc_attr( (string) $count ),
@@ -214,7 +233,12 @@ class Renderer {
 			esc_attr( $layout ),
 			esc_attr( $group_by ),
 			esc_attr( $calendar ),
-			esc_attr( $show_filters ? '1' : '' )
+			esc_attr( $show_filters ? '1' : '' ),
+			esc_attr( (string) $offset ),
+			esc_attr( $past ),
+			esc_attr( $from ),
+			esc_attr( $to ),
+			esc_attr( (string) (int) Settings::get( 'per_page' ) )
 		);
 
 		$html = sprintf(
@@ -348,9 +372,12 @@ class Renderer {
 	 * client-side over the already-rendered cards.
 	 *
 	 * @param Event[] $events Events in the current result set.
+	 * @param string  $past   Current "include past" value.
+	 * @param string  $from   Current from-date value.
+	 * @param string  $to     Current to-date value.
 	 * @return string
 	 */
-	private function filter_bar( array $events ) {
+	private function filter_bar( array $events, $past = '', $from = '', $to = '' ) {
 		$names = array();
 		foreach ( $events as $event ) {
 			foreach ( $event->tags() as $tag ) {
@@ -379,7 +406,30 @@ class Renderer {
 			$chips = sprintf( '<div class="luma-viewer__chips">%s</div>', $chips );
 		}
 
-		return sprintf( '<div class="luma-viewer__filters">%s%s</div>', $search, $chips );
+		$past_active = in_array( (string) $past, array( '1', 'true', 'yes', 'on' ), true );
+		$controls    = sprintf(
+			'<button type="button" class="luma-viewer__chip luma-viewer__past%1$s" data-lv-action="past" aria-pressed="%2$s">%3$s</button>',
+			$past_active ? ' is-active' : '',
+			$past_active ? 'true' : 'false',
+			esc_html__( 'Include past', 'luma-viewer' )
+		);
+		$controls   .= sprintf(
+			'<input type="date" class="luma-viewer__date luma-viewer__date--from" value="%1$s" aria-label="%2$s" />',
+			esc_attr( (string) $from ),
+			esc_attr__( 'From date', 'luma-viewer' )
+		);
+		$controls   .= sprintf(
+			'<input type="date" class="luma-viewer__date luma-viewer__date--to" value="%1$s" aria-label="%2$s" />',
+			esc_attr( (string) $to ),
+			esc_attr__( 'To date', 'luma-viewer' )
+		);
+
+		return sprintf(
+			'<div class="luma-viewer__filters">%s%s<div class="luma-viewer__dates">%s</div></div>',
+			$search,
+			$chips,
+			$controls
+		);
 	}
 
 	/**

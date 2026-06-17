@@ -33,6 +33,16 @@
 		var group = container.getAttribute( 'data-lv-group' ) || '';
 		var calendar = container.getAttribute( 'data-lv-calendar' ) || '';
 		var filters = container.getAttribute( 'data-lv-filters' ) || '';
+		var offsetAttr = container.getAttribute( 'data-lv-offset' ) || '0';
+		var past = container.getAttribute( 'data-lv-past' ) || '';
+		var from = container.getAttribute( 'data-lv-from' ) || '';
+		var to = container.getAttribute( 'data-lv-to' ) || '';
+
+		// "Load more" re-renders the view with a larger count.
+		if ( 'more' === trigger.getAttribute( 'data-lv-action' ) ) {
+			var step = parseInt( container.getAttribute( 'data-lv-step' ) || '0', 10 ) || 0;
+			count = String( ( parseInt( count, 10 ) || 0 ) + step );
+		}
 
 		if ( view ) {
 			url.searchParams.set( 'view', view );
@@ -58,6 +68,18 @@
 		}
 		if ( filters ) {
 			url.searchParams.set( 'filters', filters );
+		}
+		if ( past ) {
+			url.searchParams.set( 'past', past );
+		}
+		if ( from ) {
+			url.searchParams.set( 'from', from );
+		}
+		if ( to ) {
+			url.searchParams.set( 'to', to );
+		}
+		if ( offsetAttr && offsetAttr !== '0' ) {
+			url.searchParams.set( 'offset', offsetAttr );
 		}
 
 		return url.toString();
@@ -123,22 +145,7 @@
 		applyFilter( container );
 	} );
 
-	document.addEventListener( 'click', function ( event ) {
-		var trigger = event.target.closest( '[data-lv-action]' );
-		if ( ! trigger ) {
-			return;
-		}
-		var container = trigger.closest( '.luma-viewer' );
-		if ( ! container ) {
-			return;
-		}
-
-		var url = buildUrl( container, trigger );
-		if ( ! url ) {
-			return;
-		}
-
-		event.preventDefault();
+	function performFetch( container, url ) {
 		container.classList.add( 'is-loading' );
 		container.setAttribute( 'aria-busy', 'true' );
 
@@ -181,5 +188,51 @@
 				);
 			} )
 			.catch( reset );
+	}
+
+	document.addEventListener( 'click', function ( event ) {
+		var trigger = event.target.closest( '[data-lv-action]' );
+		if ( ! trigger ) {
+			return;
+		}
+		var container = trigger.closest( '.luma-viewer' );
+		if ( ! container ) {
+			return;
+		}
+
+		// "Include past" flips its state before the request is built.
+		if ( 'past' === trigger.getAttribute( 'data-lv-action' ) ) {
+			var on = container.getAttribute( 'data-lv-past' );
+			container.setAttribute(
+				'data-lv-past',
+				on && on !== '' && on !== '0' ? '' : '1'
+			);
+		}
+
+		var url = buildUrl( container, trigger );
+		if ( ! url ) {
+			return;
+		}
+		event.preventDefault();
+		performFetch( container, url );
+	} );
+
+	// Date-range inputs re-fetch on change.
+	document.addEventListener( 'change', function ( event ) {
+		if ( ! event.target.classList.contains( 'luma-viewer__date' ) ) {
+			return;
+		}
+		var container = event.target.closest( '.luma-viewer' );
+		if ( ! container ) {
+			return;
+		}
+		var fromEl = container.querySelector( '.luma-viewer__date--from' );
+		var toEl = container.querySelector( '.luma-viewer__date--to' );
+		container.setAttribute( 'data-lv-from', fromEl ? fromEl.value : '' );
+		container.setAttribute( 'data-lv-to', toEl ? toEl.value : '' );
+		var url = buildUrl( container, container );
+		if ( url ) {
+			performFetch( container, url );
+		}
 	} );
 } )();

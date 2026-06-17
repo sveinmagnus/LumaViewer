@@ -161,6 +161,14 @@ class CalendarWidget extends Widget_Base {
 				'description' => __( 'Adds a search box and category chips to list-style views.', 'luma-viewer' ),
 			)
 		);
+		$this->add_control(
+			'past',
+			array(
+				'label'       => __( 'Include past events', 'luma-viewer' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'description' => __( 'Show recent past events as well as upcoming ones.', 'luma-viewer' ),
+			)
+		);
 
 		$this->end_controls_section();
 	}
@@ -184,6 +192,7 @@ class CalendarWidget extends Widget_Base {
 			'group_by' => isset( $settings['group_by'] ) ? sanitize_key( (string) $settings['group_by'] ) : '',
 			'calendar' => isset( $settings['calendar'] ) ? sanitize_text_field( (string) $settings['calendar'] ) : '',
 			'filters'  => ( isset( $settings['filters'] ) && 'yes' === $settings['filters'] ) ? 'true' : '',
+			'past'     => ( isset( $settings['past'] ) && 'yes' === $settings['past'] ) ? 'true' : '',
 		);
 		if ( ! empty( $settings['count'] ) ) {
 			$atts['count'] = absint( $settings['count'] );

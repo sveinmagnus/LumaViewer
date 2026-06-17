@@ -559,6 +559,24 @@
 	border-color: var(--lv-accent);
 }
 
+.luma-viewer__dates {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.luma-viewer__date {
+	padding: 0.3rem 0.5rem;
+	border: 1px solid var(--lv-border);
+	border-radius: var(--lv-radius);
+}
+
+/* Load more --------------------------------------------------------------- */
+.luma-viewer__more-wrap {
+	text-align: center;
+	margin-top: 1rem;
+}
+
 /* Small screens ----------------------------------------------------------- */
 @media (max-width: 600px) {
 	.luma-viewer__card {

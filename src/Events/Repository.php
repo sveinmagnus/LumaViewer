@@ -51,7 +51,7 @@ class Repository {
 	 *     @type string $after  ISO-8601 lower bound (defaults to start of the current hour).
 	 *     @type string $before ISO-8601 upper bound.
 	 * }
-	 * @return array{events:Event[],error:\WP_Error|null}
+	 * @return array{events:Event[],error:\WP_Error|null,total:int}
 	 */
 	public function get_events( array $args = array() ) {
 		$args = array_merge(
@@ -61,6 +61,10 @@ class Repository {
 				'after'    => '',
 				'before'   => '',
 				'calendar' => '',
+				'offset'   => 0,
+				'past'     => '',
+				'from'     => '',
+				'to'       => '',
 			),
 			$args
 		);
@@ -71,12 +75,29 @@ class Repository {
 			$calendar = (string) Settings::get( 'default_calendar' );
 		}
 
-		// Round "now" to the hour so the cache key is stable within the TTL.
-		$query = array(
-			'after' => '' !== $args['after'] ? $args['after'] : gmdate( 'Y-m-d\TH:00:00\Z' ),
-		);
-		if ( '' !== $args['before'] ) {
-			$query['before'] = $args['before'];
+		// Resolve the time window. Date-bounded views (month/day/week) pass an
+		// explicit after+before; list-style views default to "upcoming", or to a
+		// past window / explicit from–to range when requested. "Now" is rounded to
+		// the hour so the cache key stays stable within the TTL.
+		$after  = (string) $args['after'];
+		$before = (string) $args['before'];
+		if ( '' === $after && '' === $before ) {
+			$past = in_array( (string) $args['past'], array( '1', 'true', 'yes', 'on' ), true );
+			if ( '' !== (string) $args['from'] ) {
+				$after = (string) $args['from'];
+			} elseif ( $past ) {
+				$after = gmdate( 'Y-m-d\T00:00:00\Z', strtotime( '-1 year' ) );
+			} else {
+				$after = gmdate( 'Y-m-d\TH:00:00\Z' );
+			}
+			if ( '' !== (string) $args['to'] ) {
+				$before = (string) $args['to'];
+			}
+		}
+
+		$query = array( 'after' => $after );
+		if ( '' !== $before ) {
+			$query['before'] = $before;
 		}
 
 		// The full feed is cached once; calendar selection is applied per request
@@ -90,6 +111,7 @@ class Repository {
 				return array(
 					'events' => array(),
 					'error'  => $fetched,
+					'total'  => 0,
 				);
 			}
 			$entries = $fetched;
@@ -127,13 +149,18 @@ class Repository {
 			}
 		);
 
+		$total  = count( $events );
+		$offset = max( 0, (int) $args['offset'] );
 		if ( $args['count'] > 0 ) {
-			$events = array_slice( $events, 0, (int) $args['count'] );
+			$events = array_slice( $events, $offset, (int) $args['count'] );
+		} elseif ( $offset > 0 ) {
+			$events = array_slice( $events, $offset );
 		}
 
 		return array(
 			'events' => $events,
 			'error'  => null,
+			'total'  => $total,
 		);
 	}
 

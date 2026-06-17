@@ -82,6 +82,7 @@ class Blocks {
 			'group_by' => isset( $attributes['group_by'] ) ? sanitize_key( (string) $attributes['group_by'] ) : '',
 			'calendar' => isset( $attributes['calendar'] ) ? sanitize_text_field( (string) $attributes['calendar'] ) : '',
 			'filters'  => empty( $attributes['filters'] ) ? '' : 'true',
+			'past'     => empty( $attributes['past'] ) ? '' : 'true',
 		);
 		if ( ! empty( $attributes['count'] ) ) {
 			$atts['count'] = absint( $attributes['count'] );

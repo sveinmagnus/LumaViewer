@@ -94,6 +94,22 @@ class RestController {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
+					'offset'   => array(
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+					),
+					'past'     => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'from'     => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'to'       => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 				),
 			)
 		);
@@ -139,11 +155,19 @@ class RestController {
 			'group_by' => (string) $request->get_param( 'group_by' ),
 			'calendar' => (string) $request->get_param( 'calendar' ),
 			'filters'  => (string) $request->get_param( 'filters' ),
+			'past'     => (string) $request->get_param( 'past' ),
+			'from'     => (string) $request->get_param( 'from' ),
+			'to'       => (string) $request->get_param( 'to' ),
 		);
 
 		$count = $request->get_param( 'count' );
 		if ( null !== $count && '' !== $count ) {
 			$atts['count'] = (int) $count;
+		}
+
+		$offset = $request->get_param( 'offset' );
+		if ( null !== $offset && '' !== $offset ) {
+			$atts['offset'] = (int) $offset;
 		}
 
 		return new \WP_REST_Response( array( 'html' => $this->renderer->calendar( $atts ) ), 200 );
