@@ -9,6 +9,7 @@ namespace LumaViewer\Admin;
 
 use LumaViewer\Api\Endpoints;
 use LumaViewer\Cache\Cache;
+use LumaViewer\Cache\Cron;
 use LumaViewer\Membership\MemberPress;
 use LumaViewer\Settings;
 
@@ -68,6 +69,7 @@ class SettingsPage {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'wp_ajax_luma_viewer_test_connection', array( $this, 'ajax_test_connection' ) );
 		add_action( 'admin_post_luma_viewer_clear_cache', array( $this, 'handle_clear_cache' ) );
+		add_action( 'admin_post_luma_viewer_refresh', array( $this, 'handle_refresh' ) );
 	}
 
 	/**
@@ -110,6 +112,7 @@ class SettingsPage {
 		add_settings_field( 'default_view', __( 'Default view', 'luma-viewer' ), array( $this, 'field_default_view' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'timezone_mode', __( 'Time zone', 'luma-viewer' ), array( $this, 'field_timezone_mode' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'accent_color', __( 'Accent color', 'luma-viewer' ), array( $this, 'field_accent_color' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'cache_ttl', __( 'Cache lifetime', 'luma-viewer' ), array( $this, 'field_cache_ttl' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'single_base', __( 'Single-event URL base', 'luma-viewer' ), array( $this, 'field_single_base' ), self::MENU_SLUG, 'luma_viewer_display' );
 
@@ -120,6 +123,7 @@ class SettingsPage {
 		add_settings_field( 'category_map', __( 'Category → membership', 'luma-viewer' ), array( $this, 'field_category_map' ), self::MENU_SLUG, 'luma_viewer_membership' );
 
 		add_settings_section( 'luma_viewer_sync', __( 'Cache and sync', 'luma-viewer' ), array( $this, 'sync_intro' ), self::MENU_SLUG );
+		add_settings_field( 'status', __( 'Status', 'luma-viewer' ), array( $this, 'field_status' ), self::MENU_SLUG, 'luma_viewer_sync' );
 		add_settings_field( 'webhook', __( 'Luma webhook URL', 'luma-viewer' ), array( $this, 'field_webhook' ), self::MENU_SLUG, 'luma_viewer_sync' );
 		add_settings_field( 'clear_cache', __( 'Cached events', 'luma-viewer' ), array( $this, 'field_clear_cache' ), self::MENU_SLUG, 'luma_viewer_sync' );
 	}
@@ -162,6 +166,7 @@ class SettingsPage {
 		$out['timezone_mode'] = ( isset( $input['timezone_mode'] ) && in_array( $input['timezone_mode'], array( 'event', 'site' ), true ) )
 			? $input['timezone_mode']
 			: $current['timezone_mode'];
+		$out['accent_color']  = isset( $input['accent_color'] ) ? (string) sanitize_hex_color( $input['accent_color'] ) : $current['accent_color'];
 
 		if ( isset( $input['single_base'] ) ) {
 			$base               = sanitize_title( $input['single_base'] );
@@ -335,6 +340,20 @@ class SettingsPage {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
+	}
+
+	/**
+	 * Accent color field.
+	 *
+	 * @return void
+	 */
+	public function field_accent_color() {
+		printf(
+			'<input type="text" name="%1$s[accent_color]" value="%2$s" class="regular-text" placeholder="#2271b1" />',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'accent_color' ) )
+		);
+		echo '<p class="description">' . esc_html__( 'Hex color for buttons, the active view tab and highlights. Leave blank to inherit the theme.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**
@@ -574,6 +593,42 @@ class SettingsPage {
 	}
 
 	/**
+	 * Status field: last refresh time + a "Refresh now" button.
+	 *
+	 * @return void
+	 */
+	public function field_status() {
+		$last = (int) get_option( 'luma_viewer_last_refresh', 0 );
+		if ( $last > 0 ) {
+			/* translators: %s: human-readable time difference, e.g. "5 mins". */
+			echo '<p>' . esc_html( sprintf( __( 'Events last refreshed %s ago.', 'luma-viewer' ), human_time_diff( $last, time() ) ) ) . '</p>';
+		} else {
+			echo '<p>' . esc_html__( 'Events have not been refreshed yet.', 'luma-viewer' ) . '</p>';
+		}
+
+		$url = wp_nonce_url( admin_url( 'admin-post.php?action=luma_viewer_refresh' ), 'luma_viewer_refresh' );
+		printf( '<a href="%s" class="button button-primary">%s</a>', esc_url( $url ), esc_html__( 'Refresh now', 'luma-viewer' ) );
+	}
+
+	/**
+	 * Handle the "Refresh now" action (clear + re-warm the cache).
+	 *
+	 * @return void
+	 */
+	public function handle_refresh() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Permission denied.', 'luma-viewer' ) );
+		}
+		check_admin_referer( 'luma_viewer_refresh' );
+
+		$this->cache->flush();
+		do_action( Cron::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the hook constant is prefixed.
+
+		wp_safe_redirect( add_query_arg( 'luma_viewer_cache', 'refreshed', admin_url( 'options-general.php?page=' . self::MENU_SLUG ) ) );
+		exit;
+	}
+
+	/**
 	 * Render the "Test connection" button + inline script.
 	 *
 	 * @return void
@@ -631,9 +686,11 @@ class SettingsPage {
 			<h1><?php esc_html_e( 'Luma Viewer', 'luma-viewer' ); ?></h1>
 			<?php
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only flag set by a nonce-verified redirect.
-			if ( isset( $_GET['luma_viewer_cache'] ) && 'cleared' === sanitize_key( wp_unslash( $_GET['luma_viewer_cache'] ) ) ) :
+			$lv_cache_notice = isset( $_GET['luma_viewer_cache'] ) ? sanitize_key( wp_unslash( $_GET['luma_viewer_cache'] ) ) : '';
+			if ( 'cleared' === $lv_cache_notice || 'refreshed' === $lv_cache_notice ) :
+				$lv_msg = 'refreshed' === $lv_cache_notice ? __( 'Events refreshed.', 'luma-viewer' ) : __( 'Cache cleared.', 'luma-viewer' );
 				?>
-				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Cache cleared.', 'luma-viewer' ); ?></p></div>
+				<div class="notice notice-success is-dismissible"><p><?php echo esc_html( $lv_msg ); ?></p></div>
 			<?php endif; ?>
 			<form action="options.php" method="post">
 				<?php

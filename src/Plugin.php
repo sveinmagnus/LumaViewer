@@ -12,9 +12,11 @@ use LumaViewer\Admin\SettingsPage;
 use LumaViewer\Api\Client;
 use LumaViewer\Api\Endpoints;
 use LumaViewer\Blocks\Blocks;
+use LumaViewer\Blocks\Patterns;
 use LumaViewer\Cache\Cache;
 use LumaViewer\Cache\Cron;
 use LumaViewer\Cache\Webhook;
+use LumaViewer\Cli\Commands;
 use LumaViewer\Elementor\Module as ElementorModule;
 use LumaViewer\Events\Repository;
 use LumaViewer\Frontend\Assets;
@@ -96,6 +98,11 @@ final class Plugin {
 		( new Cron( $repository ) )->register();
 		( new Webhook( $cache, $limiter ) )->register();
 		( new Updater() )->register();
+		( new Patterns() )->register();
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			( new Commands( $repository, $cache ) )->register();
+		}
 
 		if ( is_admin() ) {
 			( new SettingsPage( $this->endpoints, $memberpress, $cache ) )->register();

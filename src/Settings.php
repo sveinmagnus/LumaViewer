@@ -31,6 +31,7 @@ class Settings {
 			'default_view'     => 'list',
 			'per_page'         => 10,
 			'timezone_mode'    => 'event',
+			'accent_color'     => '',
 			'gating_behavior'  => 'teaser',
 			'gate_cta_text'    => __( 'This event is for members. Join or log in to see the details.', 'luma-viewer' ),
 			'gate_cta_url'     => '',

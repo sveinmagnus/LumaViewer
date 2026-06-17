@@ -114,6 +114,14 @@ class Renderer {
 			);
 		}
 
+		/**
+		 * Filters the repository query args before events are fetched.
+		 *
+		 * @param array $args Repository args (count, tag, calendar, after, before).
+		 * @param array $atts The display attributes.
+		 */
+		$args = apply_filters( 'luma_viewer_event_args', $args, $atts );
+
 		$result = $this->repo->get_events( $args );
 		$events = $result['events'];
 
@@ -194,7 +202,7 @@ class Renderer {
 			esc_attr( $calendar )
 		);
 
-		return sprintf(
+		$html = sprintf(
 			'<div class="luma-viewer luma-viewer--%1$s" role="region" aria-label="%2$s" tabindex="-1" aria-busy="false"%3$s>%4$s%5$s</div>',
 			esc_attr( $view ),
 			esc_attr__( 'Events', 'luma-viewer' ),
@@ -202,6 +210,15 @@ class Renderer {
 			$this->toolbar( $view, $nav ),
 			$body
 		);
+
+		/**
+		 * Filters the rendered calendar HTML.
+		 *
+		 * @param string $html The calendar markup.
+		 * @param string $view The resolved view.
+		 * @param array  $atts The display attributes.
+		 */
+		return apply_filters( 'luma_viewer_calendar_html', $html, $view, $atts );
 	}
 
 	/**

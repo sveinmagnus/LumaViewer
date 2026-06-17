@@ -7,6 +7,8 @@
 
 namespace LumaViewer\Frontend;
 
+use LumaViewer\Settings;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -36,6 +38,11 @@ class Assets {
 			array(),
 			LUMA_VIEWER_VERSION
 		);
+
+		$accent = sanitize_hex_color( (string) Settings::get( 'accent_color' ) );
+		if ( $accent ) {
+			wp_add_inline_style( 'luma-viewer', '.luma-viewer{--lv-accent:' . $accent . ';}' );
+		}
 
 		wp_register_script(
 			'luma-viewer',

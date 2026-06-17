@@ -16,6 +16,7 @@ parameters:
     scanFiles:
         - phpstan/stubs/memberpress.php
         - phpstan/stubs/elementor.php
+        - phpstan/stubs/wp-cli.php
     excludePaths:
         - vendor/*
         - node_modules/*

@@ -76,5 +76,6 @@ class Cron {
 	 */
 	public function warm() {
 		$this->repo->get_events( array( 'count' => (int) Settings::get( 'per_page' ) ) );
+		update_option( 'luma_viewer_last_refresh', time(), false );
 	}
 }
