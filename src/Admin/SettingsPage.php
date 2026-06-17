@@ -156,7 +156,7 @@ class SettingsPage {
 			: $current['api_mode'];
 		$out['default_calendar'] = isset( $input['default_calendar'] ) ? sanitize_text_field( $input['default_calendar'] ) : $current['default_calendar'];
 
-		$views               = array( 'list', 'week', 'month', 'day', 'photo', 'summary' );
+		$views               = array( 'list', 'week', 'month', 'day', 'photo', 'summary', 'map' );
 		$out['default_view'] = ( isset( $input['default_view'] ) && in_array( $input['default_view'], $views, true ) )
 			? $input['default_view']
 			: $current['default_view'];
@@ -303,6 +303,7 @@ class SettingsPage {
 			'day'     => __( 'Day', 'luma-viewer' ),
 			'photo'   => __( 'Photo', 'luma-viewer' ),
 			'summary' => __( 'Summary', 'luma-viewer' ),
+			'map'     => __( 'Map', 'luma-viewer' ),
 		);
 		echo '<select name="' . esc_attr( Settings::OPTION ) . '[default_view]">';
 		foreach ( $views as $key => $label ) {

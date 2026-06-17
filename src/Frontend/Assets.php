@@ -60,5 +60,26 @@ class Assets {
 				'nonce' => wp_create_nonce( 'wp_rest' ),
 			)
 		);
+
+		wp_register_script(
+			'luma-viewer-map',
+			LUMA_VIEWER_URL . 'assets/js/luma-viewer-map.js',
+			array( 'luma-viewer' ),
+			LUMA_VIEWER_VERSION,
+			true
+		);
+		/**
+		 * Filters the Leaflet asset URLs used by the map view.
+		 *
+		 * @param array $urls { 'css' => string, 'js' => string }
+		 */
+		$leaflet = apply_filters(
+			'luma_viewer_leaflet_assets',
+			array(
+				'css' => 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+				'js'  => 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+			)
+		);
+		wp_localize_script( 'luma-viewer-map', 'lumaViewerMap', array( 'leaflet' => $leaflet ) );
 	}
 }

@@ -90,6 +90,7 @@ class CalendarWidget extends Widget_Base {
 					'day'     => __( 'Day', 'luma-viewer' ),
 					'photo'   => __( 'Photo', 'luma-viewer' ),
 					'summary' => __( 'Summary', 'luma-viewer' ),
+					'map'     => __( 'Map', 'luma-viewer' ),
 				),
 			)
 		);

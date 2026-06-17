@@ -507,6 +507,19 @@
 	}
 }
 
+/* Map view ---------------------------------------------------------------- */
+.luma-viewer__map {
+	height: 420px;
+	border: 1px solid var(--lv-border);
+	border-radius: var(--lv-radius);
+}
+
+@media (max-width: 600px) {
+	.luma-viewer__map {
+		height: 300px;
+	}
+}
+
 /* Filter bar -------------------------------------------------------------- */
 .luma-viewer__filters {
 	display: flex;

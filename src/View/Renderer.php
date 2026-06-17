@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Renderer {
 
-	const VIEWS = array( 'list', 'week', 'month', 'day', 'photo', 'summary' );
+	const VIEWS = array( 'list', 'week', 'month', 'day', 'photo', 'summary', 'map' );
 
 	/** @var Repository */
 	private $repo;
@@ -114,6 +114,8 @@ class Renderer {
 				'prev' => $anchor->modify( '-7 days' )->format( 'Y-m-d' ),
 				'next' => $anchor->modify( '+7 days' )->format( 'Y-m-d' ),
 			);
+		} elseif ( 'map' === $view ) {
+			$args['count'] = 0;
 		}
 
 		/**
@@ -158,6 +160,10 @@ class Renderer {
 
 		wp_enqueue_style( 'luma-viewer' );
 		wp_enqueue_script( 'luma-viewer' );
+
+		// Tiny helper; it lazy-loads Leaflet only when a map view is actually shown
+		// (including after an AJAX view switch), so non-map pages stay light.
+		wp_enqueue_script( 'luma-viewer-map' );
 
 		$loader    = $this->loader;
 		$formatter = $this->formatter;
@@ -304,6 +310,7 @@ class Renderer {
 			'day'     => __( 'Day', 'luma-viewer' ),
 			'photo'   => __( 'Photo', 'luma-viewer' ),
 			'summary' => __( 'Summary', 'luma-viewer' ),
+			'map'     => __( 'Map', 'luma-viewer' ),
 		);
 
 		$tabs = '';

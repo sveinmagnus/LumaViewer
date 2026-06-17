@@ -37,6 +37,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Day', 'luma-viewer' ), value: 'day' },
 							{ label: __( 'Photo', 'luma-viewer' ), value: 'photo' },
 							{ label: __( 'Summary', 'luma-viewer' ), value: 'summary' },
+							{ label: __( 'Map', 'luma-viewer' ), value: 'map' },
 						] }
 						onChange={ ( value ) => setAttributes( { view: value } ) }
 					/>

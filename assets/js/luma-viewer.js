@@ -175,6 +175,10 @@
 				if ( typeof next.focus === 'function' ) {
 					next.focus();
 				}
+				// Let view-specific scripts (e.g. the map) re-initialise.
+				next.dispatchEvent(
+					new CustomEvent( 'luma-viewer:rendered', { bubbles: true } )
+				);
 			} )
 			.catch( reset );
 	} );
