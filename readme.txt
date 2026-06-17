@@ -1,4 +1,4 @@
-=== Luma Viewer ===
+=== Calendar Viewer for Luma Events ===
 Contributors: (your-wordpress-org-username)
 Tags: events, calendar, event-calendar, membership, agenda
 Requires at least: 6.4
@@ -12,7 +12,7 @@ Show a Lu.ma calendar on your site with List, Week, Month, Day, Photo and Summar
 
 == Description ==
 
-Luma Viewer displays an organization's Lu.ma calendar on WordPress with views
+Luma-viewer displays an organization's Lu.ma calendar on WordPress with views
 modeled on popular event-calendar plugins, available as shortcodes, Gutenberg
 blocks, and Elementor widgets. It is read-only: events are fetched from the Luma
 API and cached, and visitors register on Luma via deep links.
@@ -38,7 +38,7 @@ key.
 1. Upload the plugin via Plugins → Add New → Upload Plugin, or copy the
    `luma-viewer` folder to `wp-content/plugins/`.
 2. Activate the plugin.
-3. Go to Settings → Luma Viewer and enter your Luma Calendar API key, then save
+3. Go to Settings → Luma-viewer and enter your Luma Calendar API key, then save
    and click "Test connection".
 4. Add the "Luma Calendar" block/widget or the `[luma_calendar]` shortcode to a
    page.

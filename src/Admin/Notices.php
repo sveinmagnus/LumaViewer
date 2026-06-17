@@ -43,7 +43,7 @@ class Notices {
 			$url = admin_url( 'options-general.php?page=' . SettingsPage::MENU_SLUG );
 			printf(
 				'<div class="notice notice-warning"><p>%s <a href="%s">%s</a></p></div>',
-				esc_html__( 'Luma Viewer needs a Luma API key before it can show events.', 'luma-viewer' ),
+				esc_html__( 'Luma-viewer needs a Luma API key before it can show events.', 'luma-viewer' ),
 				esc_url( $url ),
 				esc_html__( 'Add your key', 'luma-viewer' )
 			);
@@ -53,7 +53,7 @@ class Notices {
 		if ( ! empty( $map ) && ! $this->memberpress_active() ) {
 			printf(
 				'<div class="notice notice-warning"><p>%s</p></div>',
-				esc_html__( 'Luma Viewer has category-based access rules, but MemberPress is not active — all events are shown to everyone until it is enabled.', 'luma-viewer' )
+				esc_html__( 'Luma-viewer has category-based access rules, but MemberPress is not active — all events are shown to everyone until it is enabled.', 'luma-viewer' )
 			);
 		}
 	}

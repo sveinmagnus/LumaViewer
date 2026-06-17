@@ -20,7 +20,7 @@ No — events are cached and pre-warmed by WP-Cron, so normal page views don't c
 the Luma API. The AJAX navigation endpoint reads from cache and is rate-limited.
 
 **The calendar is empty / shows an error.**
-Check **Settings → Luma Viewer → Test connection**. A valid Luma Plus API key is
+Check **Settings → Luma-viewer → Test connection**. A valid Luma Plus API key is
 required. Admins see the underlying error message; visitors see a friendly
 notice.
 

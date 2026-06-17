@@ -80,7 +80,7 @@ cannot lead the name, and the **slug** generally cannot be the bare trademark.
 Because "Lu.ma"/"Luma" is a third-party mark:
 
 - The directory **display name** likely needs to be something like
-  **"Event Calendar for Luma"** rather than "Luma Viewer".
+  **"Event Calendar for Luma"** rather than "Luma-viewer".
 - The **slug** `luma-viewer` may be rejected; expect to need a name like
   `event-calendar-for-luma` (the WordPress.org team assigns/approves the slug).
 - Remove any trademarked **tags** from `readme.txt`.

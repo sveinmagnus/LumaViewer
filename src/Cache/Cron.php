@@ -53,7 +53,7 @@ class Cron {
 	public function add_interval( $schedules ) {
 		$schedules[ self::INTERVAL ] = array(
 			'interval' => 15 * MINUTE_IN_SECONDS,
-			'display'  => __( 'Every 15 minutes (Luma Viewer)', 'luma-viewer' ),
+			'display'  => __( 'Every 15 minutes (Luma-viewer)', 'luma-viewer' ),
 		);
 		return $schedules;
 	}

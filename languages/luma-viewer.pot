@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Luma Viewer 0.1.0\n"
+"Project-Id-Version: Calendar Viewer for Luma Events 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/LumaViewer\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-17T08:22:13+00:00\n"
+"POT-Creation-Date: 2026-06-17T11:22:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: luma-viewer\n"
@@ -17,10 +17,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #: luma-viewer.php
 #: src/Admin/SettingsPage.php:82
-#: src/Admin/SettingsPage.php:83
 #: src/Admin/SettingsPage.php:686
-#: src/Blocks/Patterns.php:37
-msgid "Luma Viewer"
+msgid "Calendar Viewer for Luma Events"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -39,7 +37,7 @@ msgid "Svein"
 msgstr ""
 
 #: src/Admin/Notices.php:46
-msgid "Luma Viewer needs a Luma API key before it can show events."
+msgid "Luma-viewer needs a Luma API key before it can show events."
 msgstr ""
 
 #: src/Admin/Notices.php:48
@@ -47,7 +45,11 @@ msgid "Add your key"
 msgstr ""
 
 #: src/Admin/Notices.php:56
-msgid "Luma Viewer has category-based access rules, but MemberPress is not active — all events are shown to everyone until it is enabled."
+msgid "Luma-viewer has category-based access rules, but MemberPress is not active — all events are shown to everyone until it is enabled."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:83
+msgid "Luma-viewer"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:106
@@ -172,39 +174,39 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php:300
 #: src/Elementor/Widgets/CalendarWidget.php:87
-#: src/View/Renderer.php:295
+#: src/View/Renderer.php:301
 msgid "List"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:301
 #: src/Elementor/Widgets/CalendarWidget.php:88
-#: src/View/Renderer.php:296
+#: src/View/Renderer.php:302
 msgid "Week"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:302
 #: src/Elementor/Widgets/CalendarWidget.php:89
 #: src/Elementor/Widgets/CalendarWidget.php:141
-#: src/View/Renderer.php:297
+#: src/View/Renderer.php:303
 msgid "Month"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:303
 #: src/Elementor/Widgets/CalendarWidget.php:90
 #: src/Elementor/Widgets/CalendarWidget.php:140
-#: src/View/Renderer.php:298
+#: src/View/Renderer.php:304
 msgid "Day"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:304
 #: src/Elementor/Widgets/CalendarWidget.php:91
-#: src/View/Renderer.php:299
+#: src/View/Renderer.php:305
 msgid "Photo"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:305
 #: src/Elementor/Widgets/CalendarWidget.php:92
-#: src/View/Renderer.php:300
+#: src/View/Renderer.php:306
 msgid "Summary"
 msgstr ""
 
@@ -362,6 +364,10 @@ msgstr ""
 msgid "Could not parse the Luma API response."
 msgstr ""
 
+#: src/Blocks/Patterns.php:37
+msgid "Calendar Viewer for Luma"
+msgstr ""
+
 #: src/Blocks/Patterns.php:42
 msgid "Upcoming events (list)"
 msgstr ""
@@ -379,7 +385,7 @@ msgid "Compact sidebar list"
 msgstr ""
 
 #: src/Cache/Cron.php:56
-msgid "Every 15 minutes (Luma Viewer)"
+msgid "Every 15 minutes (Luma-viewer)"
 msgstr ""
 
 #: src/Cache/Webhook.php:82
@@ -458,6 +464,14 @@ msgstr ""
 msgid "Organization mode only: limit to one calendar (its api_id)."
 msgstr ""
 
+#: src/Elementor/Widgets/CalendarWidget.php:158
+msgid "Search & category filters"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:160
+msgid "Adds a search box and category chips to list-style views."
+msgstr ""
+
 #: src/Elementor/Widgets/EventWidget.php:45
 msgid "Luma Event"
 msgstr ""
@@ -474,7 +488,7 @@ msgstr ""
 msgid "The Luma event api_id (e.g. evt-…)."
 msgstr ""
 
-#: src/Frontend/RestController.php:118
+#: src/Frontend/RestController.php:122
 msgid "Too many requests. Please slow down and try again shortly."
 msgstr ""
 
@@ -501,20 +515,24 @@ msgstr ""
 msgid "%s ago"
 msgstr ""
 
-#: src/View/Renderer.php:211
+#: src/View/Renderer.php:217
 msgid "Events"
 msgstr ""
 
-#: src/View/Renderer.php:319
+#: src/View/Renderer.php:325
 msgid "Previous"
 msgstr ""
 
-#: src/View/Renderer.php:321
+#: src/View/Renderer.php:327
 msgid "Next"
 msgstr ""
 
-#: src/View/Renderer.php:327
+#: src/View/Renderer.php:333
 msgid "Calendar views"
+msgstr ""
+
+#: src/View/Renderer.php:360
+msgid "Search events…"
 msgstr ""
 
 #: templates/day.php:17
@@ -585,8 +603,8 @@ msgstr ""
 msgid "Join or log in"
 msgstr ""
 
-#: templates/single.php:115
-msgid "Register on Luma"
+#: templates/single.php:119
+msgid "Full details &amp; register on Luma"
 msgstr ""
 
 #: templates/week.php:50

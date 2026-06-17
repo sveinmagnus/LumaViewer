@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in improving Luma Viewer!
+Thanks for your interest in improving Luma-viewer!
 
 ## Getting set up
 

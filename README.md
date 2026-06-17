@@ -1,8 +1,8 @@
-# Luma Viewer
+# Calendar Viewer for Luma Events
 
 **Show your [Lu.ma](https://lu.ma) events beautifully on your WordPress site.**
 
-Luma Viewer brings your organization's Lu.ma calendar into WordPress with
+Luma-viewer brings your organization's Lu.ma calendar into WordPress with
 polished, ready-made views you can drop onto any page — as a block, an Elementor
 widget, or a shortcode. Pick a layout, and your upcoming events appear
 automatically and stay up to date.
@@ -16,7 +16,7 @@ automatically and stay up to date.
    (all versions on the [Releases page](https://github.com/sveins/luma-viewer/releases)).
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**, choose the file,
    and click **Install Now**, then **Activate**.
-3. Open **Settings → Luma Viewer**, paste your Luma API key, and click
+3. Open **Settings → Luma-viewer**, paste your Luma API key, and click
    **Test connection**.
 4. Add the **Luma Calendar** block to any page — done!
 
@@ -69,7 +69,7 @@ See the **[usage guide](docs/usage.md)** for every option.
 ## Members-only events
 
 With **MemberPress**, map your Lu.ma event categories to memberships under
-**Settings → Luma Viewer → Membership access**. Members see the full event;
+**Settings → Luma-viewer → Membership access**. Members see the full event;
 everyone else sees a teaser with a join/log-in button — or nothing at all, your
 choice. Events without a mapped category stay public.
 [Learn more](docs/membership.md).

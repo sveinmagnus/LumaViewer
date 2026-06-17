@@ -1,4 +1,4 @@
-# Luma Viewer
+# Calendar Viewer for Luma Events
 
 **Show your [Lu.ma](https://lu.ma) events beautifully on your WordPress site.**
 

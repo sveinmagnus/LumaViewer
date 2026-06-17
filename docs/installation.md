@@ -14,12 +14,12 @@
 ## Install manually
 
 1. Unzip and copy the `luma-viewer` folder into `wp-content/plugins/`.
-2. Activate **Luma Viewer** under **Plugins**.
+2. Activate **Luma-viewer** under **Plugins**.
 
 ## Connect your Luma calendar
 
 1. In Luma: **Settings → Developer → API Keys** and copy your calendar API key.
-2. In WordPress: **Settings → Luma Viewer**, paste the key, **Save Changes**,
+2. In WordPress: **Settings → Luma-viewer**, paste the key, **Save Changes**,
    then click **Test connection** — you should see your calendar name.
 
 ## Settings overview

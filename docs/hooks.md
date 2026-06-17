@@ -48,7 +48,7 @@ so you can re-theme without overriding many rules:
 .luma-viewer { --lv-accent: #e8590c; --lv-radius: 4px; }
 ```
 
-The **Accent color** setting (Settings → Luma Viewer → Display) sets
+The **Accent color** setting (Settings → Luma-viewer → Display) sets
 `--lv-accent` for you.
 
 ## WP-CLI

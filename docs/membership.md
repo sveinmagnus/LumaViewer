@@ -6,7 +6,7 @@ With **MemberPress** active, you can restrict events by their Luma category
 ## How it works
 
 1. In Luma, tag events with categories (e.g. "Members", "VIP").
-2. In WordPress: **Settings → Luma Viewer → Membership access**, map each Luma
+2. In WordPress: **Settings → Luma-viewer → Membership access**, map each Luma
    category to one or more MemberPress memberships.
 3. Choose what non-members see for gated events:
    - **Teaser** — title, date, and cover are shown, with a "join / log in"

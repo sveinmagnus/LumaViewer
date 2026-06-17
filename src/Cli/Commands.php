@@ -55,7 +55,7 @@ class Commands {
 		unset( $args, $assoc_args );
 		$this->cache->flush();
 		do_action( Cron::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the hook constant is prefixed.
-		\WP_CLI::success( 'Luma Viewer cache refreshed.' );
+		\WP_CLI::success( 'Luma-viewer cache refreshed.' );
 	}
 
 	/**
@@ -68,7 +68,7 @@ class Commands {
 	public function clear( $args, $assoc_args ) {
 		unset( $args, $assoc_args );
 		$this->cache->flush();
-		\WP_CLI::success( 'Luma Viewer cache cleared.' );
+		\WP_CLI::success( 'Luma-viewer cache cleared.' );
 	}
 
 	/**

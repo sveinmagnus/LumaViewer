@@ -43,10 +43,10 @@ Visitors can switch views and move between dates without a full page reload
 ## Single-event pages
 
 Each event is available at `/<base>/<event-id>/` (base configurable under
-**Settings → Luma Viewer → Display**). These pages render within your theme and
+**Settings → Luma-viewer → Display**). These pages render within your theme and
 include a title and JSON-LD `Event` schema for SEO.
 
 ## Time zones
 
 Choose whether times display in each event's own time zone or your site's time
-zone under **Settings → Luma Viewer → Display**.
+zone under **Settings → Luma-viewer → Display**.

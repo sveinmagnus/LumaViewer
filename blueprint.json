@@ -1,14 +1,14 @@
 {
     "$schema": "https://playground.wordpress.net/blueprint-schema.json",
     "meta": {
-        "title": "Luma Viewer dev",
+        "title": "Luma-viewer dev",
         "author": "luma-viewer"
     },
     "landingPage": "/events/",
     "preferredVersions": { "php": "8.3", "wp": "latest" },
     "login": true,
     "siteOptions": {
-        "blogname": "Luma Viewer Dev"
+        "blogname": "Luma-viewer Dev"
     },
     "constants": {
         "WP_DEBUG": true,

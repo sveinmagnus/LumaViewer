@@ -163,7 +163,7 @@ class Client {
 	private function log( $message ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[Luma Viewer] ' . $message );
+			error_log( '[Luma-viewer] ' . $message );
 		}
 	}
 }

@@ -34,7 +34,7 @@ class Patterns {
 		}
 
 		if ( function_exists( 'register_block_pattern_category' ) ) {
-			register_block_pattern_category( 'luma-viewer', array( 'label' => __( 'Luma Viewer', 'luma-viewer' ) ) );
+			register_block_pattern_category( 'luma-viewer', array( 'label' => __( 'Calendar Viewer for Luma', 'luma-viewer' ) ) );
 		}
 
 		$patterns = array(

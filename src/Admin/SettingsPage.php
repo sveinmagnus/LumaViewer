@@ -79,8 +79,8 @@ class SettingsPage {
 	 */
 	public function add_menu() {
 		add_options_page(
-			__( 'Luma Viewer', 'luma-viewer' ),
-			__( 'Luma Viewer', 'luma-viewer' ),
+			__( 'Calendar Viewer for Luma Events', 'luma-viewer' ),
+			__( 'Luma-viewer', 'luma-viewer' ),
 			'manage_options',
 			self::MENU_SLUG,
 			array( $this, 'render_page' )
@@ -683,7 +683,7 @@ class SettingsPage {
 		}
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Luma Viewer', 'luma-viewer' ); ?></h1>
+			<h1><?php esc_html_e( 'Calendar Viewer for Luma Events', 'luma-viewer' ); ?></h1>
 			<?php
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only flag set by a nonce-verified redirect.
 			$lv_cache_notice = isset( $_GET['luma_viewer_cache'] ) ? sanitize_key( wp_unslash( $_GET['luma_viewer_cache'] ) ) : '';
