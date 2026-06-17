@@ -53,8 +53,10 @@ class Blocks {
 		}
 
 		$blocks = array(
-			'calendar' => array( $this, 'render_calendar' ),
-			'event'    => array( $this, 'render_event' ),
+			'calendar'  => array( $this, 'render_calendar' ),
+			'event'     => array( $this, 'render_event' ),
+			'featured'  => array( $this, 'render_featured' ),
+			'countdown' => array( $this, 'render_countdown' ),
 		);
 
 		foreach ( $blocks as $name => $callback ) {
@@ -102,5 +104,31 @@ class Blocks {
 		$id         = isset( $attributes['id'] ) ? sanitize_text_field( (string) $attributes['id'] ) : '';
 
 		return $this->renderer->event( array( 'id' => $id ) );
+	}
+
+	/**
+	 * Render the featured-event block.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_featured( $attributes ) {
+		$attributes = (array) $attributes;
+		$id         = isset( $attributes['id'] ) ? sanitize_text_field( (string) $attributes['id'] ) : '';
+
+		return $this->renderer->featured( array( 'id' => $id ) );
+	}
+
+	/**
+	 * Render the countdown block.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_countdown( $attributes ) {
+		$attributes = (array) $attributes;
+		$id         = isset( $attributes['id'] ) ? sanitize_text_field( (string) $attributes['id'] ) : '';
+
+		return $this->renderer->countdown( array( 'id' => $id ) );
 	}
 }

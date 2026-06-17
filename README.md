@@ -24,10 +24,15 @@ Full steps: **[Installation guide](docs/installation.md)**.
 
 ## ✨ What you get
 
-- 📅 **Six beautiful views** — **List, Week, Month, Day, Photo, and Summary** —
-  and visitors can switch between them and browse dates right on the page.
-- 🧩 **Works with your editor** — a **Gutenberg block**, an **Elementor widget**,
-  and a classic **shortcode**, all with the same options and a live preview.
+- 📅 **Seven beautiful views** — **List, Week, Month, Day, Photo, Summary, and
+  Map** — and visitors can switch between them, search, filter, and browse dates
+  right on the page.
+- 🧩 **Works with your editor** — **Gutenberg blocks** (calendar, single event,
+  featured hero, countdown), an **Elementor widget**, an **Upcoming Events**
+  sidebar widget, and classic **shortcodes** — all with the same options and a
+  live preview.
+- ⭐ **Hero & countdown** — spotlight your next event with a full-width featured
+  banner or a live countdown timer that ticks down to the start.
 - 🎨 **Lists, your way** — full cards, compact rows, or a minimal title-only
   list; group by day or by month. Great for a full events page *or* a sidebar.
 - 🔒 **Members-only events** — pair it with MemberPress to show certain event
@@ -51,6 +56,7 @@ Full steps: **[Installation guide](docs/installation.md)**.
 | **Day** | A single day's agenda. |
 | **Photo** | An eye-catching grid led by event cover images. |
 | **Summary** | A tidy, space-saving date-grouped list. |
+| **Map** | Venues plotted on a map (powered by OpenStreetMap). |
 
 ## Add it to a page
 
@@ -60,8 +66,11 @@ sidebar — or use a shortcode:
 ```text
 [luma_calendar]                                   Upcoming events (List)
 [luma_calendar view="month"]                      Month calendar
+[luma_calendar view="map" filters="true"]         Map with search + filters
 [luma_calendar view="list" layout="minimal" count="5"]   Compact sidebar list
 [luma_calendar view="photo" tag="Workshops"]      Photo grid for one category
+[luma_featured]                                   Hero for the next event
+[luma_countdown]                                  Countdown to the next event
 ```
 
 See the **[usage guide](docs/usage.md)** for every option.

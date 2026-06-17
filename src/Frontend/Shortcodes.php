@@ -37,6 +37,8 @@ class Shortcodes {
 	public function register() {
 		add_shortcode( 'luma_calendar', array( $this, 'calendar' ) );
 		add_shortcode( 'luma_event', array( $this, 'event' ) );
+		add_shortcode( 'luma_featured', array( $this, 'featured' ) );
+		add_shortcode( 'luma_countdown', array( $this, 'countdown' ) );
 	}
 
 	/**
@@ -94,5 +96,27 @@ class Shortcodes {
 	public function event( $atts ) {
 		$atts = shortcode_atts( array( 'id' => '' ), $atts, 'luma_event' );
 		return $this->renderer->event( array( 'id' => sanitize_text_field( $atts['id'] ) ) );
+	}
+
+	/**
+	 * `[luma_featured id=""]` — hero for the next (or a chosen) event.
+	 *
+	 * @param array|string $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function featured( $atts ) {
+		$atts = shortcode_atts( array( 'id' => '' ), $atts, 'luma_featured' );
+		return $this->renderer->featured( array( 'id' => sanitize_text_field( $atts['id'] ) ) );
+	}
+
+	/**
+	 * `[luma_countdown id=""]` — live countdown to the next (or a chosen) event.
+	 *
+	 * @param array|string $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function countdown( $atts ) {
+		$atts = shortcode_atts( array( 'id' => '' ), $atts, 'luma_countdown' );
+		return $this->renderer->countdown( array( 'id' => sanitize_text_field( $atts['id'] ) ) );
 	}
 }

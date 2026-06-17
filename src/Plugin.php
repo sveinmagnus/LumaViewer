@@ -31,6 +31,7 @@ use LumaViewer\Update\Updater;
 use LumaViewer\View\Formatter;
 use LumaViewer\View\Renderer;
 use LumaViewer\View\TemplateLoader;
+use LumaViewer\Widgets\UpcomingWidget;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -101,6 +102,14 @@ final class Plugin {
 		( new Webhook( $cache, $limiter ) )->register();
 		( new Updater() )->register();
 		( new Patterns() )->register();
+
+		UpcomingWidget::set_renderer( $renderer );
+		add_action(
+			'widgets_init',
+			static function () {
+				register_widget( UpcomingWidget::class );
+			}
+		);
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			( new Commands( $repository, $cache ) )->register();

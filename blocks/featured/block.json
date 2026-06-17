@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "luma-viewer/featured",
+	"version": "0.1.0",
+	"title": "Luma Featured Event",
+	"category": "widgets",
+	"icon": "star-filled",
+	"description": "Feature your next (or a chosen) Lu.ma event as a hero banner.",
+	"keywords": [ "luma", "event", "featured", "hero" ],
+	"textdomain": "luma-viewer",
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ]
+	},
+	"attributes": {
+		"id": { "type": "string", "default": "" }
+	},
+	"editorScript": "file:./index.js"
+}

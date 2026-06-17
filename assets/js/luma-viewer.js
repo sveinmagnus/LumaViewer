@@ -217,6 +217,32 @@
 		performFetch( container, url );
 	} );
 
+	// Live countdown(s).
+	function tickCountdowns() {
+		var els = document.querySelectorAll( '.luma-viewer__countdown[data-lv-start]' );
+		var now = Date.now();
+		els.forEach( function ( el ) {
+			var start = Date.parse( el.getAttribute( 'data-lv-start' ) );
+			if ( isNaN( start ) ) {
+				return;
+			}
+			var diff = Math.floor( ( start - now ) / 1000 );
+			if ( diff <= 0 ) {
+				el.classList.add( 'is-live' );
+				el.textContent = el.getAttribute( 'data-lv-live' ) || 'Happening now';
+				return;
+			}
+			var d = Math.floor( diff / 86400 );
+			var h = Math.floor( ( diff % 86400 ) / 3600 );
+			var m = Math.floor( ( diff % 3600 ) / 60 );
+			var s = diff % 60;
+			el.textContent = d + 'd ' + h + 'h ' + m + 'm ' + s + 's';
+		} );
+	}
+	setInterval( tickCountdowns, 1000 );
+	tickCountdowns();
+	document.addEventListener( 'luma-viewer:rendered', tickCountdowns );
+
 	// Date-range inputs re-fetch on change.
 	document.addEventListener( 'change', function ( event ) {
 		if ( ! event.target.classList.contains( 'luma-viewer__date' ) ) {

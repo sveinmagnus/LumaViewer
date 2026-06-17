@@ -596,4 +596,88 @@
 	.luma-viewer__cell-events .luma-viewer__cell-event {
 		font-size: 0.65em;
 	}
+
+	.luma-viewer__hero-title {
+		font-size: 1.6rem;
+	}
+}
+
+/* Featured hero ----------------------------------------------------------- */
+.luma-viewer__hero {
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	min-height: 320px;
+	overflow: hidden;
+	border-radius: var(--lv-radius);
+	background: var(--lv-border);
+}
+
+.luma-viewer__hero-bg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.luma-viewer__hero-inner {
+	position: relative;
+	width: 100%;
+	padding: 1.5rem;
+	color: #fff;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.1) 70%, transparent);
+}
+
+.luma-viewer__hero-when {
+	margin: 0 0 0.35rem;
+	font-size: 0.9rem;
+	opacity: 0.9;
+}
+
+.luma-viewer__hero-rel {
+	margin-left: 0.5rem;
+	opacity: 0.85;
+}
+
+.luma-viewer__hero-title {
+	margin: 0 0 0.35rem;
+	font-size: 2rem;
+	line-height: 1.15;
+	color: #fff;
+}
+
+.luma-viewer__hero-where {
+	margin: 0 0 0.75rem;
+	opacity: 0.9;
+}
+
+.luma-viewer__hero .luma-viewer__button--primary {
+	background: var(--lv-accent);
+	border-color: var(--lv-accent);
+	color: #fff;
+}
+
+/* Countdown --------------------------------------------------------------- */
+.luma-viewer__cd {
+	text-align: center;
+	padding: var(--lv-gap);
+	border: 1px solid var(--lv-border);
+	border-radius: var(--lv-radius);
+}
+
+.luma-viewer__cd-name {
+	margin: 0 0 0.5rem;
+	font-weight: 600;
+}
+
+.luma-viewer__countdown {
+	font-size: 1.75rem;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+	color: var(--lv-accent);
+}
+
+.luma-viewer__countdown.is-live {
+	color: inherit;
 }

@@ -12,6 +12,8 @@ module.exports = {
 	entry: {
 		'calendar/index': path.resolve( process.cwd(), 'blocks', 'calendar', 'index.js' ),
 		'event/index': path.resolve( process.cwd(), 'blocks', 'event', 'index.js' ),
+		'featured/index': path.resolve( process.cwd(), 'blocks', 'featured', 'index.js' ),
+		'countdown/index': path.resolve( process.cwd(), 'blocks', 'countdown', 'index.js' ),
 	},
 	output: {
 		...defaultConfig.output,
@@ -23,6 +25,8 @@ module.exports = {
 			patterns: [
 				{ from: 'blocks/calendar/block.json', to: 'calendar/block.json' },
 				{ from: 'blocks/event/block.json', to: 'event/block.json' },
+				{ from: 'blocks/featured/block.json', to: 'featured/block.json' },
+				{ from: 'blocks/countdown/block.json', to: 'countdown/block.json' },
 			],
 		} ),
 	],

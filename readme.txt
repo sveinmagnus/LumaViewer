@@ -8,7 +8,7 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Show a Lu.ma calendar on your site with List, Week, Month, Day, Photo and Summary views, blocks, Elementor widgets and membership-aware access.
+Show a Lu.ma calendar on your site with List, Week, Month, Day, Photo, Summary and Map views, blocks, Elementor widgets and membership-aware access.
 
 == Description ==
 
@@ -18,7 +18,14 @@ blocks, and Elementor widgets. It is read-only: events are fetched from the Luma
 API and cached, and visitors register on Luma via deep links.
 
 **Views:** List (cards / compact / minimal layouts, grouped by day or month),
-Week, Month, Day, Photo, Summary, and single-event pages.
+Week, Month, Day, Photo, Summary, Map (lazy-loaded OpenStreetMap), and
+single-event pages. A search + tag filter bar, past-events toggle, date-range
+and "load more" controls are available too.
+
+**Blocks & widgets:** Gutenberg blocks for the calendar, a single event, a
+featured-event hero, and a live countdown; an Elementor calendar/event widget;
+and an "Upcoming Events" classic sidebar widget — plus the `[luma_calendar]`,
+`[luma_event]`, `[luma_featured]`, and `[luma_countdown]` shortcodes.
 
 **Membership access (optional, requires MemberPress):** map Luma event
 categories (tags) to MemberPress memberships. Events in a mapped category are
@@ -62,10 +69,12 @@ Registration happens on Luma; the plugin links out to each event's Luma page.
 == Changelog ==
 
 = 0.1.0 =
-* Initial release: List/Week/Month/Day/Photo/Summary views, single-event pages,
-  Gutenberg blocks, Elementor widgets, MemberPress category access, caching with
-  cron pre-warm and webhook invalidation, and a rate-limited REST endpoint for
-  AJAX navigation.
+* Initial release: List/Week/Month/Day/Photo/Summary/Map views, single-event
+  pages, filter bar, past-events and date-range controls, Gutenberg blocks
+  (calendar, event, featured hero, countdown), Elementor widgets, an Upcoming
+  Events sidebar widget, organization (multi-calendar) mode, MemberPress
+  category access, caching with cron pre-warm and webhook invalidation, and a
+  rate-limited REST endpoint for AJAX navigation.
 
 == Upgrade Notice ==
 

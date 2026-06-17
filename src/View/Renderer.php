@@ -310,6 +310,85 @@ class Renderer {
 	}
 
 	/**
+	 * Render a single "featured" event (hero).
+	 *
+	 * @param array $atts Attributes; supports `id` (optional event id, defaults to the next upcoming event).
+	 * @return string
+	 */
+	public function featured( array $atts ) {
+		$lead = $this->lead_event( $atts );
+
+		wp_enqueue_style( 'luma-viewer' );
+
+		$body = $this->loader->capture(
+			'featured',
+			array(
+				'event'     => $lead['event'],
+				'error'     => $lead['error'],
+				'formatter' => $this->formatter,
+			)
+		);
+
+		return sprintf( '<div class="luma-viewer luma-viewer--featured">%s</div>', $body );
+	}
+
+	/**
+	 * Render a countdown to a single event's start.
+	 *
+	 * @param array $atts Attributes; supports `id` (optional event id, defaults to the next upcoming event).
+	 * @return string
+	 */
+	public function countdown( array $atts ) {
+		$lead = $this->lead_event( $atts );
+
+		wp_enqueue_style( 'luma-viewer' );
+		wp_enqueue_script( 'luma-viewer' );
+
+		$body = $this->loader->capture(
+			'countdown',
+			array(
+				'event'     => $lead['event'],
+				'error'     => $lead['error'],
+				'formatter' => $this->formatter,
+			)
+		);
+
+		return sprintf( '<div class="luma-viewer luma-viewer--countdown">%s</div>', $body );
+	}
+
+	/**
+	 * Resolve the lead event for the featured/countdown views: an explicit id or
+	 * the next upcoming event. Gated (teaser/hidden) events are not featured.
+	 *
+	 * @param array $atts Attributes.
+	 * @return array{event:Event|null,error:\WP_Error|null}
+	 */
+	private function lead_event( array $atts ) {
+		$id = isset( $atts['id'] ) ? (string) $atts['id'] : '';
+		if ( '' !== $id ) {
+			$result = $this->repo->get_event( $id );
+			$event  = $result['event'];
+			$error  = $result['error'];
+		} else {
+			$result = $this->repo->get_events( array( 'count' => 1 ) );
+			$error  = $result['error'];
+			$event  = empty( $result['events'] ) ? null : $result['events'][0];
+		}
+
+		if ( $event && '' !== $event->id() && $this->gate->is_enabled() ) {
+			$decision = $this->gate->resolve( $event, get_current_user_id() );
+			if ( Gate::VISIBLE !== $decision ) {
+				$event = null;
+			}
+		}
+
+		return array(
+			'event' => $event,
+			'error' => $error,
+		);
+	}
+
+	/**
 	 * The URL for the "join / log in" call to action on gated events.
 	 *
 	 * @return string
