@@ -137,6 +137,53 @@
 	color: #fff;
 }
 
+/* Badges / hosts / excerpt ------------------------------------------------ */
+.luma-viewer__card-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin: 0 0 0.5rem;
+}
+
+.luma-viewer__badge {
+	font-size: 0.7em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	padding: 0.1rem 0.45rem;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.08);
+}
+
+.luma-viewer__badge--price {
+	background: rgba(26, 127, 55, 0.15);
+	color: #1a7f37;
+}
+
+.luma-viewer__badge--soldout {
+	background: rgba(179, 45, 46, 0.12);
+	color: #b32d2e;
+}
+
+.luma-viewer__badge--cancelled {
+	background: rgba(179, 45, 46, 0.12);
+	color: #b32d2e;
+	text-decoration: line-through;
+}
+
+.luma-viewer__card-hosts,
+.luma-viewer__single-hosts {
+	margin: 0 0 0.5rem;
+	font-size: 0.85em;
+	color: var(--lv-muted);
+}
+
+.luma-viewer__card-excerpt {
+	margin: 0 0 0.5rem;
+	font-size: 0.9em;
+	color: var(--lv-muted);
+}
+
 /* Month view -------------------------------------------------------------- */
 .luma-viewer__month-title {
 	margin: 0 0 0.75rem;

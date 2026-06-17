@@ -52,6 +52,21 @@ class Event {
 	/** @var string */
 	private $visibility = '';
 
+	/** @var array<int,array{name:string,avatar_url:string}> */
+	private $hosts = array();
+
+	/** @var bool|null Null when unknown. */
+	private $is_free = null;
+
+	/** @var string Best-effort price label, '' when unknown. */
+	private $price_label = '';
+
+	/** @var bool */
+	private $is_cancelled = false;
+
+	/** @var bool */
+	private $is_sold_out = false;
+
 	/**
 	 * Build from a list entry or a single-event response.
 	 *
@@ -77,6 +92,17 @@ class Event {
 		$self->location    = Location::from_event( $ev );
 		$self->tags        = self::normalize_tags( $tags );
 		$self->luma_url    = self::build_url( (string) ( $ev['url'] ?? '' ) );
+		$self->hosts       = self::normalize_hosts( $ev['hosts'] ?? array() );
+
+		// Status / pricing flags are best-effort: several candidate field names
+		// are checked and everything degrades to "unknown" (no badge) if absent.
+		// Verify the exact field names against the live API.
+		$self->is_cancelled = (bool) ( $ev['is_canceled'] ?? ( $ev['is_cancelled'] ?? ( 'canceled' === ( $ev['status'] ?? '' ) ) ) );
+		$self->is_sold_out  = (bool) ( $ev['is_sold_out'] ?? ( $ev['is_full'] ?? false ) );
+		if ( isset( $ev['is_free'] ) ) {
+			$self->is_free = (bool) $ev['is_free'];
+		}
+		$self->price_label = self::derive_price_label( $ev );
 
 		return $self;
 	}
@@ -133,6 +159,53 @@ class Event {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Normalize the hosts array.
+	 *
+	 * @param mixed $hosts Raw hosts.
+	 * @return array<int,array{name:string,avatar_url:string}>
+	 */
+	private static function normalize_hosts( $hosts ) {
+		$out = array();
+		if ( is_array( $hosts ) ) {
+			foreach ( $hosts as $host ) {
+				if ( ! is_array( $host ) ) {
+					continue;
+				}
+				$name = (string) ( $host['name'] ?? '' );
+				if ( '' === $name ) {
+					continue;
+				}
+				$out[] = array(
+					'name'       => $name,
+					'avatar_url' => (string) ( $host['avatar_url'] ?? ( $host['avatar'] ?? '' ) ),
+				);
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Best-effort price label, e.g. "From $20". Empty when unknown.
+	 *
+	 * @param array $ev Raw event object.
+	 * @return string
+	 */
+	private static function derive_price_label( array $ev ) {
+		$amount = $ev['min_price'] ?? ( $ev['price'] ?? null );
+		if ( null === $amount || '' === $amount || ! is_numeric( $amount ) ) {
+			return '';
+		}
+		$amount   = (float) $amount;
+		$currency = (string) ( $ev['currency'] ?? '' );
+		$money    = ( '' !== $currency ? $currency . ' ' : '' ) . rtrim( rtrim( number_format( $amount, 2 ), '0' ), '.' );
+
+		return isset( $ev['min_price'] )
+			/* translators: %s: formatted price. */
+			? sprintf( __( 'From %s', 'luma-viewer' ), $money )
+			: $money;
 	}
 
 	/** @return string */
@@ -208,5 +281,53 @@ class Event {
 	/** @return string */
 	public function visibility() {
 		return $this->visibility;
+	}
+
+	/** @return array<int,array{name:string,avatar_url:string}> */
+	public function hosts() {
+		return $this->hosts;
+	}
+
+	/**
+	 * Whether any price information is known (free flag or a price label).
+	 *
+	 * @return bool
+	 */
+	public function has_price_info() {
+		return null !== $this->is_free || '' !== $this->price_label;
+	}
+
+	/** @return bool */
+	public function is_free() {
+		return true === $this->is_free;
+	}
+
+	/** @return string */
+	public function price_label() {
+		return $this->price_label;
+	}
+
+	/** @return bool */
+	public function is_cancelled() {
+		return $this->is_cancelled;
+	}
+
+	/** @return bool */
+	public function is_sold_out() {
+		return $this->is_sold_out;
+	}
+
+	/**
+	 * A plain-text excerpt of the description.
+	 *
+	 * @param int $words Word count.
+	 * @return string
+	 */
+	public function excerpt( $words = 24 ) {
+		$text = trim( wp_strip_all_tags( $this->description ) );
+		if ( '' === $text ) {
+			return '';
+		}
+		return wp_trim_words( $text, max( 1, (int) $words ) );
 	}
 }

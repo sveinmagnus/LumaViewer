@@ -7,6 +7,8 @@
 
 namespace LumaViewer\Tests\Unit;
 
+use Brain\Monkey;
+use Brain\Monkey\Functions;
 use LumaViewer\Model\Event;
 use PHPUnit\Framework\TestCase;
 
@@ -15,6 +17,31 @@ use PHPUnit\Framework\TestCase;
  * @covers \LumaViewer\Model\Location
  */
 final class EventTest extends TestCase {
+
+	protected function setUp(): void {
+		parent::setUp();
+		Monkey\setUp();
+		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'wp_strip_all_tags' )->alias(
+			static function ( $text ) {
+				return trim( strip_tags( (string) $text ) );
+			}
+		);
+		Functions\when( 'wp_trim_words' )->alias(
+			static function ( $text, $num = 55 ) {
+				$words = preg_split( '/\s+/', trim( (string) $text ) );
+				if ( count( $words ) <= $num ) {
+					return implode( ' ', $words );
+				}
+				return implode( ' ', array_slice( $words, 0, $num ) ) . '…';
+			}
+		);
+	}
+
+	protected function tearDown(): void {
+		Monkey\tearDown();
+		parent::tearDown();
+	}
 
 	/**
 	 * A representative list-events entry (documented Luma shape).
@@ -117,6 +144,68 @@ final class EventTest extends TestCase {
 
 		$this->assertTrue( $location->is_online() );
 		$this->assertSame( '', $location->label() );
+	}
+
+	public function test_parses_hosts(): void {
+		$entry                    = $this->list_entry();
+		$entry['event']['hosts']  = array(
+			array(
+				'name'       => 'Ada',
+				'avatar_url' => 'https://img/ada.png',
+			),
+			array( 'name' => 'Grace' ),
+			array( 'avatar_url' => 'https://img/none.png' ), // no name -> skipped
+		);
+		$hosts = Event::from_entry( $entry )->hosts();
+
+		$this->assertCount( 2, $hosts );
+		$this->assertSame( 'Ada', $hosts[0]['name'] );
+		$this->assertSame( 'https://img/ada.png', $hosts[0]['avatar_url'] );
+		$this->assertSame( 'Grace', $hosts[1]['name'] );
+	}
+
+	public function test_free_flag(): void {
+		$entry                     = $this->list_entry();
+		$entry['event']['is_free'] = true;
+		$event                     = Event::from_entry( $entry );
+
+		$this->assertTrue( $event->is_free() );
+		$this->assertTrue( $event->has_price_info() );
+	}
+
+	public function test_min_price_label(): void {
+		$entry                       = $this->list_entry();
+		$entry['event']['min_price'] = 20;
+		$entry['event']['currency']  = 'USD';
+		$event                       = Event::from_entry( $entry );
+
+		$this->assertFalse( $event->is_free() );
+		$this->assertTrue( $event->has_price_info() );
+		$this->assertSame( 'From USD 20', $event->price_label() );
+	}
+
+	public function test_no_price_info_by_default(): void {
+		$event = Event::from_entry( $this->list_entry() );
+		$this->assertFalse( $event->has_price_info() );
+		$this->assertSame( '', $event->price_label() );
+	}
+
+	public function test_cancelled_and_sold_out_flags(): void {
+		$entry                          = $this->list_entry();
+		$entry['event']['is_canceled']  = true;
+		$entry['event']['is_sold_out']  = true;
+		$event                          = Event::from_entry( $entry );
+
+		$this->assertTrue( $event->is_cancelled() );
+		$this->assertTrue( $event->is_sold_out() );
+	}
+
+	public function test_excerpt_trims_words(): void {
+		$entry                         = $this->list_entry();
+		$entry['event']['description'] = 'one two three four five';
+		$event                         = Event::from_entry( $entry );
+
+		$this->assertSame( 'one two…', $event->excerpt( 2 ) );
 	}
 
 	public function test_accepts_bare_event_object(): void {

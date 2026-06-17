@@ -23,8 +23,10 @@ $layout  = ( ! empty( $layout ) && in_array( $layout, array( 'cards', 'compact',
 $is_full = ( 'cards' === $layout );
 $is_min  = ( 'minimal' === $layout );
 
-$location = $event->location();
-$classes  = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
+$location   = $event->location();
+$has_price  = $event->is_free() || '' !== $event->price_label();
+$has_badges = $event->is_cancelled() || $event->is_sold_out() || $has_price;
+$classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
 ?>
 <article class="<?php echo esc_attr( $classes ); ?>">
 	<?php if ( $is_full && '' !== $event->cover_url() ) : ?>
@@ -58,12 +60,35 @@ $classes  = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' lu
 			<?php endif; ?>
 		</h3>
 
+		<?php if ( ! $is_min && $has_badges ) : ?>
+			<p class="luma-viewer__card-badges">
+				<?php if ( $event->is_cancelled() ) : ?>
+					<span class="luma-viewer__badge luma-viewer__badge--cancelled"><?php esc_html_e( 'Cancelled', 'luma-viewer' ); ?></span>
+				<?php endif; ?>
+				<?php if ( $event->is_sold_out() ) : ?>
+					<span class="luma-viewer__badge luma-viewer__badge--soldout"><?php esc_html_e( 'Sold out', 'luma-viewer' ); ?></span>
+				<?php endif; ?>
+				<?php if ( $has_price ) : ?>
+					<span class="luma-viewer__badge luma-viewer__badge--price"><?php echo esc_html( $event->is_free() ? __( 'Free', 'luma-viewer' ) : $event->price_label() ); ?></span>
+				<?php endif; ?>
+			</p>
+		<?php endif; ?>
+
 		<?php if ( ! $is_min ) : ?>
 			<?php if ( $location->is_online() ) : ?>
 				<p class="luma-viewer__card-where luma-viewer__card-where--online"><?php esc_html_e( 'Online', 'luma-viewer' ); ?></p>
 			<?php elseif ( '' !== $location->label() ) : ?>
 				<p class="luma-viewer__card-where"><?php echo esc_html( $location->label() ); ?></p>
 			<?php endif; ?>
+		<?php endif; ?>
+
+		<?php if ( $is_full && ! empty( $event->hosts() ) ) : ?>
+			<p class="luma-viewer__card-hosts">
+				<?php
+				/* translators: %s: comma-separated host names. */
+				echo esc_html( sprintf( __( 'Hosted by %s', 'luma-viewer' ), implode( ', ', wp_list_pluck( $event->hosts(), 'name' ) ) ) );
+				?>
+			</p>
 		<?php endif; ?>
 
 		<?php if ( $is_full && ! empty( $event->tags() ) ) : ?>
@@ -77,6 +102,17 @@ $classes  = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' lu
 				<?php endforeach; ?>
 			</ul>
 		<?php endif; ?>
+
+		<?php
+		if ( $is_full && ! $teaser ) :
+			$excerpt = $event->excerpt();
+			if ( '' !== $excerpt ) :
+				?>
+				<p class="luma-viewer__card-excerpt"><?php echo esc_html( $excerpt ); ?></p>
+				<?php
+			endif;
+		endif;
+		?>
 
 		<?php if ( ! $is_min ) : ?>
 			<?php if ( $teaser ) : ?>

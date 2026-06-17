@@ -62,10 +62,33 @@ $location = $event->location();
 		</p>
 	<?php endif; ?>
 
+	<?php if ( $event->is_cancelled() || $event->is_sold_out() || $event->is_free() || '' !== $event->price_label() ) : ?>
+		<p class="luma-viewer__card-badges">
+			<?php if ( $event->is_cancelled() ) : ?>
+				<span class="luma-viewer__badge luma-viewer__badge--cancelled"><?php esc_html_e( 'Cancelled', 'luma-viewer' ); ?></span>
+			<?php endif; ?>
+			<?php if ( $event->is_sold_out() ) : ?>
+				<span class="luma-viewer__badge luma-viewer__badge--soldout"><?php esc_html_e( 'Sold out', 'luma-viewer' ); ?></span>
+			<?php endif; ?>
+			<?php if ( $event->is_free() || '' !== $event->price_label() ) : ?>
+				<span class="luma-viewer__badge luma-viewer__badge--price"><?php echo esc_html( $event->is_free() ? __( 'Free', 'luma-viewer' ) : $event->price_label() ); ?></span>
+			<?php endif; ?>
+		</p>
+	<?php endif; ?>
+
 	<?php if ( $location->is_online() ) : ?>
 		<p class="luma-viewer__single-where"><?php esc_html_e( 'Online', 'luma-viewer' ); ?></p>
 	<?php elseif ( '' !== $location->label() ) : ?>
 		<p class="luma-viewer__single-where"><?php echo esc_html( '' !== $location->address() ? $location->address() : $location->label() ); ?></p>
+	<?php endif; ?>
+
+	<?php if ( ! $teaser && ! empty( $event->hosts() ) ) : ?>
+		<p class="luma-viewer__single-hosts">
+			<?php
+			/* translators: %s: comma-separated host names. */
+			echo esc_html( sprintf( __( 'Hosted by %s', 'luma-viewer' ), implode( ', ', wp_list_pluck( $event->hosts(), 'name' ) ) ) );
+			?>
+		</p>
 	<?php endif; ?>
 
 	<?php if ( $teaser ) : ?>
