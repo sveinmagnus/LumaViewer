@@ -37,6 +37,10 @@ if ( empty( $markers ) ) {
 	echo '<p class="luma-viewer__empty">' . esc_html__( 'No events with a location to show on a map.', 'luma-viewer' ) . '</p>';
 	return;
 }
+
+$map_center  = (string) \LumaViewer\Settings::get( 'map_center' );
+$map_zoom    = (int) \LumaViewer\Settings::get( 'map_zoom' );
+$map_cluster = (bool) \LumaViewer\Settings::get( 'map_cluster' );
 ?>
-<div class="luma-viewer__map" role="application" aria-label="<?php echo esc_attr__( 'Map of upcoming events', 'luma-viewer' ); ?>" data-lv-markers="<?php echo esc_attr( (string) wp_json_encode( $markers ) ); ?>"></div>
+<div class="luma-viewer__map" role="application" aria-label="<?php echo esc_attr__( 'Map of upcoming events', 'luma-viewer' ); ?>" data-lv-markers="<?php echo esc_attr( (string) wp_json_encode( $markers ) ); ?>" data-lv-center="<?php echo esc_attr( $map_center ); ?>" data-lv-zoom="<?php echo esc_attr( (string) $map_zoom ); ?>" data-lv-cluster="<?php echo esc_attr( $map_cluster ? '1' : '' ); ?>"></div>
 <noscript><p class="luma-viewer__empty"><?php esc_html_e( 'Enable JavaScript to view the event map.', 'luma-viewer' ); ?></p></noscript>

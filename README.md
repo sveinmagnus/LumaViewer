@@ -24,9 +24,13 @@ Full steps: **[Installation guide](docs/installation.md)**.
 
 ## ✨ What you get
 
-- 📅 **Seven beautiful views** — **List, Week, Month, Day, Photo, Summary, and
-  Map** — and visitors can switch between them, search, filter, and browse dates
-  right on the page.
+- 📅 **Eight beautiful views** — **List, Week, Month, Day, Photo, Summary, Map,
+  and Carousel** — and visitors can switch between them, search, filter (by tag,
+  online/in-person, free/paid) and browse dates right on the page.
+- 🎛️ **Make it yours** — show or hide the cover, location, host, price,
+  excerpt, tags and dates; pick load-more or numbered pages; colour-code your
+  categories; and optionally open events in a **quick-view popup** instead of
+  leaving your site.
 - 🧩 **Works with your editor** — **Gutenberg blocks** (calendar, single event,
   featured hero, countdown), an **Elementor widget**, an **Upcoming Events**
   sidebar widget, and classic **shortcodes** — all with the same options and a
@@ -57,6 +61,7 @@ Full steps: **[Installation guide](docs/installation.md)**.
 | **Photo** | An eye-catching grid led by event cover images. |
 | **Summary** | A tidy, space-saving date-grouped list. |
 | **Map** | Venues plotted on a map (powered by OpenStreetMap). |
+| **Carousel** | A horizontally scrolling strip of upcoming events. |
 
 ## Add it to a page
 

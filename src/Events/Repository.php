@@ -151,6 +151,17 @@ class Repository {
 			$events = $this->keep_tagged( $events, $deny, false );
 		}
 
+		if ( ! (bool) Settings::get( 'show_cancelled', true ) ) {
+			$events = array_values(
+				array_filter(
+					$events,
+					static function ( Event $event ) {
+						return ! $event->is_cancelled();
+					}
+				)
+			);
+		}
+
 		if ( '' !== $args['tag'] ) {
 			$events = $this->filter_by_tag( $events, (string) $args['tag'] );
 		}

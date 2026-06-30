@@ -123,6 +123,8 @@ class SettingsPage {
 		add_settings_field( 'timezone_mode', __( 'Time zone', 'luma-viewer' ), array( $this, 'field_timezone_mode' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'link_target', __( 'Open Luma links', 'luma-viewer' ), array( $this, 'field_link_target' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'quickview', __( 'Quick view', 'luma-viewer' ), array( $this, 'field_quickview' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'show_cancelled', __( 'Cancelled events', 'luma-viewer' ), array( $this, 'field_show_cancelled' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'map_options', __( 'Map', 'luma-viewer' ), array( $this, 'field_map_options' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'empty_message', __( 'No-events message', 'luma-viewer' ), array( $this, 'field_empty_message' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'accent_color', __( 'Accent color', 'luma-viewer' ), array( $this, 'field_accent_color' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'cache_ttl', __( 'Cache lifetime', 'luma-viewer' ), array( $this, 'field_cache_ttl' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -136,6 +138,7 @@ class SettingsPage {
 
 		add_settings_section( 'luma_viewer_sync', __( 'Cache and sync', 'luma-viewer' ), array( $this, 'sync_intro' ), self::MENU_SLUG );
 		add_settings_field( 'status', __( 'Status', 'luma-viewer' ), array( $this, 'field_status' ), self::MENU_SLUG, 'luma_viewer_sync' );
+		add_settings_field( 'cron', __( 'Auto-refresh', 'luma-viewer' ), array( $this, 'field_cron' ), self::MENU_SLUG, 'luma_viewer_sync' );
 		add_settings_field( 'webhook', __( 'Luma webhook URL', 'luma-viewer' ), array( $this, 'field_webhook' ), self::MENU_SLUG, 'luma_viewer_sync' );
 		add_settings_field( 'clear_cache', __( 'Cached events', 'luma-viewer' ), array( $this, 'field_clear_cache' ), self::MENU_SLUG, 'luma_viewer_sync' );
 	}
@@ -218,8 +221,23 @@ class SettingsPage {
 			foreach ( array( 'show_cover', 'show_location', 'show_host', 'show_price', 'show_excerpt', 'show_tags', 'show_relative' ) as $flag ) {
 				$out[ $flag ] = ! empty( $input[ $flag ] );
 			}
-			$out['quickview'] = ! empty( $input['quickview'] );
+			$out['quickview']      = ! empty( $input['quickview'] );
+			$out['show_cancelled'] = ! empty( $input['show_cancelled'] );
+			$out['map_cluster']    = ! empty( $input['map_cluster'] );
 		}
+
+		if ( isset( $input['map_center'] ) ) {
+			$center            = trim( (string) $input['map_center'] );
+			$out['map_center'] = preg_match( '/^-?\d{1,3}(\.\d+)?\s*,\s*-?\d{1,3}(\.\d+)?$/', $center ) ? $center : '';
+		}
+		$out['map_zoom'] = isset( $input['map_zoom'] ) ? min( 19, max( 0, absint( $input['map_zoom'] ) ) ) : $current['map_zoom'];
+
+		if ( isset( $input['sync_submitted'] ) ) {
+			$out['disable_prewarm'] = ! empty( $input['disable_prewarm'] );
+		}
+		$out['cron_interval'] = ( isset( $input['cron_interval'] ) && in_array( $input['cron_interval'], array( 'fifteen_minutes', 'thirty_minutes', 'hourly' ), true ) )
+			? $input['cron_interval']
+			: $current['cron_interval'];
 
 		$out['excerpt_words'] = isset( $input['excerpt_words'] ) ? min( 200, max( 1, absint( $input['excerpt_words'] ) ) ) : $current['excerpt_words'];
 		$out['date_format']   = isset( $input['date_format'] ) ? sanitize_text_field( $input['date_format'] ) : $current['date_format'];
@@ -680,6 +698,50 @@ class SettingsPage {
 	}
 
 	/**
+	 * Show-cancelled toggle.
+	 *
+	 * @return void
+	 */
+	public function field_show_cancelled() {
+		printf(
+			'<label><input type="checkbox" name="%1$s[show_cancelled]" value="1"%2$s /> %3$s</label>',
+			esc_attr( Settings::OPTION ),
+			checked( (bool) Settings::get( 'show_cancelled', true ), true, false ),
+			esc_html__( 'Show events that have been cancelled in Luma (with a "Cancelled" badge).', 'luma-viewer' )
+		);
+		echo '<p class="description">' . esc_html__( 'Uncheck to hide cancelled events everywhere.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Map default center / zoom / clustering.
+	 *
+	 * @return void
+	 */
+	public function field_map_options() {
+		printf(
+			'<label>%2$s <input type="text" name="%1$s[map_center]" value="%3$s" class="regular-text" placeholder="59.913, 10.752" style="max-width:180px" /></label>',
+			esc_attr( Settings::OPTION ),
+			esc_html__( 'Center (lat, lng):', 'luma-viewer' ),
+			esc_attr( (string) Settings::get( 'map_center' ) )
+		);
+		echo '<br /><br />';
+		printf(
+			'<label>%2$s <input type="number" min="0" max="19" name="%1$s[map_zoom]" value="%3$d" class="small-text" /></label>',
+			esc_attr( Settings::OPTION ),
+			esc_html__( 'Zoom (0–19, 0 = auto-fit):', 'luma-viewer' ),
+			(int) Settings::get( 'map_zoom' )
+		);
+		echo '<br /><br />';
+		printf(
+			'<label><input type="checkbox" name="%1$s[map_cluster]" value="1"%2$s /> %3$s</label>',
+			esc_attr( Settings::OPTION ),
+			checked( (bool) Settings::get( 'map_cluster' ), true, false ),
+			esc_html__( 'Group nearby markers into clusters', 'luma-viewer' )
+		);
+		echo '<p class="description">' . esc_html__( 'Leave the center blank to fit the map to the events automatically. Clustering loads a small extra library only on map pages.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
 	 * "No events" message field.
 	 *
 	 * @return void
@@ -856,6 +918,30 @@ class SettingsPage {
 	 */
 	public function sync_intro() {
 		echo '<p>' . esc_html__( 'Events are cached and refreshed automatically every 15 minutes. Use the webhook for instant updates, or clear the cache manually.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Auto-refresh interval + disable toggle.
+	 *
+	 * @return void
+	 */
+	public function field_cron() {
+		printf( '<input type="hidden" name="%s[sync_submitted]" value="1" />', esc_attr( Settings::OPTION ) );
+
+		$value = (string) Settings::get( 'cron_interval' );
+		$opts  = array(
+			'fifteen_minutes' => __( 'Every 15 minutes', 'luma-viewer' ),
+			'thirty_minutes'  => __( 'Every 30 minutes', 'luma-viewer' ),
+			'hourly'          => __( 'Hourly', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[cron_interval]">';
+		foreach ( $opts as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+		echo '<p><label><input type="checkbox" name="' . esc_attr( Settings::OPTION ) . '[disable_prewarm]" value="1"' . checked( (bool) Settings::get( 'disable_prewarm' ), true, false ) . ' /> '
+			. esc_html__( 'Disable scheduled pre-warming (fetch on demand only)', 'luma-viewer' ) . '</label></p>';
+		echo '<p class="description">' . esc_html__( 'How often the cache is refreshed in the background. Disabling pre-warm means the first visitor after the cache expires waits for Luma.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**

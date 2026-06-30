@@ -6,9 +6,12 @@ through one shared engine.
 ## Gutenberg blocks
 
 - **Luma Calendar** — insert it and use the block sidebar to set the view
-  (including Map), category (tag), number of events, anchor date, list layout,
-  grouping, calendar, filter bar, and past/upcoming. The editor shows a live
-  server-rendered preview.
+  (including Map and Carousel), category, number of events, anchor date, list
+  layout, grouping, calendar, filter bar, past/upcoming, pagination style, and
+  quick view. A **Filtering & order** panel adds sort order, online/in-person,
+  free/paid, multi-tag, offset and date range; a **Card elements** panel toggles
+  the cover, location, host, price, excerpt, tags, relative date and excerpt
+  length. The editor shows a live server-rendered preview.
 - **Luma Event** — set an event ID to embed a single event.
 - **Luma Featured Event** — a hero banner. Leave the ID blank to feature the
   next upcoming event automatically.

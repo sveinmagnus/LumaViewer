@@ -8,9 +8,65 @@
 	'use strict';
 
 	var loading = false;
+	var clusterLoading = false;
 
 	function config() {
 		return ( window.lumaViewerMap && window.lumaViewerMap.leaflet ) || {};
+	}
+
+	function clusterReady() {
+		return (
+			typeof window.L !== 'undefined' &&
+			typeof window.L.markerClusterGroup === 'function'
+		);
+	}
+
+	function parseCenter( value ) {
+		if ( ! value ) {
+			return null;
+		}
+		var parts = value.split( ',' );
+		if ( parts.length !== 2 ) {
+			return null;
+		}
+		var lat = parseFloat( parts[ 0 ] );
+		var lng = parseFloat( parts[ 1 ] );
+		if ( isNaN( lat ) || isNaN( lng ) ) {
+			return null;
+		}
+		return [ lat, lng ];
+	}
+
+	function ensureCluster( done ) {
+		if ( clusterReady() ) {
+			done();
+			return;
+		}
+		if ( clusterLoading ) {
+			return;
+		}
+		var urls = config();
+		if ( ! urls.cluster_js ) {
+			done();
+			return;
+		}
+		clusterLoading = true;
+		[ urls.cluster_css, urls.cluster_css_default ].forEach( function ( href ) {
+			if ( ! href ) {
+				return;
+			}
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.href = href;
+			document.head.appendChild( link );
+		} );
+		var script = document.createElement( 'script' );
+		script.src = urls.cluster_js;
+		script.onload = function () {
+			clusterLoading = false;
+			done();
+		};
+		document.head.appendChild( script );
 	}
 
 	function escapeHtml( value ) {
@@ -27,6 +83,12 @@
 
 	function renderMap( el ) {
 		if ( el.dataset.lvMapReady || typeof window.L === 'undefined' ) {
+			return;
+		}
+		var wantsCluster = el.getAttribute( 'data-lv-cluster' ) === '1';
+		// Defer until the cluster plugin has loaded, then re-render.
+		if ( wantsCluster && ! clusterReady() ) {
+			ensureCluster( renderAll );
 			return;
 		}
 		var markers;
@@ -46,6 +108,7 @@
 			attribution: '&copy; OpenStreetMap contributors',
 		} ).addTo( map );
 
+		var group = wantsCluster && clusterReady() ? window.L.markerClusterGroup() : null;
 		var bounds = [];
 		markers.forEach( function ( m ) {
 			if ( typeof m.lat !== 'number' || typeof m.lng !== 'number' ) {
@@ -61,11 +124,25 @@
 					encodeURI( m.url ) +
 					'" target="_blank" rel="noopener noreferrer">Luma</a>';
 			}
-			window.L.marker( [ m.lat, m.lng ] ).addTo( map ).bindPopup( html );
+			var marker = window.L.marker( [ m.lat, m.lng ] ).bindPopup( html );
+			if ( group ) {
+				group.addLayer( marker );
+			} else {
+				marker.addTo( map );
+			}
 			bounds.push( [ m.lat, m.lng ] );
 		} );
-		if ( bounds.length ) {
-			map.fitBounds( bounds, { padding: [ 30, 30 ], maxZoom: 15 } );
+		if ( group ) {
+			map.addLayer( group );
+		}
+
+		// A configured center/zoom overrides the automatic fit-to-markers.
+		var center = parseCenter( el.getAttribute( 'data-lv-center' ) );
+		var zoom = parseInt( el.getAttribute( 'data-lv-zoom' ) || '0', 10 ) || 0;
+		if ( center ) {
+			map.setView( center, zoom || 13 );
+		} else if ( bounds.length ) {
+			map.fitBounds( bounds, { padding: [ 30, 30 ], maxZoom: zoom || 15 } );
 		}
 	}
 

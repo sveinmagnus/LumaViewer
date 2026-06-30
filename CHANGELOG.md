@@ -10,8 +10,11 @@ All notable changes to this project are documented here. The format is based on
 
 Initial release.
 
-- Views: List (cards / compact / minimal layouts, grouped by day, month, or none), Week, Month, Day, Photo, Summary, Map (lazy-loaded OpenStreetMap), and single-event pages.
-- Search + tag filter bar, past-events toggle, date-range and offset controls, and "load more" — all progressively enhanced.
+- Views: List (cards / compact / minimal layouts, grouped by day, month, or none), Week, Month, Day, Photo, Summary, Map (lazy-loaded OpenStreetMap, optional center/zoom/clustering), Carousel, and single-event pages.
+- Filtering: search, tag chips, multi-tag, online/in-person, free/paid, past-events toggle, date-range, offset, and sort order — all progressively enhanced.
+- Pagination as a "load more" button or numbered pages; optional quick-view popup that opens an event summary without leaving the site.
+- Configurable display: per-element card toggles (cover, location, host, price, excerpt, tags, relative date), excerpt length, date/time format, link target, category colors, tag allow/deny, and a custom empty-state message — as global defaults and per-instance overrides.
+- Configurable background refresh interval (15/30/60 min) with an option to disable pre-warming, and a show/hide toggle for cancelled events.
 - Gutenberg blocks: Luma Calendar, Luma Event, Luma Featured Event (hero), and Luma Event Countdown (dynamic, with editor previews).
 - Elementor widgets mirroring the block options.
 - "Luma: Upcoming Events" classic sidebar widget.

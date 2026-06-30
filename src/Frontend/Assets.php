@@ -81,8 +81,11 @@ class Assets {
 		$leaflet = apply_filters(
 			'luma_viewer_leaflet_assets',
 			array(
-				'css' => 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-				'js'  => 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+				'css'                 => 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+				'js'                  => 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+				'cluster_css'         => 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css',
+				'cluster_css_default' => 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css',
+				'cluster_js'          => 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js',
 			)
 		);
 		wp_localize_script( 'luma-viewer-map', 'lumaViewerMap', array( 'leaflet' => $leaflet ) );

@@ -18,8 +18,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class Cron {
 
-	const HOOK     = 'luma_viewer_refresh_cache';
-	const INTERVAL = 'luma_viewer_quarter_hour';
+	const HOOK        = 'luma_viewer_refresh_cache';
+	const INTERVAL    = 'luma_viewer_quarter_hour';
+	const INTERVAL_30 = 'luma_viewer_half_hour';
 
 	/** @var Repository */
 	private $repo;
@@ -45,27 +46,65 @@ class Cron {
 	}
 
 	/**
-	 * Add a 15-minute cron interval.
+	 * Add the 15- and 30-minute cron intervals.
 	 *
 	 * @param array $schedules Existing schedules.
 	 * @return array
 	 */
 	public function add_interval( $schedules ) {
-		$schedules[ self::INTERVAL ] = array(
+		$schedules[ self::INTERVAL ]    = array(
 			'interval' => 15 * MINUTE_IN_SECONDS,
 			'display'  => __( 'Every 15 minutes (Luma-viewer)', 'luma-viewer' ),
+		);
+		$schedules[ self::INTERVAL_30 ] = array(
+			'interval' => 30 * MINUTE_IN_SECONDS,
+			'display'  => __( 'Every 30 minutes (Luma-viewer)', 'luma-viewer' ),
 		);
 		return $schedules;
 	}
 
 	/**
-	 * Schedule the refresh event if it isn't already.
+	 * The WP-Cron recurrence name for the configured interval.
+	 *
+	 * @return string
+	 */
+	private function schedule_name() {
+		switch ( (string) Settings::get( 'cron_interval' ) ) {
+			case 'hourly':
+				return 'hourly';
+			case 'thirty_minutes':
+				return self::INTERVAL_30;
+			default:
+				return self::INTERVAL;
+		}
+	}
+
+	/**
+	 * Schedule (or reschedule) the refresh event to match the settings, or clear
+	 * it when pre-warming is disabled.
 	 *
 	 * @return void
 	 */
 	public function maybe_schedule() {
-		if ( ! wp_next_scheduled( self::HOOK ) ) {
-			wp_schedule_event( time() + MINUTE_IN_SECONDS, self::INTERVAL, self::HOOK );
+		if ( (bool) Settings::get( 'disable_prewarm' ) ) {
+			$timestamp = wp_next_scheduled( self::HOOK );
+			if ( $timestamp ) {
+				wp_unschedule_event( $timestamp, self::HOOK );
+			}
+			return;
+		}
+
+		$desired = $this->schedule_name();
+		$current = wp_get_schedule( self::HOOK );
+
+		if ( false === $current ) {
+			wp_schedule_event( time() + MINUTE_IN_SECONDS, $desired, self::HOOK );
+		} elseif ( $current !== $desired ) {
+			$timestamp = wp_next_scheduled( self::HOOK );
+			if ( $timestamp ) {
+				wp_unschedule_event( $timestamp, self::HOOK );
+			}
+			wp_schedule_event( time() + MINUTE_IN_SECONDS, $desired, self::HOOK );
 		}
 	}
 
