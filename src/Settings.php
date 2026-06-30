@@ -39,6 +39,7 @@ class Settings {
 			'time_format'      => '',
 			'accent_color'     => '',
 			'link_target'      => '_blank',
+			'quickview'        => false,
 			'empty_message'    => '',
 			'excerpt_words'    => 25,
 			'show_cover'       => true,

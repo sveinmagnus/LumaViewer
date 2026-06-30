@@ -22,6 +22,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		filters,
 		past,
 		pagination,
+		quickview,
 		offset,
 		from,
 		to,
@@ -134,6 +135,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Numbered pages', 'luma-viewer' ), value: 'numbers' },
 						] }
 						onChange={ ( value ) => setAttributes( { pagination: value } ) }
+					/>
+					<ToggleControl
+						label={ __( 'Quick view', 'luma-viewer' ) }
+						checked={ !! quickview }
+						onChange={ ( value ) => setAttributes( { quickview: value } ) }
+						help={ __( 'Open an event summary in a popup instead of leaving the page.', 'luma-viewer' ) }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Filtering & order', 'luma-viewer' ) } initialOpen={ false }>

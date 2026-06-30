@@ -122,6 +122,7 @@ class SettingsPage {
 		add_settings_field( 'date_time_format', __( 'Date &amp; time format', 'luma-viewer' ), array( $this, 'field_date_time_format' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'timezone_mode', __( 'Time zone', 'luma-viewer' ), array( $this, 'field_timezone_mode' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'link_target', __( 'Open Luma links', 'luma-viewer' ), array( $this, 'field_link_target' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'quickview', __( 'Quick view', 'luma-viewer' ), array( $this, 'field_quickview' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'empty_message', __( 'No-events message', 'luma-viewer' ), array( $this, 'field_empty_message' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'accent_color', __( 'Accent color', 'luma-viewer' ), array( $this, 'field_accent_color' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'cache_ttl', __( 'Cache lifetime', 'luma-viewer' ), array( $this, 'field_cache_ttl' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -217,6 +218,7 @@ class SettingsPage {
 			foreach ( array( 'show_cover', 'show_location', 'show_host', 'show_price', 'show_excerpt', 'show_tags', 'show_relative' ) as $flag ) {
 				$out[ $flag ] = ! empty( $input[ $flag ] );
 			}
+			$out['quickview'] = ! empty( $input['quickview'] );
 		}
 
 		$out['excerpt_words'] = isset( $input['excerpt_words'] ) ? min( 200, max( 1, absint( $input['excerpt_words'] ) ) ) : $current['excerpt_words'];
@@ -660,6 +662,21 @@ class SettingsPage {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
+	}
+
+	/**
+	 * Quick-view toggle.
+	 *
+	 * @return void
+	 */
+	public function field_quickview() {
+		printf(
+			'<label><input type="checkbox" name="%1$s[quickview]" value="1"%2$s /> %3$s</label>',
+			esc_attr( Settings::OPTION ),
+			checked( (bool) Settings::get( 'quickview' ), true, false ),
+			esc_html__( 'Open an event summary in a popup when a card is clicked, instead of leaving for Luma.', 'luma-viewer' )
+		);
+		echo '<p class="description">' . esc_html__( 'Blocks, widgets and shortcodes can also enable this per instance.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**

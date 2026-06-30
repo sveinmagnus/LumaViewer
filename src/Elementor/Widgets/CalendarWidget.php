@@ -183,6 +183,14 @@ class CalendarWidget extends Widget_Base {
 				),
 			)
 		);
+		$this->add_control(
+			'quickview',
+			array(
+				'label'       => __( 'Quick view', 'luma-viewer' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'description' => __( 'Open an event summary in a popup instead of leaving the page.', 'luma-viewer' ),
+			)
+		);
 
 		$this->end_controls_section();
 
@@ -330,6 +338,7 @@ class CalendarWidget extends Widget_Base {
 			'filters'       => ( isset( $settings['filters'] ) && 'yes' === $settings['filters'] ) ? 'true' : '',
 			'past'          => ( isset( $settings['past'] ) && 'yes' === $settings['past'] ) ? 'true' : '',
 			'pagination'    => isset( $settings['pagination'] ) ? sanitize_key( (string) $settings['pagination'] ) : '',
+			'quickview'     => ( isset( $settings['quickview'] ) && 'yes' === $settings['quickview'] ) ? 'true' : '',
 			'order'         => isset( $settings['order'] ) ? sanitize_key( (string) $settings['order'] ) : '',
 			'online'        => isset( $settings['online'] ) ? sanitize_key( (string) $settings['online'] ) : '',
 			'free'          => isset( $settings['free'] ) ? sanitize_key( (string) $settings['free'] ) : '',

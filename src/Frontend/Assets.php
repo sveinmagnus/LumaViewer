@@ -56,8 +56,13 @@ class Assets {
 			'luma-viewer',
 			'lumaViewer',
 			array(
-				'rest'  => esc_url_raw( rest_url( 'lumaviewer/v1/events' ) ),
-				'nonce' => wp_create_nonce( 'wp_rest' ),
+				'rest'      => esc_url_raw( rest_url( 'lumaviewer/v1/events' ) ),
+				'restEvent' => esc_url_raw( rest_url( 'lumaviewer/v1/event' ) ),
+				'nonce'     => wp_create_nonce( 'wp_rest' ),
+				'i18n'      => array(
+					'loading' => __( 'Loading…', 'luma-viewer' ),
+					'close'   => __( 'Close', 'luma-viewer' ),
+				),
 			)
 		);
 

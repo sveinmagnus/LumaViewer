@@ -37,6 +37,7 @@
 		var past = container.getAttribute( 'data-lv-past' ) || '';
 		var from = container.getAttribute( 'data-lv-from' ) || '';
 		var to = container.getAttribute( 'data-lv-to' ) || '';
+		var quickview = container.getAttribute( 'data-lv-quickview' ) || '';
 		var pagination = container.getAttribute( 'data-lv-pagination' ) || '';
 		var order = container.getAttribute( 'data-lv-order' ) || '';
 		var online = container.getAttribute( 'data-lv-online' ) || '';
@@ -95,6 +96,9 @@
 		}
 		if ( offsetAttr && offsetAttr !== '0' ) {
 			url.searchParams.set( 'offset', offsetAttr );
+		}
+		if ( quickview ) {
+			url.searchParams.set( 'quickview', quickview );
 		}
 		if ( pagination ) {
 			url.searchParams.set( 'pagination', pagination );
@@ -311,6 +315,113 @@
 	setInterval( tickCountdowns, 1000 );
 	tickCountdowns();
 	document.addEventListener( 'luma-viewer:rendered', tickCountdowns );
+
+	// Quick-view modal --------------------------------------------------------
+	var modal = null;
+	var modalBody = null;
+	var lastFocus = null;
+
+	function strings() {
+		return config().i18n || {};
+	}
+
+	function ensureModal() {
+		if ( modal ) {
+			return modal;
+		}
+		modal = document.createElement( 'div' );
+		modal.className = 'luma-viewer__modal';
+		modal.setAttribute( 'hidden', '' );
+		modal.innerHTML =
+			'<div class="luma-viewer__modal-backdrop" data-lv-close></div>' +
+			'<div class="luma-viewer__modal-box" role="dialog" aria-modal="true">' +
+			'<button type="button" class="luma-viewer__modal-close" data-lv-close aria-label="' +
+			( strings().close || 'Close' ) +
+			'">&times;</button>' +
+			'<div class="luma-viewer__modal-body" aria-live="polite"></div>' +
+			'</div>';
+		document.body.appendChild( modal );
+		modalBody = modal.querySelector( '.luma-viewer__modal-body' );
+
+		modal.addEventListener( 'click', function ( event ) {
+			if ( event.target.closest( '[data-lv-close]' ) ) {
+				closeModal();
+			}
+		} );
+		return modal;
+	}
+
+	function closeModal() {
+		if ( ! modal || modal.hasAttribute( 'hidden' ) ) {
+			return;
+		}
+		modal.setAttribute( 'hidden', '' );
+		document.body.classList.remove( 'luma-viewer-modal-open' );
+		if ( lastFocus && typeof lastFocus.focus === 'function' ) {
+			lastFocus.focus();
+		}
+	}
+
+	function openQuickView( id, opener ) {
+		var endpoint = config().restEvent;
+		if ( ! endpoint || ! id ) {
+			return;
+		}
+		lastFocus = opener || null;
+		ensureModal();
+		modalBody.textContent = strings().loading || 'Loading…';
+		modal.removeAttribute( 'hidden' );
+		document.body.classList.add( 'luma-viewer-modal-open' );
+		var closeBtn = modal.querySelector( '.luma-viewer__modal-close' );
+		if ( closeBtn ) {
+			closeBtn.focus();
+		}
+
+		var url = new URL( endpoint, window.location.origin );
+		url.searchParams.set( 'id', id );
+		var headers = { Accept: 'application/json' };
+		if ( config().nonce ) {
+			headers[ 'X-WP-Nonce' ] = config().nonce;
+		}
+		fetch( url.toString(), { credentials: 'same-origin', headers: headers } )
+			.then( function ( response ) {
+				return response.json();
+			} )
+			.then( function ( data ) {
+				if ( data && data.html ) {
+					modalBody.innerHTML = data.html;
+				} else {
+					closeModal();
+				}
+			} )
+			.catch( closeModal );
+	}
+
+	// Intercept card clicks inside quick-view-enabled calendars.
+	document.addEventListener( 'click', function ( event ) {
+		var link = event.target.closest( '.luma-viewer__card a, .luma-viewer__cell-event' );
+		if ( ! link || ! link.getAttribute( 'href' ) ) {
+			return;
+		}
+		var container = link.closest( '.luma-viewer' );
+		if ( ! container || container.getAttribute( 'data-lv-quickview' ) !== '1' ) {
+			return;
+		}
+		var card = link.closest( '[data-lv-id]' );
+		var id = card ? card.getAttribute( 'data-lv-id' ) : '';
+		// Teaser cards link to the gate, not Luma — leave those alone.
+		if ( ! id || ( card && card.classList.contains( 'luma-viewer__card--teaser' ) ) ) {
+			return;
+		}
+		event.preventDefault();
+		openQuickView( id, link );
+	} );
+
+	document.addEventListener( 'keydown', function ( event ) {
+		if ( 'Escape' === event.key ) {
+			closeModal();
+		}
+	} );
 
 	// Carousel arrows scroll the track (local, no fetch).
 	document.addEventListener( 'click', function ( event ) {

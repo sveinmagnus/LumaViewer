@@ -756,3 +756,54 @@
 	border-color: var(--lv-accent);
 	color: #fff;
 }
+
+/* Quick-view modal -------------------------------------------------------- */
+.luma-viewer__modal[hidden] {
+	display: none;
+}
+
+.luma-viewer__modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+}
+
+.luma-viewer__modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.luma-viewer__modal-box {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 640px;
+	max-height: 85vh;
+	overflow-y: auto;
+	padding: 1.5rem;
+	background: var(--lv-modal-bg, #fff);
+	border-radius: var(--lv-radius);
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.luma-viewer__modal-close {
+	position: absolute;
+	top: 0.4rem;
+	right: 0.6rem;
+	width: 2rem;
+	height: 2rem;
+	border: 0;
+	background: transparent;
+	font-size: 1.6rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+body.luma-viewer-modal-open {
+	overflow: hidden;
+}

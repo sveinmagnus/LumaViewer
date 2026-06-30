@@ -105,6 +105,9 @@ class Renderer {
 			? (string) $atts['pagination']
 			: (string) Settings::get( 'pagination', 'more' );
 
+		// Quick-view is enabled site-wide or per instance (enable-only).
+		$quickview = (bool) Settings::get( 'quickview', false ) || ( isset( $atts['quickview'] ) && $this->truthy( $atts['quickview'] ) );
+
 		$args   = array(
 			'count'    => $count,
 			'tag'      => $tag,
@@ -271,7 +274,8 @@ class Renderer {
 		// Filter + display state, threaded so AJAX re-renders (view switch, nav,
 		// load-more) preserve the configured options.
 		$data .= sprintf(
-			' data-lv-pagination="%s" data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			' data-lv-quickview="%s" data-lv-pagination="%s" data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			esc_attr( $quickview ? '1' : '' ),
 			esc_attr( $pagination ),
 			esc_attr( $resolved_order ),
 			esc_attr( $online ),

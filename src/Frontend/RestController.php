@@ -56,6 +56,22 @@ class RestController {
 	public function register_routes() {
 		register_rest_route(
 			self::NS,
+			'/event',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_event' ),
+				'permission_callback' => array( $this, 'can_read' ),
+				'args'                => array(
+					'id' => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			self::NS,
 			'/events',
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
@@ -113,6 +129,10 @@ class RestController {
 					'pagination'    => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
+					),
+					'quickview'     => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'order'         => array(
 						'type'              => 'string',
@@ -211,6 +231,7 @@ class RestController {
 			'from'          => (string) $request->get_param( 'from' ),
 			'to'            => (string) $request->get_param( 'to' ),
 			'pagination'    => (string) $request->get_param( 'pagination' ),
+			'quickview'     => (string) $request->get_param( 'quickview' ),
 			'order'         => (string) $request->get_param( 'order' ),
 			'online'        => (string) $request->get_param( 'online' ),
 			'free'          => (string) $request->get_param( 'free' ),
@@ -240,5 +261,17 @@ class RestController {
 		}
 
 		return new \WP_REST_Response( array( 'html' => $this->renderer->calendar( $atts ) ), 200 );
+	}
+
+	/**
+	 * Return the rendered summary for a single event (quick-view modal).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function get_event( \WP_REST_Request $request ) {
+		$id = (string) $request->get_param( 'id' );
+
+		return new \WP_REST_Response( array( 'html' => $this->renderer->event( array( 'id' => $id ) ) ), 200 );
 	}
 }
