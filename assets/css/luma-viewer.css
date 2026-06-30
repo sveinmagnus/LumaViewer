@@ -681,3 +681,14 @@
 .luma-viewer__countdown.is-live {
 	color: inherit;
 }
+
+/* Category colors --------------------------------------------------------- */
+.luma-viewer__tag--colored {
+	border-left: 3px solid var(--lv-tag, transparent);
+	padding-left: 0.4rem;
+}
+
+.luma-viewer__cell-event--colored {
+	border-left: 3px solid var(--lv-tag, transparent);
+	padding-left: 4px;
+}

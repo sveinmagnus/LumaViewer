@@ -102,13 +102,16 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 		<?php endif; ?>
 
 		<?php if ( $show( 'tags' ) && ! empty( $event->tags() ) ) : ?>
+			<?php $tag_colors = isset( $tag_colors ) && is_array( $tag_colors ) ? $tag_colors : array(); ?>
 			<ul class="luma-viewer__tags">
 				<?php foreach ( $event->tags() as $tag ) : ?>
 					<?php
 					if ( '' === $tag['name'] ) {
 						continue; }
+					$tag_color = isset( $tag_colors[ $tag['id'] ] ) ? $tag_colors[ $tag['id'] ] : '';
+					$tag_style = '' !== $tag_color ? ' style="--lv-tag:' . esc_attr( $tag_color ) . '"' : '';
 					?>
-					<li class="luma-viewer__tag"><?php echo esc_html( $tag['name'] ); ?></li>
+					<li class="luma-viewer__tag<?php echo '' !== $tag_color ? ' luma-viewer__tag--colored' : ''; ?>"<?php echo $tag_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value escaped above. ?>><?php echo esc_html( $tag['name'] ); ?></li>
 				<?php endforeach; ?>
 			</ul>
 		<?php endif; ?>

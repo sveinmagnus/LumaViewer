@@ -76,7 +76,8 @@ class Renderer {
 			? $atts['group_by']
 			: (string) Settings::get( 'default_group_by', 'day' );
 
-		$display = $this->display_config( $atts, $layout );
+		$display    = $this->display_config( $atts, $layout );
+		$tag_colors = $this->tag_colors();
 
 		$calendar     = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
 		$show_filters = isset( $atts['filters'] ) && in_array( (string) $atts['filters'], array( '1', 'true', 'yes', 'on' ), true );
@@ -199,7 +200,7 @@ class Renderer {
 		$cta_text  = (string) Settings::get( 'gate_cta_text' );
 		$cta_url   = $this->cta_url();
 
-		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url, $layout, $display ) {
+		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url, $layout, $display, $tag_colors ) {
 			return $loader->capture(
 				'partials/event-card',
 				array(
@@ -208,6 +209,7 @@ class Renderer {
 					'teaser'        => (bool) $teaser,
 					'layout'        => $layout,
 					'display'       => $display,
+					'tag_colors'    => $tag_colors,
 					'gate_cta_text' => $cta_text,
 					'gate_cta_url'  => $cta_url,
 				)
@@ -226,6 +228,7 @@ class Renderer {
 				'layout'      => $layout,
 				'group_by'    => $group_by,
 				'display'     => $display,
+				'tag_colors'  => $tag_colors,
 				'empty'       => $this->empty_message(),
 				'atts'        => $atts,
 			)
@@ -465,6 +468,22 @@ class Renderer {
 		$config['excerpt_words'] = $words > 0 ? $words : max( 1, (int) Settings::get( 'excerpt_words', 25 ) );
 
 		return $config;
+	}
+
+	/**
+	 * The configured tag → color map (tag api_id => hex), dropping blanks.
+	 *
+	 * @return array<string,string>
+	 */
+	private function tag_colors() {
+		$map = array();
+		foreach ( (array) Settings::get( 'category_colors' ) as $id => $hex ) {
+			$hex = (string) $hex;
+			if ( '' !== $hex ) {
+				$map[ (string) $id ] = $hex;
+			}
+		}
+		return $map;
 	}
 
 	/**

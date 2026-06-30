@@ -27,6 +27,24 @@ $tz    = wp_timezone();
 $first = ( $anchor instanceof \DateTimeImmutable ) ? $anchor : new \DateTimeImmutable( 'now', $tz );
 $first = $first->setTime( 0, 0, 0 );
 
+$tag_colors = isset( $tag_colors ) && is_array( $tag_colors ) ? $tag_colors : array();
+
+/**
+ * The first configured color among an event's tags, or '' for none.
+ *
+ * @param \LumaViewer\Model\Event $event  Event.
+ * @param array<string,string>    $colors Tag color map.
+ * @return string
+ */
+$event_color = static function ( $event, $colors ) {
+	foreach ( $event->tags() as $tag ) {
+		if ( isset( $colors[ $tag['id'] ] ) ) {
+			return $colors[ $tag['id'] ];
+		}
+	}
+	return '';
+};
+
 // Map events to their day in the site time zone.
 $by_day = array();
 foreach ( $events as $event ) {
@@ -78,12 +96,17 @@ $cell          = 0;
 								<span class="luma-viewer__cell-day"><?php echo esc_html( (string) $day_num ); ?></span>
 								<?php if ( ! empty( $by_day[ $key ] ) ) : ?>
 									<ul class="luma-viewer__cell-events">
-										<?php foreach ( $by_day[ $key ] as $event ) : ?>
+										<?php
+										foreach ( $by_day[ $key ] as $event ) :
+											$color = $event_color( $event, $tag_colors );
+											$style = '' !== $color ? ' style="--lv-tag:' . esc_attr( $color ) . '"' : '';
+											$dot   = '' !== $color ? ' luma-viewer__cell-event--colored' : '';
+											?>
 											<li>
 												<?php if ( ! empty( $teaser_ids[ $event->id() ] ) ) : ?>
-													<span class="luma-viewer__cell-event luma-viewer__cell-event--teaser" title="<?php echo esc_attr__( 'Members only', 'luma-viewer' ); ?>"><?php echo esc_html( $event->name() ); ?></span>
+													<span class="luma-viewer__cell-event luma-viewer__cell-event--teaser<?php echo esc_attr( $dot ); ?>" title="<?php echo esc_attr__( 'Members only', 'luma-viewer' ); ?>"<?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value escaped above. ?>><?php echo esc_html( $event->name() ); ?></span>
 												<?php else : ?>
-													<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer" title="<?php echo esc_attr( $event->name() ); ?>"><?php echo esc_html( $event->name() ); ?></a>
+													<a class="luma-viewer__cell-event<?php echo esc_attr( $dot ); ?>" href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $formatter->link_attrs(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?> title="<?php echo esc_attr( $event->name() ); ?>"<?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value escaped above. ?>><?php echo esc_html( $event->name() ); ?></a>
 												<?php endif; ?>
 											</li>
 										<?php endforeach; ?>

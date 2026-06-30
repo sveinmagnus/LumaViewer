@@ -114,6 +114,7 @@ class SettingsPage {
 		add_settings_field( 'default_group_by', __( 'Group list by', 'luma-viewer' ), array( $this, 'field_default_group_by' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'default_order', __( 'Default order', 'luma-viewer' ), array( $this, 'field_default_order' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'tag_filter', __( 'Tag visibility', 'luma-viewer' ), array( $this, 'field_tag_filter' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'category_colors', __( 'Category colors', 'luma-viewer' ), array( $this, 'field_category_colors' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'card_elements', __( 'Card elements', 'luma-viewer' ), array( $this, 'field_card_elements' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'excerpt_words', __( 'Excerpt length', 'luma-viewer' ), array( $this, 'field_excerpt_words' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -182,6 +183,22 @@ class SettingsPage {
 			: $current['default_order'];
 		$out['tag_allow']     = isset( $input['tag_allow'] ) ? sanitize_text_field( $input['tag_allow'] ) : $current['tag_allow'];
 		$out['tag_deny']      = isset( $input['tag_deny'] ) ? sanitize_text_field( $input['tag_deny'] ) : $current['tag_deny'];
+
+		// Only rebuild the color map when its UI rendered (a save can't wipe it
+		// when the tag list couldn't be fetched).
+		if ( isset( $input['category_colors_submitted'] ) ) {
+			$colors = array();
+			if ( isset( $input['category_colors'] ) && is_array( $input['category_colors'] ) ) {
+				foreach ( $input['category_colors'] as $tag_id => $hex ) {
+					$tag_id = sanitize_text_field( (string) $tag_id );
+					$hex    = sanitize_hex_color( (string) $hex );
+					if ( '' !== $tag_id && $hex ) {
+						$colors[ $tag_id ] = $hex;
+					}
+				}
+			}
+			$out['category_colors'] = $colors;
+		}
 
 		$out['per_page']      = isset( $input['per_page'] ) ? min( 100, max( 1, absint( $input['per_page'] ) ) ) : $current['per_page'];
 		$out['cache_ttl']     = isset( $input['cache_ttl'] ) ? max( 60, absint( $input['cache_ttl'] ) ) : $current['cache_ttl'];
@@ -501,6 +518,38 @@ class SettingsPage {
 			esc_html__( 'Never show events tagged (comma-separated):', 'luma-viewer' )
 		);
 		echo '<p class="description">' . esc_html__( 'Site-wide policy applied to every block, widget and shortcode. Use tag names or IDs.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Category → color mapping (uses live Luma tags).
+	 *
+	 * @return void
+	 */
+	public function field_category_colors() {
+		$tags = $this->fetch_tags();
+		if ( empty( $tags ) ) {
+			echo '<p class="description">' . esc_html__( 'Add an API key and create event tags in Luma to color-code categories.', 'luma-viewer' ) . '</p>';
+			return;
+		}
+
+		printf( '<input type="hidden" name="%s[category_colors_submitted]" value="1" />', esc_attr( Settings::OPTION ) );
+
+		$colors = (array) Settings::get( 'category_colors' );
+
+		echo '<table class="widefat striped" style="max-width:480px"><tbody>';
+		foreach ( $tags as $tag ) {
+			$value = isset( $colors[ $tag['id'] ] ) ? (string) $colors[ $tag['id'] ] : '';
+			echo '<tr><td>' . esc_html( $tag['name'] ) . '</td><td>';
+			printf(
+				'<input type="text" name="%1$s[category_colors][%2$s]" value="%3$s" placeholder="#1e88e5" style="max-width:120px" />',
+				esc_attr( Settings::OPTION ),
+				esc_attr( $tag['id'] ),
+				esc_attr( $value )
+			);
+			echo '</td></tr>';
+		}
+		echo '</tbody></table>';
+		echo '<p class="description">' . esc_html__( 'Optional hex colors used on tag badges and month-calendar entries. Leave blank for no color.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**
