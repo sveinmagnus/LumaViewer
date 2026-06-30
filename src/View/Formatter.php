@@ -49,7 +49,40 @@ class Formatter {
 		if ( ! $event->has_start() ) {
 			return '';
 		}
-		return wp_date( (string) get_option( 'date_format' ), $event->start()->getTimestamp(), $this->display_tz( $event ) );
+		return wp_date( $this->date_format(), $event->start()->getTimestamp(), $this->display_tz( $event ) );
+	}
+
+	/**
+	 * The configured date format, falling back to the site format.
+	 *
+	 * @return string
+	 */
+	public function date_format() {
+		$format = (string) Settings::get( 'date_format' );
+		return '' !== $format ? $format : (string) get_option( 'date_format' );
+	}
+
+	/**
+	 * The configured time format, falling back to the site format.
+	 *
+	 * @return string
+	 */
+	public function time_format() {
+		$format = (string) Settings::get( 'time_format' );
+		return '' !== $format ? $format : (string) get_option( 'time_format' );
+	}
+
+	/**
+	 * The `target`/`rel` attributes for outbound Luma links, honoring the
+	 * "open links in" setting. Returns a fixed, safe attribute string (leading
+	 * space included) or an empty string for same-tab.
+	 *
+	 * @return string
+	 */
+	public function link_attrs() {
+		return '_self' === Settings::get( 'link_target' )
+			? ''
+			: ' target="_blank" rel="noopener noreferrer"';
 	}
 
 	/**
@@ -75,7 +108,7 @@ class Formatter {
 		if ( ! $event->has_start() ) {
 			return '';
 		}
-		return wp_date( (string) get_option( 'time_format' ), $event->start()->getTimestamp(), $this->display_tz( $event ) );
+		return wp_date( $this->time_format(), $event->start()->getTimestamp(), $this->display_tz( $event ) );
 	}
 
 	/**
@@ -110,8 +143,8 @@ class Formatter {
 		}
 
 		$tz          = $this->display_tz( $event );
-		$date_format = (string) get_option( 'date_format' );
-		$time_format = (string) get_option( 'time_format' );
+		$date_format = $this->date_format();
+		$time_format = $this->time_format();
 		$start_ts    = $event->start()->getTimestamp();
 
 		$start = wp_date( $date_format . ' ' . $time_format, $start_ts, $tz );

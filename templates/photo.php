@@ -21,7 +21,7 @@ if ( $error ) {
 }
 
 if ( empty( $events ) ) {
-	echo '<p class="luma-viewer__empty">' . esc_html__( 'No upcoming events.', 'luma-viewer' ) . '</p>';
+	echo '<p class="luma-viewer__empty">' . esc_html( isset( $empty ) && '' !== $empty ? $empty : __( 'No upcoming events.', 'luma-viewer' ) ) . '</p>';
 	return;
 }
 ?>

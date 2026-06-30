@@ -71,10 +71,12 @@ class Renderer {
 
 		$layout   = ( isset( $atts['layout'] ) && in_array( $atts['layout'], array( 'cards', 'compact', 'minimal' ), true ) )
 			? $atts['layout']
-			: 'cards';
+			: (string) Settings::get( 'default_layout', 'cards' );
 		$group_by = ( isset( $atts['group_by'] ) && in_array( $atts['group_by'], array( 'day', 'month', 'none' ), true ) )
 			? $atts['group_by']
-			: 'day';
+			: (string) Settings::get( 'default_group_by', 'day' );
+
+		$display = $this->display_config( $atts, $layout );
 
 		$calendar     = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
 		$show_filters = isset( $atts['filters'] ) && in_array( (string) $atts['filters'], array( '1', 'true', 'yes', 'on' ), true );
@@ -179,7 +181,7 @@ class Renderer {
 		$cta_text  = (string) Settings::get( 'gate_cta_text' );
 		$cta_url   = $this->cta_url();
 
-		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url, $layout ) {
+		$render_card = static function ( $event, $teaser = false ) use ( $loader, $formatter, $cta_text, $cta_url, $layout, $display ) {
 			return $loader->capture(
 				'partials/event-card',
 				array(
@@ -187,6 +189,7 @@ class Renderer {
 					'formatter'     => $formatter,
 					'teaser'        => (bool) $teaser,
 					'layout'        => $layout,
+					'display'       => $display,
 					'gate_cta_text' => $cta_text,
 					'gate_cta_url'  => $cta_url,
 				)
@@ -204,6 +207,8 @@ class Renderer {
 				'anchor'      => $anchor,
 				'layout'      => $layout,
 				'group_by'    => $group_by,
+				'display'     => $display,
+				'empty'       => $this->empty_message(),
 				'atts'        => $atts,
 			)
 		);
@@ -386,6 +391,64 @@ class Renderer {
 			'event' => $event,
 			'error' => $error,
 		);
+	}
+
+	/**
+	 * Resolve which card elements are shown, the excerpt length, given the
+	 * layout and per-instance attributes. Each element's visibility is the
+	 * per-instance attribute when set, otherwise the layout baseline AND the
+	 * global default — so the global toggle can hide an element site-wide while
+	 * a block attribute can force it on or off for one instance.
+	 *
+	 * @param array  $atts   Display attributes.
+	 * @param string $layout cards | compact | minimal.
+	 * @return array<string,bool|int>
+	 */
+	private function display_config( array $atts, $layout ) {
+		$baseline = array(
+			'cover'    => ( 'cards' === $layout ),
+			'location' => ( 'minimal' !== $layout ),
+			'host'     => ( 'cards' === $layout ),
+			'price'    => ( 'minimal' !== $layout ),
+			'excerpt'  => ( 'cards' === $layout ),
+			'tags'     => ( 'cards' === $layout ),
+			'relative' => true,
+		);
+
+		$config = array();
+		foreach ( $baseline as $key => $layout_default ) {
+			$att = isset( $atts[ 'show_' . $key ] ) ? (string) $atts[ 'show_' . $key ] : '';
+			if ( '' !== $att ) {
+				$config[ $key ] = $this->truthy( $att );
+			} else {
+				$config[ $key ] = $layout_default && (bool) Settings::get( 'show_' . $key, true );
+			}
+		}
+
+		$words                   = isset( $atts['excerpt_words'] ) ? (int) $atts['excerpt_words'] : 0;
+		$config['excerpt_words'] = $words > 0 ? $words : max( 1, (int) Settings::get( 'excerpt_words', 25 ) );
+
+		return $config;
+	}
+
+	/**
+	 * The "no events" message (custom, or the default).
+	 *
+	 * @return string
+	 */
+	private function empty_message() {
+		$message = (string) Settings::get( 'empty_message' );
+		return '' !== $message ? $message : __( 'No upcoming events.', 'luma-viewer' );
+	}
+
+	/**
+	 * Interpret a truthy string attribute.
+	 *
+	 * @param string $value Raw value.
+	 * @return bool
+	 */
+	private function truthy( $value ) {
+		return in_array( strtolower( (string) $value ), array( '1', 'true', 'yes', 'on' ), true );
 	}
 
 	/**

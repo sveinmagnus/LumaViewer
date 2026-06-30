@@ -24,7 +24,7 @@ if ( $error ) {
 $tz  = wp_timezone();
 $day = ( $anchor instanceof \DateTimeImmutable ) ? $anchor : new \DateTimeImmutable( 'now', $tz );
 ?>
-<h2 class="luma-viewer__day-title"><?php echo esc_html( wp_date( (string) get_option( 'date_format' ), $day->getTimestamp(), $tz ) ); ?></h2>
+<h2 class="luma-viewer__day-title"><?php echo esc_html( wp_date( $formatter->date_format(), $day->getTimestamp(), $tz ) ); ?></h2>
 <?php if ( empty( $events ) ) : ?>
 	<p class="luma-viewer__empty"><?php esc_html_e( 'No events on this day.', 'luma-viewer' ); ?></p>
 <?php else : ?>

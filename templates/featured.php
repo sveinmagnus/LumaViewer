@@ -47,7 +47,7 @@ $location = $event->location();
 
 		<?php if ( '' !== $event->luma_url() ) : ?>
 			<p>
-				<a class="luma-viewer__button luma-viewer__button--primary" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
+				<a class="luma-viewer__button luma-viewer__button--primary" href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $formatter->link_attrs(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>>
 					<?php esc_html_e( 'View on Luma', 'luma-viewer' ); ?>
 				</a>
 			</p>

@@ -110,8 +110,15 @@ class SettingsPage {
 
 		add_settings_section( 'luma_viewer_display', __( 'Display', 'luma-viewer' ), '__return_false', self::MENU_SLUG );
 		add_settings_field( 'default_view', __( 'Default view', 'luma-viewer' ), array( $this, 'field_default_view' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'default_layout', __( 'List layout', 'luma-viewer' ), array( $this, 'field_default_layout' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'default_group_by', __( 'Group list by', 'luma-viewer' ), array( $this, 'field_default_group_by' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'card_elements', __( 'Card elements', 'luma-viewer' ), array( $this, 'field_card_elements' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'excerpt_words', __( 'Excerpt length', 'luma-viewer' ), array( $this, 'field_excerpt_words' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'date_time_format', __( 'Date &amp; time format', 'luma-viewer' ), array( $this, 'field_date_time_format' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'timezone_mode', __( 'Time zone', 'luma-viewer' ), array( $this, 'field_timezone_mode' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'link_target', __( 'Open Luma links', 'luma-viewer' ), array( $this, 'field_link_target' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'empty_message', __( 'No-events message', 'luma-viewer' ), array( $this, 'field_empty_message' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'accent_color', __( 'Accent color', 'luma-viewer' ), array( $this, 'field_accent_color' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'cache_ttl', __( 'Cache lifetime', 'luma-viewer' ), array( $this, 'field_cache_ttl' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'single_base', __( 'Single-event URL base', 'luma-viewer' ), array( $this, 'field_single_base' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -161,12 +168,33 @@ class SettingsPage {
 			? $input['default_view']
 			: $current['default_view'];
 
+		$out['default_layout']   = ( isset( $input['default_layout'] ) && in_array( $input['default_layout'], array( 'cards', 'compact', 'minimal' ), true ) )
+			? $input['default_layout']
+			: $current['default_layout'];
+		$out['default_group_by'] = ( isset( $input['default_group_by'] ) && in_array( $input['default_group_by'], array( 'day', 'month', 'none' ), true ) )
+			? $input['default_group_by']
+			: $current['default_group_by'];
+
 		$out['per_page']      = isset( $input['per_page'] ) ? min( 100, max( 1, absint( $input['per_page'] ) ) ) : $current['per_page'];
 		$out['cache_ttl']     = isset( $input['cache_ttl'] ) ? max( 60, absint( $input['cache_ttl'] ) ) : $current['cache_ttl'];
 		$out['timezone_mode'] = ( isset( $input['timezone_mode'] ) && in_array( $input['timezone_mode'], array( 'event', 'site' ), true ) )
 			? $input['timezone_mode']
 			: $current['timezone_mode'];
 		$out['accent_color']  = isset( $input['accent_color'] ) ? (string) sanitize_hex_color( $input['accent_color'] ) : $current['accent_color'];
+
+		// Card-element toggles render on every save, so an absent checkbox means
+		// "off". They sit behind a hidden marker so a partial save can't wipe them.
+		if ( isset( $input['display_submitted'] ) ) {
+			foreach ( array( 'show_cover', 'show_location', 'show_host', 'show_price', 'show_excerpt', 'show_tags', 'show_relative' ) as $flag ) {
+				$out[ $flag ] = ! empty( $input[ $flag ] );
+			}
+		}
+
+		$out['excerpt_words'] = isset( $input['excerpt_words'] ) ? min( 200, max( 1, absint( $input['excerpt_words'] ) ) ) : $current['excerpt_words'];
+		$out['date_format']   = isset( $input['date_format'] ) ? sanitize_text_field( $input['date_format'] ) : $current['date_format'];
+		$out['time_format']   = isset( $input['time_format'] ) ? sanitize_text_field( $input['time_format'] ) : $current['time_format'];
+		$out['link_target']   = ( isset( $input['link_target'] ) && '_self' === $input['link_target'] ) ? '_self' : '_blank';
+		$out['empty_message'] = isset( $input['empty_message'] ) ? sanitize_text_field( $input['empty_message'] ) : $current['empty_message'];
 
 		if ( isset( $input['single_base'] ) ) {
 			$base               = sanitize_title( $input['single_base'] );
@@ -385,6 +413,146 @@ class SettingsPage {
 			esc_attr( Settings::OPTION )
 		);
 		echo '<p class="description">' . esc_html__( 'URL base for single-event pages. If links 404 after changing this, re-save Settings → Permalinks.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Default list layout selector.
+	 *
+	 * @return void
+	 */
+	public function field_default_layout() {
+		$value   = (string) Settings::get( 'default_layout' );
+		$layouts = array(
+			'cards'   => __( 'Cards (full)', 'luma-viewer' ),
+			'compact' => __( 'Compact rows', 'luma-viewer' ),
+			'minimal' => __( 'Minimal (title + time)', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[default_layout]">';
+		foreach ( $layouts as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'Default layout for List, Week and Day views. Blocks and shortcodes can override per instance.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Default list grouping selector.
+	 *
+	 * @return void
+	 */
+	public function field_default_group_by() {
+		$value  = (string) Settings::get( 'default_group_by' );
+		$groups = array(
+			'day'   => __( 'Day', 'luma-viewer' ),
+			'month' => __( 'Month', 'luma-viewer' ),
+			'none'  => __( 'No grouping', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[default_group_by]">';
+		foreach ( $groups as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+	}
+
+	/**
+	 * Card-element visibility checkboxes.
+	 *
+	 * @return void
+	 */
+	public function field_card_elements() {
+		$elements = array(
+			'show_cover'    => __( 'Cover image', 'luma-viewer' ),
+			'show_location' => __( 'Location', 'luma-viewer' ),
+			'show_host'     => __( 'Hosts', 'luma-viewer' ),
+			'show_price'    => __( 'Price / free badge', 'luma-viewer' ),
+			'show_excerpt'  => __( 'Description excerpt', 'luma-viewer' ),
+			'show_tags'     => __( 'Tags', 'luma-viewer' ),
+			'show_relative' => __( 'Relative date ("in 3 days")', 'luma-viewer' ),
+		);
+		printf( '<input type="hidden" name="%s[display_submitted]" value="1" />', esc_attr( Settings::OPTION ) );
+		echo '<fieldset>';
+		foreach ( $elements as $key => $label ) {
+			printf(
+				'<label style="display:block;margin:2px 0;"><input type="checkbox" name="%1$s[%2$s]" value="1"%3$s /> %4$s</label>',
+				esc_attr( Settings::OPTION ),
+				esc_attr( $key ),
+				checked( (bool) Settings::get( $key, true ), true, false ),
+				esc_html( $label )
+			);
+		}
+		echo '</fieldset>';
+		echo '<p class="description">' . esc_html__( 'Which elements appear on event cards. The layout still limits what each layout can show; blocks and shortcodes can override per instance.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Excerpt-length field.
+	 *
+	 * @return void
+	 */
+	public function field_excerpt_words() {
+		printf(
+			'<input type="number" min="1" max="200" name="%1$s[excerpt_words]" value="%2$d" class="small-text" /> %3$s',
+			esc_attr( Settings::OPTION ),
+			(int) Settings::get( 'excerpt_words' ),
+			esc_html__( 'words', 'luma-viewer' )
+		);
+	}
+
+	/**
+	 * Date/time format fields (blank = inherit the site format).
+	 *
+	 * @return void
+	 */
+	public function field_date_time_format() {
+		printf(
+			'<label>%4$s <input type="text" name="%1$s[date_format]" value="%2$s" class="regular-text" placeholder="%3$s" /></label>',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'date_format' ) ),
+			esc_attr( (string) get_option( 'date_format' ) ),
+			esc_html__( 'Date', 'luma-viewer' )
+		);
+		echo '<br />';
+		printf(
+			'<label>%4$s <input type="text" name="%1$s[time_format]" value="%2$s" class="regular-text" placeholder="%3$s" /></label>',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'time_format' ) ),
+			esc_attr( (string) get_option( 'time_format' ) ),
+			esc_html__( 'Time', 'luma-viewer' )
+		);
+		echo '<p class="description">' . esc_html__( 'PHP date formats. Leave blank to use the site formats (shown as placeholders).', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Link-target selector.
+	 *
+	 * @return void
+	 */
+	public function field_link_target() {
+		$value = (string) Settings::get( 'link_target' );
+		$opts  = array(
+			'_blank' => __( 'In a new tab', 'luma-viewer' ),
+			'_self'  => __( 'In the same tab', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[link_target]">';
+		foreach ( $opts as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+	}
+
+	/**
+	 * "No events" message field.
+	 *
+	 * @return void
+	 */
+	public function field_empty_message() {
+		printf(
+			'<input type="text" name="%1$s[empty_message]" value="%2$s" class="regular-text" placeholder="%3$s" />',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'empty_message' ) ),
+			esc_attr__( 'No upcoming events.', 'luma-viewer' )
+		);
+		echo '<p class="description">' . esc_html__( 'Shown when a list/photo/summary view has no events. Leave blank for the default.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**

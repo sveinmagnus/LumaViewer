@@ -23,7 +23,7 @@ if ( ! $event || '' === $event->id() || ! $event->has_start() ) {
 <div class="luma-viewer__cd">
 	<p class="luma-viewer__cd-name">
 		<?php if ( '' !== $event->luma_url() ) : ?>
-			<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $event->name() ); ?></a>
+			<a href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $formatter->link_attrs(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>><?php echo esc_html( $event->name() ); ?></a>
 		<?php else : ?>
 			<?php echo esc_html( $event->name() ); ?>
 		<?php endif; ?>

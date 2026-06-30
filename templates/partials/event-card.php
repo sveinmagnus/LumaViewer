@@ -8,6 +8,7 @@
  * @var \LumaViewer\View\Formatter  $formatter     Date formatter.
  * @var bool                        $teaser        Render as a gated teaser (no Luma link).
  * @var string                      $layout        cards | compact | minimal.
+ * @var array<string,bool|int>      $display       Resolved element visibility + excerpt length.
  * @var string                      $gate_cta_text Teaser call-to-action label.
  * @var string                      $gate_cta_url  Teaser call-to-action URL.
  */
@@ -20,22 +21,27 @@ if ( ! isset( $event ) ) {
 
 $teaser  = ! empty( $teaser );
 $layout  = ( ! empty( $layout ) && in_array( $layout, array( 'cards', 'compact', 'minimal' ), true ) ) ? $layout : 'cards';
-$is_full = ( 'cards' === $layout );
-$is_min  = ( 'minimal' === $layout );
+$display = isset( $display ) && is_array( $display ) ? $display : array();
+$show    = static function ( $key ) use ( $display ) {
+	return ! empty( $display[ $key ] );
+};
+$words   = isset( $display['excerpt_words'] ) ? (int) $display['excerpt_words'] : 25;
 
 $location   = $event->location();
-$has_price  = $event->is_free() || '' !== $event->price_label();
-$has_badges = $event->is_cancelled() || $event->is_sold_out() || $has_price;
+$show_price = $show( 'price' ) && ( $event->is_free() || '' !== $event->price_label() );
+$has_badges = $event->is_cancelled() || $event->is_sold_out() || $show_price;
+$has_cta    = ( 'minimal' !== $layout );
+$link_attrs = $formatter->link_attrs();
 $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
 ?>
-<article class="<?php echo esc_attr( $classes ); ?>" data-lv-title="<?php echo esc_attr( strtolower( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( strtolower( implode( ' ', wp_list_pluck( $event->tags(), 'name' ) ) ) ); ?>">
-	<?php if ( $is_full && '' !== $event->cover_url() ) : ?>
+<article class="<?php echo esc_attr( $classes ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>" data-lv-title="<?php echo esc_attr( strtolower( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( strtolower( implode( ' ', wp_list_pluck( $event->tags(), 'name' ) ) ) ); ?>">
+	<?php if ( $show( 'cover' ) && '' !== $event->cover_url() ) : ?>
 		<?php if ( $teaser ) : ?>
 			<span class="luma-viewer__card-cover">
 				<img src="<?php echo esc_url( $event->cover_url() ); ?>" alt="" loading="lazy" />
 			</span>
 		<?php else : ?>
-			<a class="luma-viewer__card-cover" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
+			<a class="luma-viewer__card-cover" href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>>
 				<img src="<?php echo esc_url( $event->cover_url() ); ?>" alt="" loading="lazy" />
 			</a>
 		<?php endif; ?>
@@ -47,7 +53,7 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 				<time datetime="<?php echo esc_attr( $event->start()->format( 'c' ) ); ?>">
 					<?php echo esc_html( $formatter->range( $event ) ); ?>
 				</time>
-				<?php $relative = $formatter->relative( $event ); ?>
+				<?php $relative = $show( 'relative' ) ? $formatter->relative( $event ) : ''; ?>
 				<?php if ( '' !== $relative ) : ?>
 					<span class="luma-viewer__card-rel"><?php echo esc_html( $relative ); ?></span>
 				<?php endif; ?>
@@ -58,13 +64,13 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 			<?php if ( $teaser ) : ?>
 				<?php echo esc_html( $event->name() ); ?>
 			<?php else : ?>
-				<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
+				<a href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>>
 					<?php echo esc_html( $event->name() ); ?>
 				</a>
 			<?php endif; ?>
 		</h3>
 
-		<?php if ( ! $is_min && $has_badges ) : ?>
+		<?php if ( $has_badges ) : ?>
 			<p class="luma-viewer__card-badges">
 				<?php if ( $event->is_cancelled() ) : ?>
 					<span class="luma-viewer__badge luma-viewer__badge--cancelled"><?php esc_html_e( 'Cancelled', 'luma-viewer' ); ?></span>
@@ -72,13 +78,13 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 				<?php if ( $event->is_sold_out() ) : ?>
 					<span class="luma-viewer__badge luma-viewer__badge--soldout"><?php esc_html_e( 'Sold out', 'luma-viewer' ); ?></span>
 				<?php endif; ?>
-				<?php if ( $has_price ) : ?>
+				<?php if ( $show_price ) : ?>
 					<span class="luma-viewer__badge luma-viewer__badge--price"><?php echo esc_html( $event->is_free() ? __( 'Free', 'luma-viewer' ) : $event->price_label() ); ?></span>
 				<?php endif; ?>
 			</p>
 		<?php endif; ?>
 
-		<?php if ( ! $is_min ) : ?>
+		<?php if ( $show( 'location' ) ) : ?>
 			<?php if ( $location->is_online() ) : ?>
 				<p class="luma-viewer__card-where luma-viewer__card-where--online"><?php esc_html_e( 'Online', 'luma-viewer' ); ?></p>
 			<?php elseif ( '' !== $location->label() ) : ?>
@@ -86,7 +92,7 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 			<?php endif; ?>
 		<?php endif; ?>
 
-		<?php if ( $is_full && ! empty( $event->hosts() ) ) : ?>
+		<?php if ( $show( 'host' ) && ! empty( $event->hosts() ) ) : ?>
 			<p class="luma-viewer__card-hosts">
 				<?php
 				/* translators: %s: comma-separated host names. */
@@ -95,7 +101,7 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 			</p>
 		<?php endif; ?>
 
-		<?php if ( $is_full && ! empty( $event->tags() ) ) : ?>
+		<?php if ( $show( 'tags' ) && ! empty( $event->tags() ) ) : ?>
 			<ul class="luma-viewer__tags">
 				<?php foreach ( $event->tags() as $tag ) : ?>
 					<?php
@@ -108,8 +114,8 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 		<?php endif; ?>
 
 		<?php
-		if ( $is_full && ! $teaser ) :
-			$excerpt = $event->excerpt();
+		if ( $show( 'excerpt' ) && ! $teaser ) :
+			$excerpt = $event->excerpt( $words );
 			if ( '' !== $excerpt ) :
 				?>
 				<p class="luma-viewer__card-excerpt"><?php echo esc_html( $excerpt ); ?></p>
@@ -118,7 +124,7 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 		endif;
 		?>
 
-		<?php if ( ! $is_min ) : ?>
+		<?php if ( $has_cta ) : ?>
 			<?php if ( $teaser ) : ?>
 				<p class="luma-viewer__card-cta">
 					<a class="luma-viewer__button luma-viewer__button--gate" href="<?php echo esc_url( isset( $gate_cta_url ) ? $gate_cta_url : '' ); ?>">
@@ -127,7 +133,7 @@ $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' 
 				</p>
 			<?php elseif ( '' !== $event->luma_url() ) : ?>
 				<p class="luma-viewer__card-cta">
-					<a class="luma-viewer__button" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
+					<a class="luma-viewer__button" href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>>
 						<?php esc_html_e( 'View on Luma', 'luma-viewer' ); ?>
 					</a>
 				</p>

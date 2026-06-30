@@ -45,7 +45,8 @@ if ( $blocked ) {
 	return;
 }
 
-$location = $event->location();
+$location   = $event->location();
+$link_attrs = $formatter->link_attrs();
 ?>
 <article class="luma-viewer__single-event<?php echo $teaser ? ' luma-viewer__single-event--teaser' : ''; ?>">
 	<?php if ( '' !== $event->cover_url() ) : ?>
@@ -115,7 +116,7 @@ $location = $event->location();
 
 		<?php if ( '' !== $event->luma_url() ) : ?>
 			<p class="luma-viewer__single-cta">
-				<a class="luma-viewer__button luma-viewer__button--primary" href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer">
+				<a class="luma-viewer__button luma-viewer__button--primary" href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>>
 					<?php esc_html_e( 'Full details &amp; register on Luma', 'luma-viewer' ); ?>
 				</a>
 			</p>

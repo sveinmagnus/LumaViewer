@@ -34,7 +34,7 @@ foreach ( $events as $event ) {
 }
 
 $today_key   = wp_date( 'Y-m-d', time(), $tz );
-$date_format = (string) get_option( 'date_format' );
+$date_format = $formatter->date_format();
 ?>
 <div class="luma-viewer__week">
 	<?php

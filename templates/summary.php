@@ -20,11 +20,12 @@ if ( $error ) {
 }
 
 if ( empty( $events ) ) {
-	echo '<p class="luma-viewer__empty">' . esc_html__( 'No upcoming events.', 'luma-viewer' ) . '</p>';
+	echo '<p class="luma-viewer__empty">' . esc_html( isset( $empty ) && '' !== $empty ? $empty : __( 'No upcoming events.', 'luma-viewer' ) ) . '</p>';
 	return;
 }
 
-$groups = array();
+$link_attrs = $formatter->link_attrs();
+$groups     = array();
 foreach ( $events as $event ) {
 	$key              = $event->has_start() ? $formatter->day_key( $event ) : 'tbd';
 	$groups[ $key ][] = $event;
@@ -45,7 +46,7 @@ foreach ( $events as $event ) {
 						<?php if ( ! empty( $teaser_ids[ $event->id() ] ) ) : ?>
 							<span class="luma-viewer__summary-teaser"><?php echo esc_html( $event->name() ); ?></span>
 						<?php else : ?>
-							<a href="<?php echo esc_url( $event->luma_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $event->name() ); ?></a>
+							<a href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>><?php echo esc_html( $event->name() ); ?></a>
 						<?php endif; ?>
 					</li>
 				<?php endforeach; ?>
