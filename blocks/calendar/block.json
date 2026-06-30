@@ -22,7 +22,22 @@
 		"group_by": { "type": "string", "default": "" },
 		"calendar": { "type": "string", "default": "" },
 		"filters": { "type": "boolean", "default": false },
-		"past": { "type": "boolean", "default": false }
+		"past": { "type": "boolean", "default": false },
+		"offset": { "type": "number", "default": 0 },
+		"from": { "type": "string", "default": "" },
+		"to": { "type": "string", "default": "" },
+		"order": { "type": "string", "default": "" },
+		"online": { "type": "string", "default": "" },
+		"free": { "type": "string", "default": "" },
+		"tags": { "type": "string", "default": "" },
+		"excerpt_words": { "type": "number", "default": 0 },
+		"show_cover": { "type": "string", "default": "" },
+		"show_location": { "type": "string", "default": "" },
+		"show_host": { "type": "string", "default": "" },
+		"show_price": { "type": "string", "default": "" },
+		"show_excerpt": { "type": "string", "default": "" },
+		"show_tags": { "type": "string", "default": "" },
+		"show_relative": { "type": "string", "default": "" }
 	},
 	"editorScript": "file:./index.js"
 }

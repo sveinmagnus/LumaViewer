@@ -77,17 +77,34 @@ class Blocks {
 		$attributes = (array) $attributes;
 
 		$atts = array(
-			'view'     => isset( $attributes['view'] ) ? sanitize_key( (string) $attributes['view'] ) : '',
-			'tag'      => isset( $attributes['tag'] ) ? sanitize_text_field( (string) $attributes['tag'] ) : '',
-			'date'     => isset( $attributes['date'] ) ? sanitize_text_field( (string) $attributes['date'] ) : '',
-			'layout'   => isset( $attributes['layout'] ) ? sanitize_key( (string) $attributes['layout'] ) : '',
-			'group_by' => isset( $attributes['group_by'] ) ? sanitize_key( (string) $attributes['group_by'] ) : '',
-			'calendar' => isset( $attributes['calendar'] ) ? sanitize_text_field( (string) $attributes['calendar'] ) : '',
-			'filters'  => empty( $attributes['filters'] ) ? '' : 'true',
-			'past'     => empty( $attributes['past'] ) ? '' : 'true',
+			'view'          => isset( $attributes['view'] ) ? sanitize_key( (string) $attributes['view'] ) : '',
+			'tag'           => isset( $attributes['tag'] ) ? sanitize_text_field( (string) $attributes['tag'] ) : '',
+			'date'          => isset( $attributes['date'] ) ? sanitize_text_field( (string) $attributes['date'] ) : '',
+			'layout'        => isset( $attributes['layout'] ) ? sanitize_key( (string) $attributes['layout'] ) : '',
+			'group_by'      => isset( $attributes['group_by'] ) ? sanitize_key( (string) $attributes['group_by'] ) : '',
+			'calendar'      => isset( $attributes['calendar'] ) ? sanitize_text_field( (string) $attributes['calendar'] ) : '',
+			'filters'       => empty( $attributes['filters'] ) ? '' : 'true',
+			'past'          => empty( $attributes['past'] ) ? '' : 'true',
+			'offset'        => isset( $attributes['offset'] ) ? absint( $attributes['offset'] ) : 0,
+			'from'          => isset( $attributes['from'] ) ? sanitize_text_field( (string) $attributes['from'] ) : '',
+			'to'            => isset( $attributes['to'] ) ? sanitize_text_field( (string) $attributes['to'] ) : '',
+			'order'         => isset( $attributes['order'] ) ? sanitize_key( (string) $attributes['order'] ) : '',
+			'online'        => isset( $attributes['online'] ) ? sanitize_key( (string) $attributes['online'] ) : '',
+			'free'          => isset( $attributes['free'] ) ? sanitize_key( (string) $attributes['free'] ) : '',
+			'tags'          => isset( $attributes['tags'] ) ? sanitize_text_field( (string) $attributes['tags'] ) : '',
+			'show_cover'    => isset( $attributes['show_cover'] ) ? sanitize_text_field( (string) $attributes['show_cover'] ) : '',
+			'show_location' => isset( $attributes['show_location'] ) ? sanitize_text_field( (string) $attributes['show_location'] ) : '',
+			'show_host'     => isset( $attributes['show_host'] ) ? sanitize_text_field( (string) $attributes['show_host'] ) : '',
+			'show_price'    => isset( $attributes['show_price'] ) ? sanitize_text_field( (string) $attributes['show_price'] ) : '',
+			'show_excerpt'  => isset( $attributes['show_excerpt'] ) ? sanitize_text_field( (string) $attributes['show_excerpt'] ) : '',
+			'show_tags'     => isset( $attributes['show_tags'] ) ? sanitize_text_field( (string) $attributes['show_tags'] ) : '',
+			'show_relative' => isset( $attributes['show_relative'] ) ? sanitize_text_field( (string) $attributes['show_relative'] ) : '',
 		);
 		if ( ! empty( $attributes['count'] ) ) {
 			$atts['count'] = absint( $attributes['count'] );
+		}
+		if ( ! empty( $attributes['excerpt_words'] ) ) {
+			$atts['excerpt_words'] = absint( $attributes['excerpt_words'] );
 		}
 
 		return $this->renderer->calendar( $atts );
