@@ -85,6 +85,7 @@ class Blocks {
 			'calendar'      => isset( $attributes['calendar'] ) ? sanitize_text_field( (string) $attributes['calendar'] ) : '',
 			'filters'       => empty( $attributes['filters'] ) ? '' : 'true',
 			'past'          => empty( $attributes['past'] ) ? '' : 'true',
+			'pagination'    => isset( $attributes['pagination'] ) ? sanitize_key( (string) $attributes['pagination'] ) : '',
 			'offset'        => isset( $attributes['offset'] ) ? absint( $attributes['offset'] ) : 0,
 			'from'          => isset( $attributes['from'] ) ? sanitize_text_field( (string) $attributes['from'] ) : '',
 			'to'            => isset( $attributes['to'] ) ? sanitize_text_field( (string) $attributes['to'] ) : '',

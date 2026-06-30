@@ -83,14 +83,15 @@ class CalendarWidget extends Widget_Base {
 				'type'    => Controls_Manager::SELECT,
 				'default' => '',
 				'options' => array(
-					''        => __( 'Site default', 'luma-viewer' ),
-					'list'    => __( 'List', 'luma-viewer' ),
-					'week'    => __( 'Week', 'luma-viewer' ),
-					'month'   => __( 'Month', 'luma-viewer' ),
-					'day'     => __( 'Day', 'luma-viewer' ),
-					'photo'   => __( 'Photo', 'luma-viewer' ),
-					'summary' => __( 'Summary', 'luma-viewer' ),
-					'map'     => __( 'Map', 'luma-viewer' ),
+					''         => __( 'Site default', 'luma-viewer' ),
+					'list'     => __( 'List', 'luma-viewer' ),
+					'week'     => __( 'Week', 'luma-viewer' ),
+					'month'    => __( 'Month', 'luma-viewer' ),
+					'day'      => __( 'Day', 'luma-viewer' ),
+					'photo'    => __( 'Photo', 'luma-viewer' ),
+					'summary'  => __( 'Summary', 'luma-viewer' ),
+					'map'      => __( 'Map', 'luma-viewer' ),
+					'carousel' => __( 'Carousel', 'luma-viewer' ),
 				),
 			)
 		);
@@ -167,6 +168,19 @@ class CalendarWidget extends Widget_Base {
 				'label'       => __( 'Include past events', 'luma-viewer' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'description' => __( 'Show recent past events as well as upcoming ones.', 'luma-viewer' ),
+			)
+		);
+		$this->add_control(
+			'pagination',
+			array(
+				'label'   => __( 'Pagination', 'luma-viewer' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => '',
+				'options' => array(
+					''        => __( 'Site default', 'luma-viewer' ),
+					'more'    => __( 'Load more', 'luma-viewer' ),
+					'numbers' => __( 'Numbered pages', 'luma-viewer' ),
+				),
 			)
 		);
 
@@ -315,6 +329,7 @@ class CalendarWidget extends Widget_Base {
 			'calendar'      => isset( $settings['calendar'] ) ? sanitize_text_field( (string) $settings['calendar'] ) : '',
 			'filters'       => ( isset( $settings['filters'] ) && 'yes' === $settings['filters'] ) ? 'true' : '',
 			'past'          => ( isset( $settings['past'] ) && 'yes' === $settings['past'] ) ? 'true' : '',
+			'pagination'    => isset( $settings['pagination'] ) ? sanitize_key( (string) $settings['pagination'] ) : '',
 			'order'         => isset( $settings['order'] ) ? sanitize_key( (string) $settings['order'] ) : '',
 			'online'        => isset( $settings['online'] ) ? sanitize_key( (string) $settings['online'] ) : '',
 			'free'          => isset( $settings['free'] ) ? sanitize_key( (string) $settings['free'] ) : '',

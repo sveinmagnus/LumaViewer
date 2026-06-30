@@ -692,3 +692,67 @@
 	border-left: 3px solid var(--lv-tag, transparent);
 	padding-left: 4px;
 }
+
+/* Carousel ---------------------------------------------------------------- */
+.luma-viewer__carousel {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.luma-viewer__carousel-track {
+	display: flex;
+	gap: var(--lv-gap);
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-padding: 0 1rem;
+	flex: 1;
+	padding-bottom: 0.5rem;
+}
+
+.luma-viewer__carousel-track > .luma-viewer__card {
+	flex: 0 0 280px;
+	max-width: 280px;
+	scroll-snap-align: start;
+}
+
+.luma-viewer__carousel-nav {
+	flex: 0 0 auto;
+	width: 2.25rem;
+	height: 2.25rem;
+	border: 1px solid var(--lv-border);
+	border-radius: 50%;
+	background: transparent;
+	font-size: 1.25rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.luma-viewer__carousel-nav:hover {
+	border-color: var(--lv-accent);
+}
+
+/* Numbered pagination ----------------------------------------------------- */
+.luma-viewer__pages {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	justify-content: center;
+	margin-top: 1rem;
+}
+
+.luma-viewer__page {
+	min-width: 2rem;
+	padding: 0.3rem 0.55rem;
+	border: 1px solid var(--lv-border);
+	border-radius: var(--lv-radius);
+	background: transparent;
+	cursor: pointer;
+}
+
+.luma-viewer__page.is-current {
+	background: var(--lv-accent);
+	border-color: var(--lv-accent);
+	color: #fff;
+}

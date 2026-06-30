@@ -116,6 +116,7 @@ class SettingsPage {
 		add_settings_field( 'tag_filter', __( 'Tag visibility', 'luma-viewer' ), array( $this, 'field_tag_filter' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'category_colors', __( 'Category colors', 'luma-viewer' ), array( $this, 'field_category_colors' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'pagination', __( 'Pagination', 'luma-viewer' ), array( $this, 'field_pagination' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'card_elements', __( 'Card elements', 'luma-viewer' ), array( $this, 'field_card_elements' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'excerpt_words', __( 'Excerpt length', 'luma-viewer' ), array( $this, 'field_excerpt_words' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'date_time_format', __( 'Date &amp; time format', 'luma-viewer' ), array( $this, 'field_date_time_format' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -166,7 +167,7 @@ class SettingsPage {
 			: $current['api_mode'];
 		$out['default_calendar'] = isset( $input['default_calendar'] ) ? sanitize_text_field( $input['default_calendar'] ) : $current['default_calendar'];
 
-		$views               = array( 'list', 'week', 'month', 'day', 'photo', 'summary', 'map' );
+		$views               = array( 'list', 'week', 'month', 'day', 'photo', 'summary', 'map', 'carousel' );
 		$out['default_view'] = ( isset( $input['default_view'] ) && in_array( $input['default_view'], $views, true ) )
 			? $input['default_view']
 			: $current['default_view'];
@@ -201,6 +202,9 @@ class SettingsPage {
 		}
 
 		$out['per_page']      = isset( $input['per_page'] ) ? min( 100, max( 1, absint( $input['per_page'] ) ) ) : $current['per_page'];
+		$out['pagination']    = ( isset( $input['pagination'] ) && in_array( $input['pagination'], array( 'more', 'numbers' ), true ) )
+			? $input['pagination']
+			: $current['pagination'];
 		$out['cache_ttl']     = isset( $input['cache_ttl'] ) ? max( 60, absint( $input['cache_ttl'] ) ) : $current['cache_ttl'];
 		$out['timezone_mode'] = ( isset( $input['timezone_mode'] ) && in_array( $input['timezone_mode'], array( 'event', 'site' ), true ) )
 			? $input['timezone_mode']
@@ -350,13 +354,14 @@ class SettingsPage {
 	public function field_default_view() {
 		$value = (string) Settings::get( 'default_view' );
 		$views = array(
-			'list'    => __( 'List', 'luma-viewer' ),
-			'week'    => __( 'Week', 'luma-viewer' ),
-			'month'   => __( 'Month', 'luma-viewer' ),
-			'day'     => __( 'Day', 'luma-viewer' ),
-			'photo'   => __( 'Photo', 'luma-viewer' ),
-			'summary' => __( 'Summary', 'luma-viewer' ),
-			'map'     => __( 'Map', 'luma-viewer' ),
+			'list'     => __( 'List', 'luma-viewer' ),
+			'week'     => __( 'Week', 'luma-viewer' ),
+			'month'    => __( 'Month', 'luma-viewer' ),
+			'day'      => __( 'Day', 'luma-viewer' ),
+			'photo'    => __( 'Photo', 'luma-viewer' ),
+			'summary'  => __( 'Summary', 'luma-viewer' ),
+			'map'      => __( 'Map', 'luma-viewer' ),
+			'carousel' => __( 'Carousel', 'luma-viewer' ),
 		);
 		echo '<select name="' . esc_attr( Settings::OPTION ) . '[default_view]">';
 		foreach ( $views as $key => $label ) {
@@ -477,6 +482,25 @@ class SettingsPage {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
+	}
+
+	/**
+	 * Pagination-style selector.
+	 *
+	 * @return void
+	 */
+	public function field_pagination() {
+		$value = (string) Settings::get( 'pagination' );
+		$opts  = array(
+			'more'    => __( '"Load more" button', 'luma-viewer' ),
+			'numbers' => __( 'Numbered pages', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[pagination]">';
+		foreach ( $opts as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'How list-style views page through events beyond the per-page count.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**

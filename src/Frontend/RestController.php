@@ -110,6 +110,10 @@ class RestController {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
+					'pagination'    => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					),
 					'order'         => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
@@ -206,6 +210,7 @@ class RestController {
 			'past'          => (string) $request->get_param( 'past' ),
 			'from'          => (string) $request->get_param( 'from' ),
 			'to'            => (string) $request->get_param( 'to' ),
+			'pagination'    => (string) $request->get_param( 'pagination' ),
 			'order'         => (string) $request->get_param( 'order' ),
 			'online'        => (string) $request->get_param( 'online' ),
 			'free'          => (string) $request->get_param( 'free' ),

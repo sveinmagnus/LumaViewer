@@ -23,6 +23,7 @@
 		"calendar": { "type": "string", "default": "" },
 		"filters": { "type": "boolean", "default": false },
 		"past": { "type": "boolean", "default": false },
+		"pagination": { "type": "string", "default": "" },
 		"offset": { "type": "number", "default": 0 },
 		"from": { "type": "string", "default": "" },
 		"to": { "type": "string", "default": "" },

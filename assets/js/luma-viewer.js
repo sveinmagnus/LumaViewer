@@ -37,6 +37,7 @@
 		var past = container.getAttribute( 'data-lv-past' ) || '';
 		var from = container.getAttribute( 'data-lv-from' ) || '';
 		var to = container.getAttribute( 'data-lv-to' ) || '';
+		var pagination = container.getAttribute( 'data-lv-pagination' ) || '';
 		var order = container.getAttribute( 'data-lv-order' ) || '';
 		var online = container.getAttribute( 'data-lv-online' ) || '';
 		var free = container.getAttribute( 'data-lv-free' ) || '';
@@ -94,6 +95,9 @@
 		}
 		if ( offsetAttr && offsetAttr !== '0' ) {
 			url.searchParams.set( 'offset', offsetAttr );
+		}
+		if ( pagination ) {
+			url.searchParams.set( 'pagination', pagination );
 		}
 		if ( order ) {
 			url.searchParams.set( 'order', order );
@@ -266,6 +270,14 @@
 			);
 		}
 
+		// Numbered pagination: jump to the page's offset.
+		if ( 'page' === action ) {
+			container.setAttribute(
+				'data-lv-offset',
+				trigger.getAttribute( 'data-lv-offset' ) || '0'
+			);
+		}
+
 		var url = buildUrl( container, trigger );
 		if ( ! url ) {
 			return;
@@ -299,6 +311,24 @@
 	setInterval( tickCountdowns, 1000 );
 	tickCountdowns();
 	document.addEventListener( 'luma-viewer:rendered', tickCountdowns );
+
+	// Carousel arrows scroll the track (local, no fetch).
+	document.addEventListener( 'click', function ( event ) {
+		var navBtn = event.target.closest( '[data-lv-carousel]' );
+		if ( ! navBtn ) {
+			return;
+		}
+		var container = navBtn.closest( '.luma-viewer' );
+		var track = container
+			? container.querySelector( '.luma-viewer__carousel-track' )
+			: null;
+		if ( ! track ) {
+			return;
+		}
+		var dir = navBtn.getAttribute( 'data-lv-carousel' ) === 'prev' ? -1 : 1;
+		var amount = Math.max( 240, Math.round( track.clientWidth * 0.8 ) );
+		track.scrollBy( { left: dir * amount, behavior: 'smooth' } );
+	} );
 
 	// Date-range inputs re-fetch on change.
 	document.addEventListener( 'change', function ( event ) {

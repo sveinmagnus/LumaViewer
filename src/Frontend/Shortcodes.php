@@ -74,6 +74,7 @@ class Shortcodes {
 				'online'        => '',
 				'free'          => '',
 				'tags'          => '',
+				'pagination'    => '',
 			),
 			$atts,
 			'luma_calendar'
@@ -103,6 +104,7 @@ class Shortcodes {
 			'online'        => sanitize_key( $atts['online'] ),
 			'free'          => sanitize_key( $atts['free'] ),
 			'tags'          => sanitize_text_field( $atts['tags'] ),
+			'pagination'    => sanitize_key( $atts['pagination'] ),
 		);
 		if ( '' !== $atts['count'] ) {
 			$clean['count'] = absint( $atts['count'] );

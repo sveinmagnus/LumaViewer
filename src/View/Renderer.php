@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Renderer {
 
-	const VIEWS = array( 'list', 'week', 'month', 'day', 'photo', 'summary', 'map' );
+	const VIEWS = array( 'list', 'week', 'month', 'day', 'photo', 'summary', 'map', 'carousel' );
 
 	/** @var Repository */
 	private $repo;
@@ -100,6 +100,10 @@ class Renderer {
 
 		$past_on        = $this->truthy( $past );
 		$resolved_order = '' !== $order ? $order : ( $past_on ? 'desc' : (string) Settings::get( 'default_order', 'asc' ) );
+
+		$pagination = ( isset( $atts['pagination'] ) && in_array( $atts['pagination'], array( 'more', 'numbers' ), true ) )
+			? (string) $atts['pagination']
+			: (string) Settings::get( 'pagination', 'more' );
 
 		$args   = array(
 			'count'    => $count,
@@ -241,11 +245,8 @@ class Renderer {
 		}
 
 		$total = (int) $result['total'];
-		if ( $list_style && $count > 0 && ( $offset + $count ) < $total ) {
-			$body .= sprintf(
-				'<div class="luma-viewer__more-wrap"><button type="button" class="luma-viewer__button luma-viewer__more" data-lv-action="more">%s</button></div>',
-				esc_html__( 'Load more', 'luma-viewer' )
-			);
+		if ( $list_style && $count > 0 ) {
+			$body .= $this->pagination_html( $pagination, $offset, $count, $total );
 		}
 
 		$body .= $this->itemlist_jsonld( $events, $teaser_ids );
@@ -270,7 +271,8 @@ class Renderer {
 		// Filter + display state, threaded so AJAX re-renders (view switch, nav,
 		// load-more) preserve the configured options.
 		$data .= sprintf(
-			' data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			' data-lv-pagination="%s" data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			esc_attr( $pagination ),
 			esc_attr( $resolved_order ),
 			esc_attr( $online ),
 			esc_attr( $free ),
@@ -471,6 +473,52 @@ class Renderer {
 	}
 
 	/**
+	 * Build the pagination control for list-style views: a "load more" button or
+	 * numbered page links, depending on the configured style.
+	 *
+	 * @param string $style  more | numbers.
+	 * @param int    $offset Current offset.
+	 * @param int    $count  Page size.
+	 * @param int    $total  Total events available.
+	 * @return string
+	 */
+	private function pagination_html( $style, $offset, $count, $total ) {
+		$count = max( 1, (int) $count );
+		$pages = (int) ceil( $total / $count );
+		if ( $pages <= 1 ) {
+			return '';
+		}
+
+		if ( 'numbers' === $style ) {
+			$current = (int) floor( $offset / $count ) + 1;
+			$links   = '';
+			for ( $page = 1; $page <= $pages; $page++ ) {
+				$links .= sprintf(
+					'<button type="button" class="luma-viewer__page%1$s" data-lv-action="page" data-lv-offset="%2$d" aria-current="%3$s">%4$d</button>',
+					$page === $current ? ' is-current' : '',
+					( $page - 1 ) * $count,
+					$page === $current ? 'page' : 'false',
+					$page
+				);
+			}
+			return sprintf(
+				'<nav class="luma-viewer__pages" aria-label="%s">%s</nav>',
+				esc_attr__( 'Pagination', 'luma-viewer' ),
+				$links
+			);
+		}
+
+		if ( ( $offset + $count ) < $total ) {
+			return sprintf(
+				'<div class="luma-viewer__more-wrap"><button type="button" class="luma-viewer__button luma-viewer__more" data-lv-action="more">%s</button></div>',
+				esc_html__( 'Load more', 'luma-viewer' )
+			);
+		}
+
+		return '';
+	}
+
+	/**
 	 * The configured tag → color map (tag api_id => hex), dropping blanks.
 	 *
 	 * @return array<string,string>
@@ -525,13 +573,14 @@ class Renderer {
 	 */
 	private function toolbar( $view, $nav ) {
 		$labels = array(
-			'list'    => __( 'List', 'luma-viewer' ),
-			'week'    => __( 'Week', 'luma-viewer' ),
-			'month'   => __( 'Month', 'luma-viewer' ),
-			'day'     => __( 'Day', 'luma-viewer' ),
-			'photo'   => __( 'Photo', 'luma-viewer' ),
-			'summary' => __( 'Summary', 'luma-viewer' ),
-			'map'     => __( 'Map', 'luma-viewer' ),
+			'list'     => __( 'List', 'luma-viewer' ),
+			'week'     => __( 'Week', 'luma-viewer' ),
+			'month'    => __( 'Month', 'luma-viewer' ),
+			'day'      => __( 'Day', 'luma-viewer' ),
+			'photo'    => __( 'Photo', 'luma-viewer' ),
+			'summary'  => __( 'Summary', 'luma-viewer' ),
+			'map'      => __( 'Map', 'luma-viewer' ),
+			'carousel' => __( 'Carousel', 'luma-viewer' ),
 		);
 
 		$tabs = '';

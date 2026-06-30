@@ -21,6 +21,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		calendar,
 		filters,
 		past,
+		pagination,
 		offset,
 		from,
 		to,
@@ -60,6 +61,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Photo', 'luma-viewer' ), value: 'photo' },
 							{ label: __( 'Summary', 'luma-viewer' ), value: 'summary' },
 							{ label: __( 'Map', 'luma-viewer' ), value: 'map' },
+							{ label: __( 'Carousel', 'luma-viewer' ), value: 'carousel' },
 						] }
 						onChange={ ( value ) => setAttributes( { view: value } ) }
 					/>
@@ -122,6 +124,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={ !! past }
 						onChange={ ( value ) => setAttributes( { past: value } ) }
 						help={ __( 'Show recent past events as well as upcoming ones.', 'luma-viewer' ) }
+					/>
+					<SelectControl
+						label={ __( 'Pagination', 'luma-viewer' ) }
+						value={ pagination }
+						options={ [
+							{ label: __( 'Site default', 'luma-viewer' ), value: '' },
+							{ label: __( 'Load more', 'luma-viewer' ), value: 'more' },
+							{ label: __( 'Numbered pages', 'luma-viewer' ), value: 'numbers' },
+						] }
+						onChange={ ( value ) => setAttributes( { pagination: value } ) }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Filtering & order', 'luma-viewer' ) } initialOpen={ false }>
