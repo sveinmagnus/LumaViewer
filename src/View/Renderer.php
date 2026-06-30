@@ -86,14 +86,32 @@ class Renderer {
 		$from   = isset( $atts['from'] ) ? (string) $atts['from'] : '';
 		$to     = isset( $atts['to'] ) ? (string) $atts['to'] : '';
 
+		$online = ( isset( $atts['online'] ) && in_array( $atts['online'], array( 'online', 'in_person' ), true ) ) ? (string) $atts['online'] : '';
+		$free   = ( isset( $atts['free'] ) && in_array( $atts['free'], array( 'free', 'paid' ), true ) ) ? (string) $atts['free'] : '';
+		$order  = ( isset( $atts['order'] ) && in_array( $atts['order'], array( 'asc', 'desc' ), true ) ) ? (string) $atts['order'] : '';
+
+		$tags = isset( $atts['tags'] ) ? $atts['tags'] : '';
+		if ( is_string( $tags ) ) {
+			$tags = explode( ',', $tags );
+		}
+		$tags     = array_values( array_filter( array_map( 'trim', array_map( 'strval', (array) $tags ) ) ) );
+		$tags_csv = implode( ',', $tags );
+
+		$past_on        = $this->truthy( $past );
+		$resolved_order = '' !== $order ? $order : ( $past_on ? 'desc' : (string) Settings::get( 'default_order', 'asc' ) );
+
 		$args   = array(
 			'count'    => $count,
 			'tag'      => $tag,
+			'tags'     => $tags,
 			'calendar' => $calendar,
 			'offset'   => $offset,
 			'past'     => $past,
 			'from'     => $from,
 			'to'       => $to,
+			'order'    => $resolved_order,
+			'online'   => $online,
+			'free'     => $free,
 		);
 		$anchor = null;
 		$nav    = null;
@@ -216,7 +234,7 @@ class Renderer {
 		$list_style = in_array( $view, array( 'list', 'week', 'day', 'photo', 'summary' ), true );
 
 		if ( $show_filters && $list_style ) {
-			$body = $this->filter_bar( $events, $past, $from, $to ) . $body;
+			$body = $this->filter_bar( $events, $past, $from, $to, $online, $free ) . $body;
 		}
 
 		$total = (int) $result['total'];
@@ -244,6 +262,24 @@ class Renderer {
 			esc_attr( $from ),
 			esc_attr( $to ),
 			esc_attr( (string) (int) Settings::get( 'per_page' ) )
+		);
+
+		// Filter + display state, threaded so AJAX re-renders (view switch, nav,
+		// load-more) preserve the configured options.
+		$data .= sprintf(
+			' data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			esc_attr( $resolved_order ),
+			esc_attr( $online ),
+			esc_attr( $free ),
+			esc_attr( $tags_csv ),
+			esc_attr( (string) $display['excerpt_words'] ),
+			esc_attr( ! empty( $display['cover'] ) ? '1' : '0' ),
+			esc_attr( ! empty( $display['location'] ) ? '1' : '0' ),
+			esc_attr( ! empty( $display['host'] ) ? '1' : '0' ),
+			esc_attr( ! empty( $display['price'] ) ? '1' : '0' ),
+			esc_attr( ! empty( $display['excerpt'] ) ? '1' : '0' ),
+			esc_attr( ! empty( $display['tags'] ) ? '1' : '0' ),
+			esc_attr( ! empty( $display['relative'] ) ? '1' : '0' )
 		);
 
 		$html = sprintf(
@@ -517,9 +553,11 @@ class Renderer {
 	 * @param string  $past   Current "include past" value.
 	 * @param string  $from   Current from-date value.
 	 * @param string  $to     Current to-date value.
+	 * @param string  $online Current online filter (''|online|in_person).
+	 * @param string  $free   Current price filter (''|free|paid).
 	 * @return string
 	 */
-	private function filter_bar( array $events, $past = '', $from = '', $to = '' ) {
+	private function filter_bar( array $events, $past = '', $from = '', $to = '', $online = '', $free = '' ) {
 		$names = array();
 		foreach ( $events as $event ) {
 			foreach ( $event->tags() as $tag ) {
@@ -555,12 +593,39 @@ class Renderer {
 			$past_active ? 'true' : 'false',
 			esc_html__( 'Include past', 'luma-viewer' )
 		);
-		$controls   .= sprintf(
+
+		// Online/in-person and free/paid cycle buttons (each click advances to the
+		// next state and re-fetches; the JS owns the cycling).
+		$online_labels = array(
+			''          => __( 'Any location', 'luma-viewer' ),
+			'online'    => __( 'Online only', 'luma-viewer' ),
+			'in_person' => __( 'In person only', 'luma-viewer' ),
+		);
+		$free_labels   = array(
+			''     => __( 'Any price', 'luma-viewer' ),
+			'free' => __( 'Free only', 'luma-viewer' ),
+			'paid' => __( 'Paid only', 'luma-viewer' ),
+		);
+		$online        = isset( $online_labels[ $online ] ) ? $online : '';
+		$free          = isset( $free_labels[ $free ] ) ? $free : '';
+		$controls     .= sprintf(
+			'<button type="button" class="luma-viewer__chip luma-viewer__online%1$s" data-lv-action="online" data-lv-value="%2$s">%3$s</button>',
+			'' !== $online ? ' is-active' : '',
+			esc_attr( $online ),
+			esc_html( $online_labels[ $online ] )
+		);
+		$controls     .= sprintf(
+			'<button type="button" class="luma-viewer__chip luma-viewer__free%1$s" data-lv-action="free" data-lv-value="%2$s">%3$s</button>',
+			'' !== $free ? ' is-active' : '',
+			esc_attr( $free ),
+			esc_html( $free_labels[ $free ] )
+		);
+		$controls     .= sprintf(
 			'<input type="date" class="luma-viewer__date luma-viewer__date--from" value="%1$s" aria-label="%2$s" />',
 			esc_attr( (string) $from ),
 			esc_attr__( 'From date', 'luma-viewer' )
 		);
-		$controls   .= sprintf(
+		$controls     .= sprintf(
 			'<input type="date" class="luma-viewer__date luma-viewer__date--to" value="%1$s" aria-label="%2$s" />',
 			esc_attr( (string) $to ),
 			esc_attr__( 'To date', 'luma-viewer' )

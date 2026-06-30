@@ -62,51 +62,99 @@ class RestController {
 				'callback'            => array( $this, 'get_events' ),
 				'permission_callback' => array( $this, 'can_read' ),
 				'args'                => array(
-					'view'     => array(
+					'view'          => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'tag'      => array(
+					'tag'           => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'date'     => array(
+					'date'          => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'count'    => array(
+					'count'         => array(
 						'type'              => 'integer',
 						'sanitize_callback' => 'absint',
 					),
-					'layout'   => array(
+					'layout'        => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'group_by' => array(
+					'group_by'      => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
 					),
-					'calendar' => array(
+					'calendar'      => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'filters'  => array(
+					'filters'       => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'offset'   => array(
+					'offset'        => array(
 						'type'              => 'integer',
 						'sanitize_callback' => 'absint',
 					),
-					'past'     => array(
+					'past'          => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'from'     => array(
+					'from'          => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'to'       => array(
+					'to'            => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'order'         => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'online'        => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'free'          => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'tags'          => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'excerpt_words' => array(
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+					),
+					'show_cover'    => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'show_location' => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'show_host'     => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'show_price'    => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'show_excerpt'  => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'show_tags'     => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'show_relative' => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
@@ -148,16 +196,27 @@ class RestController {
 	 */
 	public function get_events( \WP_REST_Request $request ) {
 		$atts = array(
-			'view'     => (string) $request->get_param( 'view' ),
-			'tag'      => (string) $request->get_param( 'tag' ),
-			'date'     => (string) $request->get_param( 'date' ),
-			'layout'   => (string) $request->get_param( 'layout' ),
-			'group_by' => (string) $request->get_param( 'group_by' ),
-			'calendar' => (string) $request->get_param( 'calendar' ),
-			'filters'  => (string) $request->get_param( 'filters' ),
-			'past'     => (string) $request->get_param( 'past' ),
-			'from'     => (string) $request->get_param( 'from' ),
-			'to'       => (string) $request->get_param( 'to' ),
+			'view'          => (string) $request->get_param( 'view' ),
+			'tag'           => (string) $request->get_param( 'tag' ),
+			'date'          => (string) $request->get_param( 'date' ),
+			'layout'        => (string) $request->get_param( 'layout' ),
+			'group_by'      => (string) $request->get_param( 'group_by' ),
+			'calendar'      => (string) $request->get_param( 'calendar' ),
+			'filters'       => (string) $request->get_param( 'filters' ),
+			'past'          => (string) $request->get_param( 'past' ),
+			'from'          => (string) $request->get_param( 'from' ),
+			'to'            => (string) $request->get_param( 'to' ),
+			'order'         => (string) $request->get_param( 'order' ),
+			'online'        => (string) $request->get_param( 'online' ),
+			'free'          => (string) $request->get_param( 'free' ),
+			'tags'          => (string) $request->get_param( 'tags' ),
+			'show_cover'    => (string) $request->get_param( 'show_cover' ),
+			'show_location' => (string) $request->get_param( 'show_location' ),
+			'show_host'     => (string) $request->get_param( 'show_host' ),
+			'show_price'    => (string) $request->get_param( 'show_price' ),
+			'show_excerpt'  => (string) $request->get_param( 'show_excerpt' ),
+			'show_tags'     => (string) $request->get_param( 'show_tags' ),
+			'show_relative' => (string) $request->get_param( 'show_relative' ),
 		);
 
 		$count = $request->get_param( 'count' );
@@ -168,6 +227,11 @@ class RestController {
 		$offset = $request->get_param( 'offset' );
 		if ( null !== $offset && '' !== $offset ) {
 			$atts['offset'] = (int) $offset;
+		}
+
+		$words = $request->get_param( 'excerpt_words' );
+		if ( null !== $words && '' !== $words ) {
+			$atts['excerpt_words'] = (int) $words;
 		}
 
 		return new \WP_REST_Response( array( 'html' => $this->renderer->calendar( $atts ) ), 200 );

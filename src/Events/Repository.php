@@ -58,6 +58,7 @@ class Repository {
 			array(
 				'count'    => 0,
 				'tag'      => '',
+				'tags'     => array(),
 				'after'    => '',
 				'before'   => '',
 				'calendar' => '',
@@ -65,6 +66,9 @@ class Repository {
 				'past'     => '',
 				'from'     => '',
 				'to'       => '',
+				'order'    => '',
+				'online'   => '',
+				'free'     => '',
 			),
 			$args
 		);
@@ -136,8 +140,48 @@ class Repository {
 			);
 		}
 
+		// Site-wide allow / deny policy (Settings → Display), applied to every
+		// surface so a viewer can never show events that aren't meant to be public.
+		$allow = $this->parse_tag_list( (string) Settings::get( 'tag_allow' ) );
+		if ( ! empty( $allow ) ) {
+			$events = $this->keep_tagged( $events, $allow, true );
+		}
+		$deny = $this->parse_tag_list( (string) Settings::get( 'tag_deny' ) );
+		if ( ! empty( $deny ) ) {
+			$events = $this->keep_tagged( $events, $deny, false );
+		}
+
 		if ( '' !== $args['tag'] ) {
 			$events = $this->filter_by_tag( $events, (string) $args['tag'] );
+		}
+
+		$tags = array_filter( array_map( 'strval', (array) $args['tags'] ) );
+		if ( ! empty( $tags ) ) {
+			$events = $this->keep_tagged( $events, $tags, true );
+		}
+
+		if ( 'online' === $args['online'] || 'in_person' === $args['online'] ) {
+			$want_online = ( 'online' === $args['online'] );
+			$events      = array_values(
+				array_filter(
+					$events,
+					static function ( Event $event ) use ( $want_online ) {
+						return $event->location()->is_online() === $want_online;
+					}
+				)
+			);
+		}
+
+		if ( 'free' === $args['free'] || 'paid' === $args['free'] ) {
+			$want_free = ( 'free' === $args['free'] );
+			$events    = array_values(
+				array_filter(
+					$events,
+					static function ( Event $event ) use ( $want_free ) {
+						return $event->is_free() === $want_free;
+					}
+				)
+			);
 		}
 
 		usort(
@@ -148,6 +192,10 @@ class Repository {
 				return $sa <=> $sb;
 			}
 		);
+
+		if ( 'desc' === $args['order'] ) {
+			$events = array_reverse( $events );
+		}
 
 		$total  = count( $events );
 		$offset = max( 0, (int) $args['offset'] );
@@ -253,18 +301,61 @@ class Repository {
 	 * @return Event[]
 	 */
 	private function filter_by_tag( array $events, $tag ) {
+		return $this->keep_tagged( $events, array( $tag ), true );
+	}
+
+	/**
+	 * Keep (or drop) events that carry any of the given tags. A token matches a
+	 * tag by api_id or by case-insensitive name.
+	 *
+	 * @param Event[]  $events Events.
+	 * @param string[] $tokens Tag api_ids or names.
+	 * @param bool     $keep   True to keep matching events, false to drop them.
+	 * @return Event[]
+	 */
+	private function keep_tagged( array $events, array $tokens, $keep ) {
 		return array_values(
 			array_filter(
 				$events,
-				static function ( Event $event ) use ( $tag ) {
-					foreach ( $event->tags() as $event_tag ) {
-						if ( $event_tag['id'] === $tag || 0 === strcasecmp( $event_tag['name'], $tag ) ) {
-							return true;
-						}
-					}
-					return false;
+				function ( Event $event ) use ( $tokens, $keep ) {
+					return $this->event_has_any_tag( $event, $tokens ) === $keep;
 				}
 			)
 		);
+	}
+
+	/**
+	 * Whether an event carries any of the given tag tokens.
+	 *
+	 * @param Event    $event  Event.
+	 * @param string[] $tokens Tag api_ids or names.
+	 * @return bool
+	 */
+	private function event_has_any_tag( Event $event, array $tokens ) {
+		foreach ( $event->tags() as $event_tag ) {
+			foreach ( $tokens as $token ) {
+				if ( $event_tag['id'] === $token || 0 === strcasecmp( $event_tag['name'], (string) $token ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Parse a comma-separated tag list into trimmed, non-empty tokens.
+	 *
+	 * @param string $csv Comma-separated tag ids or names.
+	 * @return string[]
+	 */
+	private function parse_tag_list( $csv ) {
+		$tokens = array();
+		foreach ( explode( ',', (string) $csv ) as $token ) {
+			$token = trim( $token );
+			if ( '' !== $token ) {
+				$tokens[] = $token;
+			}
+		}
+		return $tokens;
 	}
 }

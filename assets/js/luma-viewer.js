@@ -37,6 +37,20 @@
 		var past = container.getAttribute( 'data-lv-past' ) || '';
 		var from = container.getAttribute( 'data-lv-from' ) || '';
 		var to = container.getAttribute( 'data-lv-to' ) || '';
+		var order = container.getAttribute( 'data-lv-order' ) || '';
+		var online = container.getAttribute( 'data-lv-online' ) || '';
+		var free = container.getAttribute( 'data-lv-free' ) || '';
+		var mtags = container.getAttribute( 'data-lv-mtags' ) || '';
+		var words = container.getAttribute( 'data-lv-words' ) || '';
+		var toggles = [
+			'cover',
+			'location',
+			'host',
+			'price',
+			'excerpt',
+			'tags',
+			'relative',
+		];
 
 		// "Load more" re-renders the view with a larger count.
 		if ( 'more' === trigger.getAttribute( 'data-lv-action' ) ) {
@@ -81,6 +95,28 @@
 		if ( offsetAttr && offsetAttr !== '0' ) {
 			url.searchParams.set( 'offset', offsetAttr );
 		}
+		if ( order ) {
+			url.searchParams.set( 'order', order );
+		}
+		if ( online ) {
+			url.searchParams.set( 'online', online );
+		}
+		if ( free ) {
+			url.searchParams.set( 'free', free );
+		}
+		if ( mtags ) {
+			url.searchParams.set( 'tags', mtags );
+		}
+		if ( words && words !== '0' ) {
+			url.searchParams.set( 'excerpt_words', words );
+		}
+		// Preserve resolved element-visibility across re-renders.
+		toggles.forEach( function ( key ) {
+			var val = container.getAttribute( 'data-lv-show-' + key );
+			if ( val === '0' || val === '1' ) {
+				url.searchParams.set( 'show_' + key, val );
+			}
+		} );
 
 		return url.toString();
 	}
@@ -127,7 +163,8 @@
 
 	document.addEventListener( 'click', function ( event ) {
 		var chip = event.target.closest( '.luma-viewer__chip' );
-		if ( ! chip ) {
+		// Action buttons (past / online / free) are handled by the action listener.
+		if ( ! chip || chip.hasAttribute( 'data-lv-action' ) ) {
 			return;
 		}
 		var container = chip.closest( '.luma-viewer' );
@@ -200,12 +237,32 @@
 			return;
 		}
 
+		var action = trigger.getAttribute( 'data-lv-action' );
+
 		// "Include past" flips its state before the request is built.
-		if ( 'past' === trigger.getAttribute( 'data-lv-action' ) ) {
+		if ( 'past' === action ) {
 			var on = container.getAttribute( 'data-lv-past' );
 			container.setAttribute(
 				'data-lv-past',
 				on && on !== '' && on !== '0' ? '' : '1'
+			);
+		}
+
+		// Online/in-person and free/paid cycle through their states on each click.
+		if ( 'online' === action ) {
+			var cycle = [ '', 'online', 'in_person' ];
+			var cur = container.getAttribute( 'data-lv-online' ) || '';
+			container.setAttribute(
+				'data-lv-online',
+				cycle[ ( cycle.indexOf( cur ) + 1 ) % cycle.length ]
+			);
+		}
+		if ( 'free' === action ) {
+			var fcycle = [ '', 'free', 'paid' ];
+			var fcur = container.getAttribute( 'data-lv-free' ) || '';
+			container.setAttribute(
+				'data-lv-free',
+				fcycle[ ( fcycle.indexOf( fcur ) + 1 ) % fcycle.length ]
 			);
 		}
 

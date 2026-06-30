@@ -112,6 +112,8 @@ class SettingsPage {
 		add_settings_field( 'default_view', __( 'Default view', 'luma-viewer' ), array( $this, 'field_default_view' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'default_layout', __( 'List layout', 'luma-viewer' ), array( $this, 'field_default_layout' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'default_group_by', __( 'Group list by', 'luma-viewer' ), array( $this, 'field_default_group_by' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'default_order', __( 'Default order', 'luma-viewer' ), array( $this, 'field_default_order' ), self::MENU_SLUG, 'luma_viewer_display' );
+		add_settings_field( 'tag_filter', __( 'Tag visibility', 'luma-viewer' ), array( $this, 'field_tag_filter' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'card_elements', __( 'Card elements', 'luma-viewer' ), array( $this, 'field_card_elements' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'excerpt_words', __( 'Excerpt length', 'luma-viewer' ), array( $this, 'field_excerpt_words' ), self::MENU_SLUG, 'luma_viewer_display' );
@@ -174,6 +176,12 @@ class SettingsPage {
 		$out['default_group_by'] = ( isset( $input['default_group_by'] ) && in_array( $input['default_group_by'], array( 'day', 'month', 'none' ), true ) )
 			? $input['default_group_by']
 			: $current['default_group_by'];
+
+		$out['default_order'] = ( isset( $input['default_order'] ) && in_array( $input['default_order'], array( 'asc', 'desc' ), true ) )
+			? $input['default_order']
+			: $current['default_order'];
+		$out['tag_allow']     = isset( $input['tag_allow'] ) ? sanitize_text_field( $input['tag_allow'] ) : $current['tag_allow'];
+		$out['tag_deny']      = isset( $input['tag_deny'] ) ? sanitize_text_field( $input['tag_deny'] ) : $current['tag_deny'];
 
 		$out['per_page']      = isset( $input['per_page'] ) ? min( 100, max( 1, absint( $input['per_page'] ) ) ) : $current['per_page'];
 		$out['cache_ttl']     = isset( $input['cache_ttl'] ) ? max( 60, absint( $input['cache_ttl'] ) ) : $current['cache_ttl'];
@@ -452,6 +460,47 @@ class SettingsPage {
 			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
 		}
 		echo '</select>';
+	}
+
+	/**
+	 * Default sort-order selector.
+	 *
+	 * @return void
+	 */
+	public function field_default_order() {
+		$value = (string) Settings::get( 'default_order' );
+		$opts  = array(
+			'asc'  => __( 'Soonest first', 'luma-viewer' ),
+			'desc' => __( 'Latest first', 'luma-viewer' ),
+		);
+		echo '<select name="' . esc_attr( Settings::OPTION ) . '[default_order]">';
+		foreach ( $opts as $key => $label ) {
+			printf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $value, $key, false ), esc_html( $label ) );
+		}
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'Past-events listings default to latest-first regardless of this setting.', 'luma-viewer' ) . '</p>';
+	}
+
+	/**
+	 * Tag allow/deny lists.
+	 *
+	 * @return void
+	 */
+	public function field_tag_filter() {
+		printf(
+			'<label>%3$s<br /><input type="text" name="%1$s[tag_allow]" value="%2$s" class="regular-text" /></label>',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'tag_allow' ) ),
+			esc_html__( 'Only show events tagged (comma-separated; blank = all):', 'luma-viewer' )
+		);
+		echo '<br /><br />';
+		printf(
+			'<label>%3$s<br /><input type="text" name="%1$s[tag_deny]" value="%2$s" class="regular-text" /></label>',
+			esc_attr( Settings::OPTION ),
+			esc_attr( (string) Settings::get( 'tag_deny' ) ),
+			esc_html__( 'Never show events tagged (comma-separated):', 'luma-viewer' )
+		);
+		echo '<p class="description">' . esc_html__( 'Site-wide policy applied to every block, widget and shortcode. Use tag names or IDs.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**

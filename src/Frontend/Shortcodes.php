@@ -70,6 +70,10 @@ class Shortcodes {
 				'show_tags'     => '',
 				'show_relative' => '',
 				'excerpt_words' => '',
+				'order'         => '',
+				'online'        => '',
+				'free'          => '',
+				'tags'          => '',
 			),
 			$atts,
 			'luma_calendar'
@@ -95,6 +99,10 @@ class Shortcodes {
 			'show_tags'     => sanitize_text_field( $atts['show_tags'] ),
 			'show_relative' => sanitize_text_field( $atts['show_relative'] ),
 			'excerpt_words' => absint( $atts['excerpt_words'] ),
+			'order'         => sanitize_key( $atts['order'] ),
+			'online'        => sanitize_key( $atts['online'] ),
+			'free'          => sanitize_key( $atts['free'] ),
+			'tags'          => sanitize_text_field( $atts['tags'] ),
 		);
 		if ( '' !== $atts['count'] ) {
 			$clean['count'] = absint( $atts['count'] );
