@@ -8,7 +8,7 @@ or a shortcode.
 
 ## ⬇️ Get it
 
-Download **[luma-viewer.zip](https://github.com/sveins/luma-viewer/releases/latest/download/luma-viewer.zip)**,
+Download **[luma-viewer.zip](https://github.com/sveinmagnus/LumaViewer/releases/latest/download/luma-viewer.zip)**,
 then in WordPress go to **Plugins → Add New → Upload Plugin**. See the
 **[installation guide](installation.md)** for the full walkthrough.
 

@@ -26,5 +26,5 @@ Initial release.
 - Hardening: output escaping, per-IP REST rate limiting, gated content kept out of shared caches.
 - Self-hosted updates via GitHub Releases (Plugin Update Checker).
 
-[Unreleased]: https://github.com/sveins/luma-viewer/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/sveins/luma-viewer/releases/tag/v0.1.0
+[Unreleased]: https://github.com/sveinmagnus/LumaViewer/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sveinmagnus/LumaViewer/releases/tag/v0.1.0

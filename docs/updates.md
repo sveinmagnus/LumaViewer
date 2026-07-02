@@ -23,7 +23,7 @@ users receive the production build (with `vendor/` and compiled blocks).
 ### What you need to do
 
 1. Make sure the repository URL is correct. By default it points at
-   `https://github.com/sveins/luma-viewer/`. Override it without editing code:
+   `https://github.com/sveinmagnus/LumaViewer/`. Override it without editing code:
 
    ```php
    add_filter( 'luma_viewer_update_repo', fn() => 'https://github.com/OWNER/REPO/' );

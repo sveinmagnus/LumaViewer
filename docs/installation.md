@@ -8,7 +8,7 @@
 
 ## Install from the release zip (recommended)
 
-1. Download **[luma-viewer.zip](https://github.com/sveins/luma-viewer/releases/latest/download/luma-viewer.zip)**.
+1. Download **[luma-viewer.zip](https://github.com/sveinmagnus/LumaViewer/releases/latest/download/luma-viewer.zip)**.
 2. In WordPress: **Plugins → Add New → Upload Plugin** → choose the zip → **Install Now** → **Activate**.
 
 ## Install manually

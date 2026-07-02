@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Calendar Viewer for Luma Events
- * Plugin URI:        https://github.com/sveins/luma-viewer
+ * Plugin URI:        https://github.com/sveinmagnus/LumaViewer
  * Description:       Display your Lu.ma organization calendar on WordPress with The Events Calendar–style views, Gutenberg & Elementor blocks, and MemberPress-aware access by event category.
  * Version:           0.1.0
  * Requires at least: 6.4

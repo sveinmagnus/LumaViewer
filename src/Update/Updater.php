@@ -24,7 +24,7 @@ class Updater {
 	 * Default repository the releases are published to. Override with the
 	 * `luma_viewer_update_repo` filter to match the actual repository.
 	 */
-	const DEFAULT_REPO = 'https://github.com/sveins/luma-viewer/';
+	const DEFAULT_REPO = 'https://github.com/sveinmagnus/LumaViewer/';
 
 	/**
 	 * Set up the update checker.

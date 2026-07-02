@@ -12,8 +12,8 @@ automatically and stay up to date.
 ## ⬇️ Get it
 
 1. **Download the latest version:**
-   **[luma-viewer.zip](https://github.com/sveins/luma-viewer/releases/latest/download/luma-viewer.zip)**
-   (all versions on the [Releases page](https://github.com/sveins/luma-viewer/releases)).
+   **[luma-viewer.zip](https://github.com/sveinmagnus/LumaViewer/releases/latest/download/luma-viewer.zip)**
+   (all versions on the [Releases page](https://github.com/sveinmagnus/LumaViewer/releases)).
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**, choose the file,
    and click **Install Now**, then **Activate**.
 3. Open **Settings → Luma-viewer**, paste your Luma API key, and click
@@ -98,7 +98,7 @@ choice. Events without a mapped category stay public.
 
 📖 **[Read the docs](docs/)** — installation, usage, blocks & Elementor,
 members-only events, updates, and FAQ. Found a bug or have an idea? Please
-[open an issue](https://github.com/sveins/luma-viewer/issues).
+[open an issue](https://github.com/sveinmagnus/LumaViewer/issues).
 
 ---
 
