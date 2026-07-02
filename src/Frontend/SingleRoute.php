@@ -128,26 +128,30 @@ class SingleRoute {
 
 		$decision = $this->gate->resolve( $event, get_current_user_id() );
 
-		// Never leak a gated event's details via the document title or JSON-LD
-		// in the <head>; the body is already gated by the renderer.
-		if ( Gate::HIDDEN !== $decision ) {
-			add_filter(
-				'document_title_parts',
-				static function ( $parts ) use ( $event ) {
-					$parts['title'] = $event->name();
-					return $parts;
-				}
-			);
-
-			$hide_description = ( Gate::TEASER === $decision );
-			add_action(
-				'wp_head',
-				function () use ( $event, $hide_description ) {
-					$this->print_meta_tags( $event, $hide_description );
-					$this->print_json_ld( $event, $hide_description );
-				}
-			);
+		// "Hide" behavior: the event must not exist for this viewer. 404 so its URL
+		// can't be used to confirm the event (or leak it to crawlers).
+		if ( Gate::HIDDEN === $decision ) {
+			$this->set_404();
+			return;
 		}
+
+		// Emit the document title + JSON-LD (dropping the description for teasers).
+		add_filter(
+			'document_title_parts',
+			static function ( $parts ) use ( $event ) {
+				$parts['title'] = $event->name();
+				return $parts;
+			}
+		);
+
+		$hide_description = ( Gate::TEASER === $decision );
+		add_action(
+			'wp_head',
+			function () use ( $event, $hide_description ) {
+				$this->print_meta_tags( $event, $hide_description );
+				$this->print_json_ld( $event, $hide_description );
+			}
+		);
 
 		$html = $this->renderer->event( array( 'id' => $id ) );
 

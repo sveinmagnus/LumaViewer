@@ -163,24 +163,26 @@ class Renderer {
 		 */
 		$args = apply_filters( 'luma_viewer_event_args', $args, $atts );
 
+		// Drop HIDDEN events inside the repository, before pagination, so counts /
+		// page links / "load more" reflect only what this user can actually see.
+		$gate    = $this->gate;
+		$user_id = get_current_user_id();
+		if ( $gate->is_enabled() ) {
+			$args['filter'] = static function ( Event $event ) use ( $gate, $user_id ) {
+				return Gate::HIDDEN !== $gate->resolve( $event, $user_id );
+			};
+		}
+
 		$result = $this->repo->get_events( $args );
 		$events = $result['events'];
 
 		$teaser_ids = array();
-		if ( $this->gate->is_enabled() ) {
-			$user_id = get_current_user_id();
-			$visible = array();
+		if ( $gate->is_enabled() ) {
 			foreach ( $events as $event ) {
-				$decision = $this->gate->resolve( $event, $user_id );
-				if ( Gate::HIDDEN === $decision ) {
-					continue;
-				}
-				if ( Gate::TEASER === $decision ) {
+				if ( Gate::TEASER === $gate->resolve( $event, $user_id ) ) {
 					$teaser_ids[ $event->id() ] = true;
 				}
-				$visible[] = $event;
 			}
-			$events = $visible;
 			// Visibility varies per logged-in user, so keep those responses out of
 			// shared / full-page caches. Anonymous visitors all see the same
 			// teaser/public result, which stays cacheable.
@@ -340,6 +342,11 @@ class Renderer {
 				if ( ! headers_sent() ) {
 					nocache_headers();
 				}
+			}
+			// "Hide" behavior means the event does not exist for this viewer, so
+			// render exactly like a missing event — no existence tell.
+			if ( $blocked ) {
+				$event = null;
 			}
 		}
 

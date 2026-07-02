@@ -17,6 +17,14 @@ defined( 'ABSPATH' ) || exit;
 class MemberPress {
 
 	/**
+	 * Per-request cache of user → level ids, so resolving visibility across a
+	 * whole result set doesn't issue one MeprUser query per event.
+	 *
+	 * @var array<int,array<int,int>>
+	 */
+	private $level_cache = array();
+
+	/**
 	 * Whether MemberPress is available.
 	 *
 	 * @return bool
@@ -64,11 +72,17 @@ class MemberPress {
 			return array();
 		}
 
+		if ( isset( $this->level_cache[ $user_id ] ) ) {
+			return $this->level_cache[ $user_id ];
+		}
+
 		$mepr_user = new \MeprUser( $user_id );
 		if ( ! method_exists( $mepr_user, 'active_product_subscriptions' ) ) {
+			$this->level_cache[ $user_id ] = array();
 			return array();
 		}
 
-		return array_map( 'intval', (array) $mepr_user->active_product_subscriptions() );
+		$this->level_cache[ $user_id ] = array_map( 'intval', (array) $mepr_user->active_product_subscriptions() );
+		return $this->level_cache[ $user_id ];
 	}
 }

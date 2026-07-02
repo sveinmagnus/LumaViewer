@@ -50,6 +50,7 @@ final class GateTest extends TestCase {
 			}
 		);
 		Functions\when( 'current_user_can' )->justReturn( false );
+		Functions\when( 'user_can' )->justReturn( false );
 	}
 
 	protected function tearDown(): void {
@@ -146,7 +147,7 @@ final class GateTest extends TestCase {
 	}
 
 	public function test_admin_bypasses_gate(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+		Functions\when( 'user_can' )->justReturn( true );
 		$this->with_settings(
 			array(
 				'category_map'    => array( 'evttag-x' => array( 12 ) ),
@@ -155,5 +156,28 @@ final class GateTest extends TestCase {
 		);
 		$gate = new Gate( new FakeMemberPress() );
 		$this->assertSame( Gate::VISIBLE, $gate->resolve( $this->event_with_tag( 'evttag-x' ), 1 ) );
+	}
+
+	public function test_admin_shortcut_uses_passed_user_not_current(): void {
+		// user 1 is an admin; the "current" request is irrelevant to resolve().
+		Functions\when( 'user_can' )->alias(
+			static function ( $uid ) {
+				return 1 === (int) $uid;
+			}
+		);
+		$this->with_settings(
+			array(
+				'category_map'    => array( 'evttag-x' => array( 12 ) ),
+				'gating_behavior' => 'hide',
+			)
+		);
+		$gate  = new Gate( new FakeMemberPress() );
+		$event = $this->event_with_tag( 'evttag-x' );
+
+		// The sitemap resolves as user 0, so it must stay hidden even while an
+		// admin is the one triggering generation.
+		$this->assertSame( Gate::HIDDEN, $gate->resolve( $event, 0 ) );
+		// The admin viewing their own request still previews it.
+		$this->assertSame( Gate::VISIBLE, $gate->resolve( $event, 1 ) );
 	}
 }

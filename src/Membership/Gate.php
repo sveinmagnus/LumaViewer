@@ -69,8 +69,10 @@ class Gate {
 			return self::VISIBLE; // Event is not gated.
 		}
 
-		// Let admins preview gated events.
-		if ( current_user_can( 'manage_options' ) ) {
+		// Let admins preview gated events — but key this off the user being
+		// resolved, not the current request. Otherwise an admin generating the
+		// sitemap (which resolves as user 0) would leak members-only URLs.
+		if ( user_can( (int) $user_id, 'manage_options' ) ) {
 			return self::VISIBLE;
 		}
 

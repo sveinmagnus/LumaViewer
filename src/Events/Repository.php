@@ -159,6 +159,20 @@ class Repository {
 			);
 		}
 
+		// Never surface events Luma marks non-public (private / unlisted). An empty
+		// visibility is treated as public for backward compatibility.
+		if ( apply_filters( 'luma_viewer_enforce_visibility', true ) ) {
+			$events = array_values(
+				array_filter(
+					$events,
+					static function ( Event $event ) {
+						$visibility = strtolower( $event->visibility() );
+						return '' === $visibility || 'public' === $visibility;
+					}
+				)
+			);
+		}
+
 		// Site-wide allow / deny policy (Settings → Display), applied to every
 		// surface so a viewer can never show events that aren't meant to be public.
 		$allow = $this->parse_tag_list( (string) Settings::get( 'tag_allow' ) );
@@ -212,6 +226,13 @@ class Repository {
 					}
 				)
 			);
+		}
+
+		// Per-request visibility filter (e.g. MemberPress gating) is applied BEFORE
+		// pagination so counts, page links and "load more" reflect only the events
+		// the current user can actually see.
+		if ( isset( $args['filter'] ) && is_callable( $args['filter'] ) ) {
+			$events = array_values( array_filter( $events, $args['filter'] ) );
 		}
 
 		usort(
