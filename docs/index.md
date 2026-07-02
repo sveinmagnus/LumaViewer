@@ -14,12 +14,16 @@ then in WordPress go to **Plugins → Add New → Upload Plugin**. See the
 
 ## ✨ What you get
 
-- 📅 **Six beautiful views** — List, Week, Month, Day, Photo, and Summary — with
-  on-page switching and date browsing.
-- 🧩 **Works with your editor** — Gutenberg block, Elementor widget, and
-  shortcode, all with the same options.
-- 🎨 **Lists, your way** — full cards, compact rows, or minimal; grouped by day
-  or month. Perfect for a main page or a sidebar.
+- 📅 **Eight beautiful views** — List, Week, Month, Day, Photo, Summary, Map, and
+  Carousel — with on-page switching, search, filtering and date browsing.
+- 🎛️ **Make it yours** — show or hide the cover, location, host, price, excerpt,
+  tags and dates; load-more or numbered pages; colour-coded categories; and an
+  optional quick-view popup instead of leaving your site.
+- 🧩 **Works with your editor** — Gutenberg blocks (calendar, single event,
+  featured hero, countdown), an Elementor widget, an Upcoming Events sidebar
+  widget, and shortcodes — all with the same options.
+- ⭐ **Hero & countdown** — spotlight your next event with a featured banner or a
+  live countdown timer.
 - 🔒 **Members-only events** — with MemberPress, gate events by category; others
   see a teaser or nothing.
 - ⚡ **Fast and always fresh** — cached and refreshed in the background.

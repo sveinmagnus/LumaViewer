@@ -18,6 +18,7 @@
 /package.json
 /package-lock.json
 /node_modules
+/webpack.config.js
 /phpcs.xml.dist
 /phpstan.neon.dist
 /phpstan.neon
