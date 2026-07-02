@@ -22,7 +22,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Repository {
 
-	const NOT_FOUND = '__luma_not_found__';
+	const NOT_FOUND   = '__luma_not_found__';
+	const FETCH_ERROR = '__luma_fetch_error__';
 
 	/** @var Endpoints */
 	private $endpoints;
@@ -87,15 +88,20 @@ class Repository {
 		$before = (string) $args['before'];
 		if ( '' === $after && '' === $before ) {
 			$past = in_array( (string) $args['past'], array( '1', 'true', 'yes', 'on' ), true );
-			if ( '' !== (string) $args['from'] ) {
-				$after = (string) $args['from'];
+			// from/to are attacker-reachable via REST, so they are validated and
+			// clamped to a sane window (like the month/day anchors) — otherwise each
+			// unique value is a cache miss that fans out to the Luma API.
+			$from = $this->clamp_bound( (string) $args['from'], false );
+			$to   = $this->clamp_bound( (string) $args['to'], true );
+			if ( '' !== $from ) {
+				$after = $from;
 			} elseif ( $past ) {
 				$after = gmdate( 'Y-m-d\T00:00:00\Z', strtotime( '-1 year' ) );
 			} else {
 				$after = gmdate( 'Y-m-d\TH:00:00\Z' );
 			}
-			if ( '' !== (string) $args['to'] ) {
-				$before = (string) $args['to'];
+			if ( '' !== $to ) {
+				$before = $to;
 			}
 		}
 
@@ -109,9 +115,22 @@ class Repository {
 		$cache_key = $this->cache->key( array( $is_org ? 'org_events' : 'events', $query ) );
 		$entries   = $this->cache->get( $cache_key );
 
+		if ( self::FETCH_ERROR === $entries ) {
+			// A recent fetch for this exact window failed; don't hammer the API
+			// again until the short negative-cache window expires.
+			return array(
+				'events' => array(),
+				'error'  => new \WP_Error( 'luma_viewer_unavailable', __( 'Events are temporarily unavailable.', 'luma-viewer' ) ),
+				'total'  => 0,
+			);
+		}
+
 		if ( null === $entries ) {
 			$fetched = $is_org ? $this->endpoints->list_all_org_events( $query ) : $this->endpoints->list_all_events( $query );
 			if ( is_wp_error( $fetched ) ) {
+				// Briefly negative-cache the failure so a burst of unique/abusive
+				// queries can't amplify into repeated upstream calls.
+				$this->cache->set( $cache_key, self::FETCH_ERROR, MINUTE_IN_SECONDS );
 				return array(
 					'events' => array(),
 					'error'  => $fetched,
@@ -231,7 +250,9 @@ class Repository {
 	 */
 	public function get_event( $id ) {
 		$id = (string) $id;
-		if ( '' === $id ) {
+		// Reject obviously malformed ids before spending an API call — this is the
+		// shared choke point for the single route and the quick-view REST endpoint.
+		if ( '' === $id || ! preg_match( '/^[A-Za-z0-9_-]{1,64}$/', $id ) ) {
 			return array(
 				'event' => null,
 				'error' => null,
@@ -351,6 +372,36 @@ class Repository {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Validate a `Y-m-d` date bound and clamp it to a ±5-year UTC window so it
+	 * can't be used to enumerate unbounded cache entries / API calls. Returns an
+	 * ISO-8601 string, or '' when the input is not a plain date.
+	 *
+	 * @param string $date        Raw date (expected `Y-m-d`).
+	 * @param bool   $end_of_day  Whether to anchor at 23:59:59 (upper bound).
+	 * @return string
+	 */
+	private function clamp_bound( $date, $end_of_day ) {
+		$date = trim( (string) $date );
+		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ) {
+			return '';
+		}
+		$utc = new \DateTimeZone( 'UTC' );
+		try {
+			$dt = new \DateTimeImmutable( $date . ( $end_of_day ? 'T23:59:59' : 'T00:00:00' ), $utc );
+		} catch ( \Exception $e ) {
+			return '';
+		}
+		$min = new \DateTimeImmutable( '-5 years', $utc );
+		$max = new \DateTimeImmutable( '+5 years', $utc );
+		if ( $dt < $min ) {
+			$dt = $min;
+		} elseif ( $dt > $max ) {
+			$dt = $max;
+		}
+		return $dt->format( 'c' );
 	}
 
 	/**

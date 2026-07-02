@@ -194,14 +194,24 @@ class RestController {
 	 * @return bool|\WP_Error
 	 */
 	public function can_read() {
-		if ( is_user_logged_in() ) {
+		// Admins are exempt; everyone else is throttled. Logged-in users get a
+		// higher, per-user allowance (a membership site is full of subscriber
+		// accounts, so "logged in" alone can't be a free pass).
+		if ( current_user_can( 'manage_options' ) ) {
 			return true;
 		}
 
 		$limit  = (int) apply_filters( 'luma_viewer_rest_rate_limit', 60 );
 		$window = (int) apply_filters( 'luma_viewer_rest_rate_window', MINUTE_IN_SECONDS );
 
-		if ( $this->limiter->allow( 'rest_' . RateLimiter::client_ip(), $limit, $window ) ) {
+		if ( is_user_logged_in() ) {
+			$limit  = (int) apply_filters( 'luma_viewer_rest_rate_limit_user', $limit * 2 );
+			$bucket = 'rest_user_' . get_current_user_id();
+		} else {
+			$bucket = 'rest_' . RateLimiter::client_ip();
+		}
+
+		if ( $this->limiter->allow( $bucket, $limit, $window ) ) {
 			return true;
 		}
 
@@ -247,12 +257,12 @@ class RestController {
 
 		$count = $request->get_param( 'count' );
 		if ( null !== $count && '' !== $count ) {
-			$atts['count'] = (int) $count;
+			$atts['count'] = min( 100, max( 0, (int) $count ) );
 		}
 
 		$offset = $request->get_param( 'offset' );
 		if ( null !== $offset && '' !== $offset ) {
-			$atts['offset'] = (int) $offset;
+			$atts['offset'] = min( 10000, max( 0, (int) $offset ) );
 		}
 
 		$words = $request->get_param( 'excerpt_words' );

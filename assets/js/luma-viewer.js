@@ -12,6 +12,29 @@
 		return window.lumaViewer || {};
 	}
 
+	// Fetch a plugin REST endpoint, sending the nonce when we have one. If a stale
+	// nonce is rejected (403), retry once as an anonymous read — the endpoint is
+	// public, so logged-in users on long-lived pages still get their content.
+	function restFetch( url ) {
+		var nonce = config().nonce;
+		var headers = { Accept: 'application/json' };
+		if ( nonce ) {
+			headers[ 'X-WP-Nonce' ] = nonce;
+		}
+		return fetch( url, {
+			credentials: 'same-origin',
+			headers: headers,
+		} ).then( function ( response ) {
+			if ( response.status === 403 && nonce ) {
+				return fetch( url, {
+					credentials: 'omit',
+					headers: { Accept: 'application/json' },
+				} );
+			}
+			return response;
+		} );
+	}
+
 	function buildUrl( container, trigger ) {
 		var rest = config().rest;
 		if ( ! rest ) {
@@ -199,12 +222,7 @@
 			container.setAttribute( 'aria-busy', 'false' );
 		}
 
-		var headers = { Accept: 'application/json' };
-		if ( config().nonce ) {
-			headers[ 'X-WP-Nonce' ] = config().nonce;
-		}
-
-		fetch( url, { credentials: 'same-origin', headers: headers } )
+		restFetch( url )
 			.then( function ( response ) {
 				return response.json();
 			} )
@@ -379,11 +397,7 @@
 
 		var url = new URL( endpoint, window.location.origin );
 		url.searchParams.set( 'id', id );
-		var headers = { Accept: 'application/json' };
-		if ( config().nonce ) {
-			headers[ 'X-WP-Nonce' ] = config().nonce;
-		}
-		fetch( url.toString(), { credentials: 'same-origin', headers: headers } )
+		restFetch( url.toString() )
 			.then( function ( response ) {
 				return response.json();
 			} )

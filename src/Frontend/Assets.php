@@ -58,7 +58,10 @@ class Assets {
 			array(
 				'rest'      => esc_url_raw( rest_url( 'lumaviewer/v1/events' ) ),
 				'restEvent' => esc_url_raw( rest_url( 'lumaviewer/v1/event' ) ),
-				'nonce'     => wp_create_nonce( 'wp_rest' ),
+				// Only logged-in users get (and need) a REST nonce. An anonymous
+				// visitor must NOT send a nonce, or a stale page-cached one would be
+				// rejected with 403 and break AJAX navigation entirely.
+				'nonce'     => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 				'i18n'      => array(
 					'loading' => __( 'Loading…', 'luma-viewer' ),
 					'close'   => __( 'Close', 'luma-viewer' ),

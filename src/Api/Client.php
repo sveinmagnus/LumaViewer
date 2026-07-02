@@ -112,6 +112,12 @@ class Client {
 			$args['body']                    = wp_json_encode( $body );
 		}
 
+		// Only block-and-retry on 429 in background contexts (cron / WP-CLI). On a
+		// front-end or REST request, sleeping would tie up a PHP worker and turn a
+		// Luma rate-limit into a site-wide slowdown, so we fail fast and let the
+		// caller negative-cache the error instead.
+		$may_retry = wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI );
+
 		$attempt  = 0;
 		$response = null;
 		do {
@@ -121,7 +127,7 @@ class Client {
 			}
 
 			$code = (int) wp_remote_retrieve_response_code( $response );
-			if ( 429 === $code && $attempt < $this->max_retries ) {
+			if ( 429 === $code && $may_retry && $attempt < $this->max_retries ) {
 				$retry_after = (int) wp_remote_retrieve_header( $response, 'retry-after' );
 				$sleep       = $retry_after > 0 ? $retry_after : (int) pow( 2, $attempt );
 				sleep( min( $sleep, 8 ) );

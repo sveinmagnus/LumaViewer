@@ -22,6 +22,8 @@ final class ClientTest extends TestCase {
 		Monkey\setUp();
 		// __() just returns the original string in unit context.
 		Functions\when( '__' )->returnArg( 1 );
+		// Front-end context: no blocking 429 retry.
+		Functions\when( 'wp_doing_cron' )->justReturn( false );
 	}
 
 	protected function tearDown(): void {
