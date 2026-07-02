@@ -757,6 +757,12 @@
 	color: #fff;
 }
 
+.luma-viewer__page-gap {
+	align-self: center;
+	padding: 0 0.2rem;
+	color: var(--lv-muted);
+}
+
 /* Quick-view modal -------------------------------------------------------- */
 .luma-viewer__modal[hidden] {
 	display: none;

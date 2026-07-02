@@ -9,15 +9,15 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-30T14:13:54+00:00\n"
+"POT-Creation-Date: 2026-07-02T21:02:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: luma-viewer\n"
 
 #. Plugin Name of the plugin
 #: luma-viewer.php
-#: src/Admin/SettingsPage.php:82
-#: src/Admin/SettingsPage.php:1080
+#: src/Admin/SettingsPage.php:96
+#: src/Admin/SettingsPage.php:1120
 msgid "Calendar Viewer for Luma Events"
 msgstr ""
 
@@ -48,462 +48,466 @@ msgstr ""
 msgid "Luma-viewer has category-based access rules, but MemberPress is not active — all events are shown to everyone until it is enabled."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:83
+#: src/Admin/SettingsPage.php:97
 msgid "Luma-viewer"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:106
+#: src/Admin/SettingsPage.php:120
 msgid "Luma connection"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:107
+#: src/Admin/SettingsPage.php:121
 msgid "API key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:108
+#: src/Admin/SettingsPage.php:122
 msgid "Key type"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:109
+#: src/Admin/SettingsPage.php:123
 msgid "Default calendar"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:111
+#: src/Admin/SettingsPage.php:125
 msgid "Display"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:112
+#: src/Admin/SettingsPage.php:126
 msgid "Default view"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:113
+#: src/Admin/SettingsPage.php:127
 #: src/Elementor/Widgets/CalendarWidget.php:124
-#: blocks/calendar/edit.js:90
+#: blocks/calendar/edit.js:91
 msgid "List layout"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:114
+#: src/Admin/SettingsPage.php:128
 #: src/Elementor/Widgets/CalendarWidget.php:138
-#: blocks/calendar/edit.js:101
+#: blocks/calendar/edit.js:102
 msgid "Group list by"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:115
-msgid "Default order"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:116
-msgid "Tag visibility"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:117
-msgid "Category colors"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:118
+#: src/Admin/SettingsPage.php:129
 msgid "Events per page"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:119
-#: src/Elementor/Widgets/CalendarWidget.php:176
-#: src/View/Renderer.php:510
-#: blocks/calendar/edit.js:130
-msgid "Pagination"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:120
-#: src/Elementor/Widgets/CalendarWidget.php:273
-#: blocks/calendar/edit.js:203
-msgid "Card elements"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:121
-msgid "Excerpt length"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:122
+#: src/Admin/SettingsPage.php:130
 msgid "Date &amp; time format"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:123
+#: src/Admin/SettingsPage.php:131
 msgid "Time zone"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:124
+#: src/Admin/SettingsPage.php:132
 msgid "Open Luma links"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:125
-#: src/Elementor/Widgets/CalendarWidget.php:189
-#: blocks/calendar/edit.js:140
-msgid "Quick view"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:126
-msgid "Cancelled events"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:127
-#: src/Admin/SettingsPage.php:383
-#: src/Elementor/Widgets/CalendarWidget.php:93
-#: src/View/Renderer.php:586
-#: blocks/calendar/edit.js:64
-msgid "Map"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:128
+#: src/Admin/SettingsPage.php:133
 msgid "No-events message"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:129
+#: src/Admin/SettingsPage.php:134
 msgid "Accent color"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:130
+#: src/Admin/SettingsPage.php:135
 msgid "Cache lifetime"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:131
+#: src/Admin/SettingsPage.php:136
 msgid "Single-event URL base"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:133
-msgid "Membership access"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:134
-msgid "For non-members"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:135
-msgid "Gate message"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:136
-msgid "Gate button URL"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:137
-msgid "Category → membership"
+#: src/Admin/SettingsPage.php:138
+msgid "Content &amp; filtering"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:139
-msgid "Cache and sync"
+msgid "Default order"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:140
-msgid "Status"
+#: src/Elementor/Widgets/CalendarWidget.php:176
+#: src/View/Renderer.php:558
+#: blocks/calendar/edit.js:131
+msgid "Pagination"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:141
-msgid "Auto-refresh"
+msgid "Tag visibility"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:142
-msgid "Luma webhook URL"
+msgid "Category colors"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:143
+#: src/Elementor/Widgets/CalendarWidget.php:285
+#: blocks/calendar/edit.js:210
+msgid "Card elements"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:144
+msgid "Excerpt length"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:145
+#: src/Elementor/Widgets/CalendarWidget.php:189
+#: blocks/calendar/edit.js:141
+msgid "Quick view"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:146
+msgid "Cancelled events"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:147
+#: src/Admin/SettingsPage.php:411
+#: src/Elementor/Widgets/CalendarWidget.php:93
+#: src/View/Renderer.php:654
+#: blocks/calendar/edit.js:65
+msgid "Map"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:149
+msgid "Membership access"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:150
+msgid "For non-members"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:151
+msgid "Gate message"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:152
+msgid "Gate button URL"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:153
+msgid "Category → membership"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:155
+msgid "Cache and sync"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:156
+msgid "Status"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:157
+msgid "Auto-refresh"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:158
+msgid "Luma webhook URL"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:159
 msgid "Cached events"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:289
+#: src/Admin/SettingsPage.php:305
 msgid "A key is saved — leave blank to keep it"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:289
+#: src/Admin/SettingsPage.php:305
 msgid "Paste your Luma calendar API key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:291
+#: src/Admin/SettingsPage.php:307
 msgid "From your Luma calendar: Settings → Developer → API Keys. Requires Luma Plus. Save changes, then test the connection."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:303
+#: src/Admin/SettingsPage.php:319
 msgid "Calendar key (one calendar)"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:304
+#: src/Admin/SettingsPage.php:320
 msgid "Organization key (multiple calendars)"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:311
+#: src/Admin/SettingsPage.php:327
 msgid "Use an Organization key to show events from several calendars."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:321
+#: src/Admin/SettingsPage.php:337
 msgid "Used only with an Organization key."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:327
+#: src/Admin/SettingsPage.php:343
 msgid "No calendars found yet — save your Organization key, then reload this page."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:333
+#: src/Admin/SettingsPage.php:349
 msgid "All calendars"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:338
+#: src/Admin/SettingsPage.php:354
 msgid "Blocks and shortcodes can override this with a calendar attribute."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:377
+#: src/Admin/SettingsPage.php:405
 #: src/Elementor/Widgets/CalendarWidget.php:87
-#: src/View/Renderer.php:580
-#: blocks/calendar/edit.js:58
+#: src/View/Renderer.php:648
+#: blocks/calendar/edit.js:59
 msgid "List"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:378
+#: src/Admin/SettingsPage.php:406
 #: src/Elementor/Widgets/CalendarWidget.php:88
-#: src/View/Renderer.php:581
-#: blocks/calendar/edit.js:59
+#: src/View/Renderer.php:649
+#: blocks/calendar/edit.js:60
 msgid "Week"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:379
-#: src/Admin/SettingsPage.php:497
+#: src/Admin/SettingsPage.php:407
+#: src/Admin/SettingsPage.php:525
 #: src/Elementor/Widgets/CalendarWidget.php:89
 #: src/Elementor/Widgets/CalendarWidget.php:143
-#: src/View/Renderer.php:582
-#: blocks/calendar/edit.js:60
-#: blocks/calendar/edit.js:105
+#: src/View/Renderer.php:650
+#: blocks/calendar/edit.js:61
+#: blocks/calendar/edit.js:106
 msgid "Month"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:380
-#: src/Admin/SettingsPage.php:496
+#: src/Admin/SettingsPage.php:408
+#: src/Admin/SettingsPage.php:524
 #: src/Elementor/Widgets/CalendarWidget.php:90
 #: src/Elementor/Widgets/CalendarWidget.php:142
-#: src/View/Renderer.php:583
-#: blocks/calendar/edit.js:61
-#: blocks/calendar/edit.js:104
+#: src/View/Renderer.php:651
+#: blocks/calendar/edit.js:62
+#: blocks/calendar/edit.js:105
 msgid "Day"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:381
+#: src/Admin/SettingsPage.php:409
 #: src/Elementor/Widgets/CalendarWidget.php:91
-#: src/View/Renderer.php:584
-#: blocks/calendar/edit.js:62
+#: src/View/Renderer.php:652
+#: blocks/calendar/edit.js:63
 msgid "Photo"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:382
+#: src/Admin/SettingsPage.php:410
 #: src/Elementor/Widgets/CalendarWidget.php:92
-#: src/View/Renderer.php:585
-#: blocks/calendar/edit.js:63
+#: src/View/Renderer.php:653
+#: blocks/calendar/edit.js:64
 msgid "Summary"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:384
+#: src/Admin/SettingsPage.php:412
 #: src/Elementor/Widgets/CalendarWidget.php:94
-#: src/View/Renderer.php:587
-#: blocks/calendar/edit.js:65
+#: src/View/Renderer.php:655
+#: blocks/calendar/edit.js:66
 msgid "Carousel"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:414
+#: src/Admin/SettingsPage.php:442
 msgid "Each event's own time zone"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:415
+#: src/Admin/SettingsPage.php:443
 msgid "The site time zone"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:435
+#: src/Admin/SettingsPage.php:463
 msgid "Hex color for buttons, the active view tab and highlights. Leave blank to inherit the theme."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:448
+#: src/Admin/SettingsPage.php:476
 msgid "seconds"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:450
+#: src/Admin/SettingsPage.php:478
 msgid "How long fetched events are cached before refreshing from Luma."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:465
+#: src/Admin/SettingsPage.php:493
 msgid "URL base for single-event pages. If links 404 after changing this, re-save Settings → Permalinks."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:476
+#: src/Admin/SettingsPage.php:504
 msgid "Cards (full)"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:477
+#: src/Admin/SettingsPage.php:505
 msgid "Compact rows"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:478
+#: src/Admin/SettingsPage.php:506
 msgid "Minimal (title + time)"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:485
+#: src/Admin/SettingsPage.php:513
 msgid "Default layout for List, Week and Day views. Blocks and shortcodes can override per instance."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:498
+#: src/Admin/SettingsPage.php:526
 #: src/Elementor/Widgets/CalendarWidget.php:144
-#: blocks/calendar/edit.js:106
+#: blocks/calendar/edit.js:107
 msgid "No grouping"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:515
+#: src/Admin/SettingsPage.php:543
 msgid "\"Load more\" button"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:516
+#: src/Admin/SettingsPage.php:544
 #: src/Elementor/Widgets/CalendarWidget.php:182
-#: blocks/calendar/edit.js:135
+#: blocks/calendar/edit.js:136
 msgid "Numbered pages"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:523
+#: src/Admin/SettingsPage.php:551
 msgid "How list-style views page through events beyond the per-page count."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:534
-#: src/Elementor/Widgets/CalendarWidget.php:207
-#: blocks/calendar/edit.js:152
+#: src/Admin/SettingsPage.php:562
+#: src/Elementor/Widgets/CalendarWidget.php:219
+#: blocks/calendar/edit.js:159
 msgid "Soonest first"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:535
-#: src/Elementor/Widgets/CalendarWidget.php:208
-#: blocks/calendar/edit.js:153
+#: src/Admin/SettingsPage.php:563
+#: src/Elementor/Widgets/CalendarWidget.php:220
+#: blocks/calendar/edit.js:160
 msgid "Latest first"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:542
+#: src/Admin/SettingsPage.php:570
 msgid "Past-events listings default to latest-first regardless of this setting."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:555
+#: src/Admin/SettingsPage.php:583
 msgid "Only show events tagged (comma-separated; blank = all):"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:562
+#: src/Admin/SettingsPage.php:590
 msgid "Never show events tagged (comma-separated):"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:564
+#: src/Admin/SettingsPage.php:592
 msgid "Site-wide policy applied to every block, widget and shortcode. Use tag names or IDs."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:575
+#: src/Admin/SettingsPage.php:603
 msgid "Add an API key and create event tags in Luma to color-code categories."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:596
+#: src/Admin/SettingsPage.php:624
 msgid "Optional hex colors used on tag badges and month-calendar entries. Leave blank for no color."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:606
-#: src/Elementor/Widgets/CalendarWidget.php:310
-#: blocks/calendar/edit.js:205
+#: src/Admin/SettingsPage.php:634
+#: src/Elementor/Widgets/CalendarWidget.php:322
+#: blocks/calendar/edit.js:212
 msgid "Cover image"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:607
-#: src/Elementor/Widgets/CalendarWidget.php:215
-#: src/Elementor/Widgets/CalendarWidget.php:311
-#: blocks/calendar/edit.js:158
-#: blocks/calendar/edit.js:211
+#: src/Admin/SettingsPage.php:635
+#: src/Elementor/Widgets/CalendarWidget.php:227
+#: src/Elementor/Widgets/CalendarWidget.php:323
+#: blocks/calendar/edit.js:165
+#: blocks/calendar/edit.js:218
 msgid "Location"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:608
-#: src/Elementor/Widgets/CalendarWidget.php:312
-#: blocks/calendar/edit.js:217
+#: src/Admin/SettingsPage.php:636
+#: src/Elementor/Widgets/CalendarWidget.php:324
+#: blocks/calendar/edit.js:224
 msgid "Hosts"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:609
-#: src/Elementor/Widgets/CalendarWidget.php:313
-#: blocks/calendar/edit.js:223
+#: src/Admin/SettingsPage.php:637
+#: src/Elementor/Widgets/CalendarWidget.php:325
+#: blocks/calendar/edit.js:230
 msgid "Price / free badge"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:610
-#: src/Elementor/Widgets/CalendarWidget.php:314
-#: blocks/calendar/edit.js:229
+#: src/Admin/SettingsPage.php:638
+#: src/Elementor/Widgets/CalendarWidget.php:326
+#: blocks/calendar/edit.js:236
 msgid "Description excerpt"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:611
-#: src/Elementor/Widgets/CalendarWidget.php:241
-#: src/Elementor/Widgets/CalendarWidget.php:315
-#: blocks/calendar/edit.js:178
-#: blocks/calendar/edit.js:235
+#: src/Admin/SettingsPage.php:639
+#: src/Elementor/Widgets/CalendarWidget.php:253
+#: src/Elementor/Widgets/CalendarWidget.php:327
+#: blocks/calendar/edit.js:185
+#: blocks/calendar/edit.js:242
 msgid "Tags"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:612
+#: src/Admin/SettingsPage.php:640
 msgid "Relative date (\"in 3 days\")"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:626
+#: src/Admin/SettingsPage.php:654
 msgid "Which elements appear on event cards. The layout still limits what each layout can show; blocks and shortcodes can override per instance."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:639
+#: src/Admin/SettingsPage.php:667
 msgid "words"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:654
+#: src/Admin/SettingsPage.php:682
 msgid "Date"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:662
+#: src/Admin/SettingsPage.php:690
 msgid "Time"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:664
+#: src/Admin/SettingsPage.php:692
 msgid "PHP date formats. Leave blank to use the site formats (shown as placeholders)."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:675
+#: src/Admin/SettingsPage.php:703
 msgid "In a new tab"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:676
+#: src/Admin/SettingsPage.php:704
 msgid "In the same tab"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:695
+#: src/Admin/SettingsPage.php:723
 msgid "Open an event summary in a popup when a card is clicked, instead of leaving for Luma."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:697
+#: src/Admin/SettingsPage.php:725
 msgid "Blocks, widgets and shortcodes can also enable this per instance."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:710
+#: src/Admin/SettingsPage.php:738
 msgid "Show events that have been cancelled in Luma (with a \"Cancelled\" badge)."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:712
+#: src/Admin/SettingsPage.php:740
 msgid "Uncheck to hide cancelled events everywhere."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:724
+#: src/Admin/SettingsPage.php:752
 msgid "Center (lat, lng):"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:731
+#: src/Admin/SettingsPage.php:759
 msgid "Zoom (0–19, 0 = auto-fit):"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:739
+#: src/Admin/SettingsPage.php:767
 msgid "Group nearby markers into clusters"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:741
+#: src/Admin/SettingsPage.php:769
 msgid "Leave the center blank to fit the map to the events automatically. Clustering loads a small extra library only on map pages."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:754
-#: src/View/Renderer.php:548
+#: src/Admin/SettingsPage.php:782
+#: src/View/Renderer.php:616
 #: templates/carousel.php:26
 #: templates/list.php:26
 #: templates/photo.php:24
@@ -511,132 +515,132 @@ msgstr ""
 msgid "No upcoming events."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:756
+#: src/Admin/SettingsPage.php:784
 msgid "Shown when a list/photo/summary view has no events. Leave blank for the default."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:766
+#: src/Admin/SettingsPage.php:794
 msgid "MemberPress is not active — all events are shown to everyone until it is enabled."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:769
+#: src/Admin/SettingsPage.php:797
 msgid "Map Luma event categories (tags) to MemberPress memberships. Events with a mapped category are shown only to members who hold one of the mapped memberships."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:783
+#: src/Admin/SettingsPage.php:811
 msgid "Show a teaser with a join / log-in button"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:789
+#: src/Admin/SettingsPage.php:817
 msgid "Hide the event entirely"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:816
+#: src/Admin/SettingsPage.php:844
 msgid "Defaults to the login page"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:827
+#: src/Admin/SettingsPage.php:855
 msgid "Enable MemberPress to map categories."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:833
+#: src/Admin/SettingsPage.php:861
 msgid "No MemberPress memberships found — create one first."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:839
+#: src/Admin/SettingsPage.php:867
 msgid "No Luma categories found. Add an API key and create event tags in Luma."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:850
+#: src/Admin/SettingsPage.php:878
 msgid "Luma category"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:851
+#: src/Admin/SettingsPage.php:879
 msgid "Required memberships"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:869
+#: src/Admin/SettingsPage.php:897
 msgid "Hold Ctrl/Cmd to select multiple memberships. Categories left empty stay public."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:920
-msgid "Events are cached and refreshed automatically every 15 minutes. Use the webhook for instant updates, or clear the cache manually."
+#: src/Admin/SettingsPage.php:960
+msgid "Events are cached and refreshed automatically on the schedule below. Use the webhook for instant updates, or clear the cache manually."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:933
+#: src/Admin/SettingsPage.php:973
 msgid "Every 15 minutes"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:934
+#: src/Admin/SettingsPage.php:974
 msgid "Every 30 minutes"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:935
+#: src/Admin/SettingsPage.php:975
 msgid "Hourly"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:943
+#: src/Admin/SettingsPage.php:983
 msgid "Disable scheduled pre-warming (fetch on demand only)"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:944
+#: src/Admin/SettingsPage.php:984
 msgid "How often the cache is refreshed in the background. Disabling pre-warm means the first visitor after the cache expires waits for Luma."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:959
+#: src/Admin/SettingsPage.php:999
 msgid "Add this as a webhook in Luma (Event Created / Updated / Canceled) to refresh the cache instantly. Treat it as a secret."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:969
+#: src/Admin/SettingsPage.php:1009
 msgid "Clear cached events"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:979
-#: src/Admin/SettingsPage.php:1014
-#: src/Admin/SettingsPage.php:1109
+#: src/Admin/SettingsPage.php:1019
+#: src/Admin/SettingsPage.php:1054
+#: src/Admin/SettingsPage.php:1149
 msgid "Permission denied."
 msgstr ""
 
 #. translators: %s: human-readable time difference, e.g. "5 mins".
-#: src/Admin/SettingsPage.php:998
+#: src/Admin/SettingsPage.php:1038
 #, php-format
 msgid "Events last refreshed %s ago."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1000
+#: src/Admin/SettingsPage.php:1040
 msgid "Events have not been refreshed yet."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1004
+#: src/Admin/SettingsPage.php:1044
 msgid "Refresh now"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1034
+#: src/Admin/SettingsPage.php:1074
 msgid "Test connection"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1043
+#: src/Admin/SettingsPage.php:1083
 msgid "Testing…"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1060
+#: src/Admin/SettingsPage.php:1100
 msgid "Request failed."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1085
+#: src/Admin/SettingsPage.php:1125
 msgid "Events refreshed."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1085
+#: src/Admin/SettingsPage.php:1125
 msgid "Cache cleared."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1113
+#: src/Admin/SettingsPage.php:1153
 msgid "Save an API key first, then test."
 msgstr ""
 
 #. translators: %d: number of calendars.
-#: src/Admin/SettingsPage.php:1126
+#: src/Admin/SettingsPage.php:1166
 #, php-format
 msgid "Connected — %d calendar found."
 msgid_plural "Connected — %d calendars found."
@@ -644,12 +648,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: calendar name.
-#: src/Admin/SettingsPage.php:1147
+#: src/Admin/SettingsPage.php:1187
 #, php-format
 msgid "Connected to “%s”."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:1148
+#: src/Admin/SettingsPage.php:1188
 msgid "Connected successfully."
 msgstr ""
 
@@ -657,11 +661,11 @@ msgstr ""
 msgid "No Luma API key is configured."
 msgstr ""
 
-#: src/Api/Client.php:145
+#: src/Api/Client.php:151
 msgid "The Luma API request failed."
 msgstr ""
 
-#: src/Api/Client.php:151
+#: src/Api/Client.php:157
 msgid "Could not parse the Luma API response."
 msgstr ""
 
@@ -706,69 +710,69 @@ msgid "Calendar"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:82
-#: blocks/calendar/edit.js:54
+#: blocks/calendar/edit.js:55
 msgid "View"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:86
 #: src/Elementor/Widgets/CalendarWidget.php:180
-#: blocks/calendar/edit.js:57
-#: blocks/calendar/edit.js:133
+#: blocks/calendar/edit.js:58
+#: blocks/calendar/edit.js:134
 msgid "Site default"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:101
-#: blocks/calendar/edit.js:70
+#: blocks/calendar/edit.js:71
 msgid "Category (tag)"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:108
-#: blocks/calendar/edit.js:76
+#: blocks/calendar/edit.js:77
 msgid "Number of events"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:116
-#: blocks/calendar/edit.js:84
+#: blocks/calendar/edit.js:85
 msgid "Anchor date"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:118
-#: blocks/calendar/edit.js:87
+#: blocks/calendar/edit.js:88
 msgid "YYYY-MM for Month, YYYY-MM-DD for Week/Day."
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:128
-#: blocks/calendar/edit.js:93
+#: blocks/calendar/edit.js:94
 msgid "Cards"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:129
-#: blocks/calendar/edit.js:94
+#: blocks/calendar/edit.js:95
 msgid "Compact"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:130
-#: blocks/calendar/edit.js:95
+#: blocks/calendar/edit.js:96
 msgid "Minimal"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:132
-#: blocks/calendar/edit.js:97
+#: blocks/calendar/edit.js:98
 msgid "Applies to List, Week and Day views."
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:146
-#: blocks/calendar/edit.js:108
+#: blocks/calendar/edit.js:109
 msgid "Applies to the List view."
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:152
-#: blocks/calendar/edit.js:112
+#: blocks/calendar/edit.js:113
 msgid "Calendar ID"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:154
-#: blocks/calendar/edit.js:115
+#: blocks/calendar/edit.js:116
 msgid "Organization mode only: limit to one calendar (its api_id)."
 msgstr ""
 
@@ -781,134 +785,152 @@ msgid "Adds a search box and category chips to list-style views."
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:168
-#: blocks/calendar/edit.js:124
+#: blocks/calendar/edit.js:125
 msgid "Include past events"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:170
-#: blocks/calendar/edit.js:127
+#: blocks/calendar/edit.js:128
 msgid "Show recent past events as well as upcoming ones."
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:181
-#: src/View/Renderer.php:518
-#: blocks/calendar/edit.js:134
+#: src/View/Renderer.php:566
+#: blocks/calendar/edit.js:135
 msgid "Load more"
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:191
-#: blocks/calendar/edit.js:143
+#: blocks/calendar/edit.js:144
 msgid "Open an event summary in a popup instead of leaving the page."
 msgstr ""
 
 #: src/Elementor/Widgets/CalendarWidget.php:197
-#: blocks/calendar/edit.js:146
+#: blocks/calendar/edit.js:147
+msgid "Show view switcher"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:200
+msgid "Yes"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:201
+msgid "No"
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:203
+#: blocks/calendar/edit.js:150
+msgid "The row of view tabs (List, Month, Map…) above the calendar."
+msgstr ""
+
+#: src/Elementor/Widgets/CalendarWidget.php:209
+#: blocks/calendar/edit.js:153
 msgid "Filtering & order"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:202
-#: blocks/calendar/edit.js:148
+#: src/Elementor/Widgets/CalendarWidget.php:214
+#: blocks/calendar/edit.js:155
 msgid "Order"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:206
-#: src/Elementor/Widgets/CalendarWidget.php:283
-#: blocks/calendar/edit.js:44
-#: blocks/calendar/edit.js:151
+#: src/Elementor/Widgets/CalendarWidget.php:218
+#: src/Elementor/Widgets/CalendarWidget.php:295
+#: blocks/calendar/edit.js:45
+#: blocks/calendar/edit.js:158
 msgid "Default"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:219
-#: src/Elementor/Widgets/CalendarWidget.php:232
-#: blocks/calendar/edit.js:161
-#: blocks/calendar/edit.js:171
+#: src/Elementor/Widgets/CalendarWidget.php:231
+#: src/Elementor/Widgets/CalendarWidget.php:244
+#: blocks/calendar/edit.js:168
+#: blocks/calendar/edit.js:178
 msgid "Any"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:220
-#: src/View/Renderer.php:673
-#: blocks/calendar/edit.js:162
+#: src/Elementor/Widgets/CalendarWidget.php:232
+#: src/View/Renderer.php:743
+#: blocks/calendar/edit.js:169
 msgid "Online only"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:221
-#: src/View/Renderer.php:674
-#: blocks/calendar/edit.js:163
+#: src/Elementor/Widgets/CalendarWidget.php:233
+#: src/View/Renderer.php:744
+#: blocks/calendar/edit.js:170
 msgid "In person only"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:228
-#: blocks/calendar/edit.js:168
+#: src/Elementor/Widgets/CalendarWidget.php:240
+#: blocks/calendar/edit.js:175
 msgid "Price"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:233
-#: src/View/Renderer.php:678
-#: blocks/calendar/edit.js:172
+#: src/Elementor/Widgets/CalendarWidget.php:245
+#: src/View/Renderer.php:748
+#: blocks/calendar/edit.js:179
 msgid "Free only"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:234
-#: src/View/Renderer.php:679
-#: blocks/calendar/edit.js:173
+#: src/Elementor/Widgets/CalendarWidget.php:246
+#: src/View/Renderer.php:749
+#: blocks/calendar/edit.js:180
 msgid "Paid only"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:243
-#: blocks/calendar/edit.js:181
+#: src/Elementor/Widgets/CalendarWidget.php:255
+#: blocks/calendar/edit.js:188
 msgid "Comma-separated; matches events with any of these tags."
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:249
-#: blocks/calendar/edit.js:184
+#: src/Elementor/Widgets/CalendarWidget.php:261
+#: blocks/calendar/edit.js:191
 msgid "Skip first (offset)"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:257
-#: src/View/Renderer.php:698
-#: blocks/calendar/edit.js:191
+#: src/Elementor/Widgets/CalendarWidget.php:269
+#: src/View/Renderer.php:768
+#: blocks/calendar/edit.js:198
 msgid "From date"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:259
-#: blocks/calendar/edit.js:194
+#: src/Elementor/Widgets/CalendarWidget.php:271
+#: blocks/calendar/edit.js:201
 msgid "YYYY-MM-DD lower bound (list-style views)."
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:265
-#: src/View/Renderer.php:703
-#: blocks/calendar/edit.js:197
+#: src/Elementor/Widgets/CalendarWidget.php:277
+#: src/View/Renderer.php:773
+#: blocks/calendar/edit.js:204
 msgid "To date"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:267
-#: blocks/calendar/edit.js:200
+#: src/Elementor/Widgets/CalendarWidget.php:279
+#: blocks/calendar/edit.js:207
 msgid "YYYY-MM-DD upper bound (list-style views)."
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:284
-#: blocks/calendar/edit.js:45
+#: src/Elementor/Widgets/CalendarWidget.php:296
+#: blocks/calendar/edit.js:46
 msgid "Show"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:285
-#: blocks/calendar/edit.js:46
+#: src/Elementor/Widgets/CalendarWidget.php:297
+#: blocks/calendar/edit.js:47
 msgid "Hide"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:293
-#: blocks/calendar/edit.js:247
+#: src/Elementor/Widgets/CalendarWidget.php:305
+#: blocks/calendar/edit.js:254
 msgid "Excerpt length (words)"
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:296
-#: blocks/calendar/edit.js:80
-#: blocks/calendar/edit.js:251
+#: src/Elementor/Widgets/CalendarWidget.php:308
+#: blocks/calendar/edit.js:81
+#: blocks/calendar/edit.js:258
 msgid "0 uses the site default."
 msgstr ""
 
-#: src/Elementor/Widgets/CalendarWidget.php:316
-#: blocks/calendar/edit.js:241
+#: src/Elementor/Widgets/CalendarWidget.php:328
+#: blocks/calendar/edit.js:248
 msgid "Relative date"
 msgstr ""
 
@@ -933,15 +955,47 @@ msgstr ""
 msgid "The Luma event api_id (e.g. evt-…)."
 msgstr ""
 
-#: src/Frontend/Assets.php:63
+#: src/Events/Repository.php:127
+#: templates/carousel.php:18
+#: templates/day.php:17
+#: templates/list.php:18
+#: templates/map.php:14
+#: templates/month.php:17
+#: templates/photo.php:16
+#: templates/summary.php:15
+#: templates/week.php:18
+msgid "Events are temporarily unavailable."
+msgstr ""
+
+#: src/Frontend/Assets.php:77
 msgid "Loading…"
 msgstr ""
 
-#: src/Frontend/Assets.php:64
+#: src/Frontend/Assets.php:78
 msgid "Close"
 msgstr ""
 
-#: src/Frontend/RestController.php:210
+#: src/Frontend/Assets.php:80
+msgctxt "countdown days"
+msgid "d"
+msgstr ""
+
+#: src/Frontend/Assets.php:81
+msgctxt "countdown hours"
+msgid "h"
+msgstr ""
+
+#: src/Frontend/Assets.php:82
+msgctxt "countdown minutes"
+msgid "m"
+msgstr ""
+
+#: src/Frontend/Assets.php:83
+msgctxt "countdown seconds"
+msgid "s"
+msgstr ""
+
+#: src/Frontend/RestController.php:224
 msgid "Too many requests. Please slow down and try again shortly."
 msgstr ""
 
@@ -957,48 +1011,48 @@ msgid "This event is for members. Join or log in to see the details."
 msgstr ""
 
 #. translators: %s: human time difference, e.g. "3 days".
-#: src/View/Formatter.php:128
+#: src/View/Formatter.php:140
 #, php-format
 msgid "in %s"
 msgstr ""
 
 #. translators: %s: human time difference, e.g. "2 hours".
-#: src/View/Formatter.php:131
+#: src/View/Formatter.php:143
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: src/View/Renderer.php:297
+#: src/View/Renderer.php:314
 msgid "Events"
 msgstr ""
 
-#: src/View/Renderer.php:606
+#: src/View/Renderer.php:676
 #: templates/carousel.php:31
 msgid "Previous"
 msgstr ""
 
-#: src/View/Renderer.php:608
+#: src/View/Renderer.php:678
 #: templates/carousel.php:40
 msgid "Next"
 msgstr ""
 
-#: src/View/Renderer.php:614
+#: src/View/Renderer.php:684
 msgid "Calendar views"
 msgstr ""
 
-#: src/View/Renderer.php:646
+#: src/View/Renderer.php:716
 msgid "Search events…"
 msgstr ""
 
-#: src/View/Renderer.php:666
+#: src/View/Renderer.php:736
 msgid "Include past"
 msgstr ""
 
-#: src/View/Renderer.php:672
+#: src/View/Renderer.php:742
 msgid "Any location"
 msgstr ""
 
-#: src/View/Renderer.php:677
+#: src/View/Renderer.php:747
 msgid "Any price"
 msgstr ""
 
@@ -1010,23 +1064,12 @@ msgstr ""
 msgid "A compact list of upcoming Lu.ma events."
 msgstr ""
 
-#: src/Widgets/UpcomingWidget.php:91
+#: src/Widgets/UpcomingWidget.php:92
 msgid "Title:"
 msgstr ""
 
-#: src/Widgets/UpcomingWidget.php:98
+#: src/Widgets/UpcomingWidget.php:99
 msgid "Number of events:"
-msgstr ""
-
-#: templates/carousel.php:18
-#: templates/day.php:17
-#: templates/list.php:18
-#: templates/map.php:14
-#: templates/month.php:17
-#: templates/photo.php:16
-#: templates/summary.php:15
-#: templates/week.php:18
-msgid "Events are temporarily unavailable."
 msgstr ""
 
 #: templates/countdown.php:19
@@ -1046,13 +1089,13 @@ msgid "No upcoming event to feature."
 msgstr ""
 
 #: templates/featured.php:43
-#: templates/partials/event-card.php:89
+#: templates/partials/event-card.php:95
 #: templates/single.php:81
 msgid "Online"
 msgstr ""
 
 #: templates/featured.php:51
-#: templates/partials/event-card.php:140
+#: templates/partials/event-card.php:146
 msgid "View on Luma"
 msgstr ""
 
@@ -1068,28 +1111,28 @@ msgstr ""
 msgid "Enable JavaScript to view the event map."
 msgstr ""
 
-#: templates/month.php:107
-#: templates/partials/event-card.php:134
+#: templates/month.php:108
+#: templates/partials/event-card.php:140
 msgid "Members only"
 msgstr ""
 
-#: templates/partials/event-card.php:76
+#: templates/partials/event-card.php:82
 #: templates/single.php:69
 msgid "Cancelled"
 msgstr ""
 
-#: templates/partials/event-card.php:79
+#: templates/partials/event-card.php:85
 #: templates/single.php:72
 msgid "Sold out"
 msgstr ""
 
-#: templates/partials/event-card.php:82
+#: templates/partials/event-card.php:88
 #: templates/single.php:75
 msgid "Free"
 msgstr ""
 
 #. translators: %s: comma-separated host names.
-#: templates/partials/event-card.php:99
+#: templates/partials/event-card.php:105
 #: templates/single.php:90
 #, php-format
 msgid "Hosted by %s"
@@ -1112,23 +1155,23 @@ msgstr ""
 msgid "Full details &amp; register on Luma"
 msgstr ""
 
-#: templates/week.php:50
+#: templates/week.php:51
 msgid "No events."
 msgstr ""
 
-#: blocks/calendar/edit.js:52
+#: blocks/calendar/edit.js:53
 msgid "Calendar settings"
 msgstr ""
 
-#: blocks/calendar/edit.js:73
+#: blocks/calendar/edit.js:74
 msgid "Show only events with this Luma tag."
 msgstr ""
 
-#: blocks/calendar/edit.js:118
+#: blocks/calendar/edit.js:119
 msgid "Show search & category filters"
 msgstr ""
 
-#: blocks/calendar/edit.js:121
+#: blocks/calendar/edit.js:122
 msgid "Adds a search box and category chips above list-style views."
 msgstr ""
 

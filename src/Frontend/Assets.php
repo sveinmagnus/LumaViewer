@@ -23,15 +23,19 @@ class Assets {
 	 * @return void
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
+		// The stylesheet is registered on `init` so it's available both on the
+		// front end and inside the block editor (referenced as each block's
+		// `style` handle), giving server-rendered block previews their styling.
+		add_action( 'init', array( $this, 'register_style' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
 	}
 
 	/**
-	 * Register (not enqueue) styles.
+	 * Register the front-end stylesheet + accent inline style.
 	 *
 	 * @return void
 	 */
-	public function register_assets() {
+	public function register_style() {
 		wp_register_style(
 			'luma-viewer',
 			LUMA_VIEWER_URL . 'assets/css/luma-viewer.css',
@@ -43,7 +47,14 @@ class Assets {
 		if ( $accent ) {
 			wp_add_inline_style( 'luma-viewer', '.luma-viewer{--lv-accent:' . $accent . ';}' );
 		}
+	}
 
+	/**
+	 * Register the front-end scripts.
+	 *
+	 * @return void
+	 */
+	public function register_scripts() {
 		wp_register_script(
 			'luma-viewer',
 			LUMA_VIEWER_URL . 'assets/js/luma-viewer.js',
@@ -65,6 +76,11 @@ class Assets {
 				'i18n'      => array(
 					'loading' => __( 'Loading…', 'luma-viewer' ),
 					'close'   => __( 'Close', 'luma-viewer' ),
+					// Single-letter countdown unit labels.
+					'cdDay'   => _x( 'd', 'countdown days', 'luma-viewer' ),
+					'cdHour'  => _x( 'h', 'countdown hours', 'luma-viewer' ),
+					'cdMin'   => _x( 'm', 'countdown minutes', 'luma-viewer' ),
+					'cdSec'   => _x( 's', 'countdown seconds', 'luma-viewer' ),
 				),
 			)
 		);

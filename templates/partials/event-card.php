@@ -34,7 +34,13 @@ $has_cta    = ( 'minimal' !== $layout );
 $link_attrs = $formatter->link_attrs();
 $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
 ?>
-<article class="<?php echo esc_attr( $classes ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>" data-lv-title="<?php echo esc_attr( $formatter->lc( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( $formatter->lc( implode( ' ', wp_list_pluck( $event->tags(), 'name' ) ) ) ); ?>">
+<?php
+// Tags are stored as a |-delimited, lowercased list so a chip can match a whole
+// tag name (which may itself contain spaces) rather than a loose substring.
+$lv_tag_names = array_filter( wp_list_pluck( $event->tags(), 'name' ) );
+$lv_tags_attr = empty( $lv_tag_names ) ? '' : '|' . $formatter->lc( implode( '|', $lv_tag_names ) ) . '|';
+?>
+<article class="<?php echo esc_attr( $classes ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>" data-lv-title="<?php echo esc_attr( $formatter->lc( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( $lv_tags_attr ); ?>">
 	<?php if ( $show( 'cover' ) && '' !== $event->cover_url() ) : ?>
 		<?php if ( $teaser ) : ?>
 			<span class="luma-viewer__card-cover">

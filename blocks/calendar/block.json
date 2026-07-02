@@ -42,5 +42,6 @@
 		"show_tags": { "type": "string", "default": "" },
 		"show_relative": { "type": "string", "default": "" }
 	},
-	"editorScript": "file:./index.js"
+	"editorScript": "file:./index.js",
+	"style": "luma-viewer"
 }

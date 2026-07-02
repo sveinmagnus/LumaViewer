@@ -118,7 +118,7 @@
 			if ( m.where ) {
 				html += '<br>' + escapeHtml( m.where );
 			}
-			if ( m.url ) {
+			if ( m.url && /^https?:\/\//i.test( m.url ) ) {
 				html +=
 					'<br><a href="' +
 					encodeURI( m.url ) +

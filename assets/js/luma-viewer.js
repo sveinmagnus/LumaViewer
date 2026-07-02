@@ -168,7 +168,7 @@
 			var tags = card.getAttribute( 'data-lv-tags' ) || '';
 			var match =
 				( ! query || title.indexOf( query ) !== -1 ) &&
-				( ! tag || tags.indexOf( tag ) !== -1 );
+				( ! tag || tags.indexOf( '|' + tag + '|' ) !== -1 );
 			card.style.display = match ? '' : 'none';
 		} );
 
@@ -221,6 +221,14 @@
 		container.classList.add( 'is-loading' );
 		container.setAttribute( 'aria-busy', 'true' );
 
+		// Remember any live search / chip selection so it survives the swap.
+		var oldSearch = container.querySelector( '.luma-viewer__search' );
+		var searchVal = oldSearch ? oldSearch.value : '';
+		var activeChip = container.querySelector(
+			'.luma-viewer__chip.is-active[data-lv-chip]'
+		);
+		var chipVal = activeChip ? activeChip.getAttribute( 'data-lv-chip' ) : '';
+
 		function reset() {
 			container.classList.remove( 'is-loading' );
 			container.setAttribute( 'aria-busy', 'false' );
@@ -244,6 +252,28 @@
 				}
 				container.replaceWith( next );
 				next.setAttribute( 'aria-busy', 'false' );
+
+				// Restore the live search / chip filter onto the fresh markup.
+				if ( searchVal || chipVal ) {
+					var newSearch = next.querySelector( '.luma-viewer__search' );
+					if ( newSearch ) {
+						newSearch.value = searchVal;
+					}
+					if ( chipVal ) {
+						var safe =
+							window.CSS && CSS.escape
+								? CSS.escape( chipVal )
+								: chipVal.replace( /"/g, '\\"' );
+						var newChip = next.querySelector(
+							'.luma-viewer__chip[data-lv-chip="' + safe + '"]'
+						);
+						if ( newChip ) {
+							newChip.classList.add( 'is-active' );
+						}
+					}
+					applyFilter( next );
+				}
+
 				// Move focus to the refreshed region so keyboard and screen-reader
 				// users follow the content change instead of losing their place.
 				if ( typeof next.focus === 'function' ) {
@@ -337,12 +367,30 @@
 			var h = Math.floor( ( diff % 86400 ) / 3600 );
 			var m = Math.floor( ( diff % 3600 ) / 60 );
 			var s = diff % 60;
-			el.textContent = d + 'd ' + h + 'h ' + m + 'm ' + s + 's';
+			var i18n = strings();
+			el.textContent =
+				d + ( i18n.cdDay || 'd' ) + ' ' +
+				h + ( i18n.cdHour || 'h' ) + ' ' +
+				m + ( i18n.cdMin || 'm' ) + ' ' +
+				s + ( i18n.cdSec || 's' );
 		} );
 	}
-	setInterval( tickCountdowns, 1000 );
-	tickCountdowns();
-	document.addEventListener( 'luma-viewer:rendered', tickCountdowns );
+	// Only run the 1s ticker while a countdown is actually on the page.
+	var countdownTimer = null;
+	function ensureTicker() {
+		var has = document.querySelector( '.luma-viewer__countdown[data-lv-start]' );
+		if ( has && ! countdownTimer ) {
+			countdownTimer = setInterval( tickCountdowns, 1000 );
+		} else if ( ! has && countdownTimer ) {
+			clearInterval( countdownTimer );
+			countdownTimer = null;
+		}
+		if ( has ) {
+			tickCountdowns();
+		}
+	}
+	ensureTicker();
+	document.addEventListener( 'luma-viewer:rendered', ensureTicker );
 
 	// Quick-view modal --------------------------------------------------------
 	var modal = null;
@@ -360,20 +408,46 @@
 		modal = document.createElement( 'div' );
 		modal.className = 'luma-viewer__modal';
 		modal.setAttribute( 'hidden', '' );
+		// Structure is static; the (translatable) label is set via setAttribute so
+		// a hostile translation can't inject markup.
 		modal.innerHTML =
 			'<div class="luma-viewer__modal-backdrop" data-lv-close></div>' +
 			'<div class="luma-viewer__modal-box" role="dialog" aria-modal="true">' +
-			'<button type="button" class="luma-viewer__modal-close" data-lv-close aria-label="' +
-			( strings().close || 'Close' ) +
-			'">&times;</button>' +
+			'<button type="button" class="luma-viewer__modal-close" data-lv-close>&times;</button>' +
 			'<div class="luma-viewer__modal-body" aria-live="polite"></div>' +
 			'</div>';
 		document.body.appendChild( modal );
 		modalBody = modal.querySelector( '.luma-viewer__modal-body' );
+		var closeBtn = modal.querySelector( '.luma-viewer__modal-close' );
+		if ( closeBtn ) {
+			closeBtn.setAttribute( 'aria-label', strings().close || 'Close' );
+		}
 
 		modal.addEventListener( 'click', function ( event ) {
 			if ( event.target.closest( '[data-lv-close]' ) ) {
 				closeModal();
+			}
+		} );
+
+		// Keep Tab focus inside the dialog while it is open.
+		modal.addEventListener( 'keydown', function ( event ) {
+			if ( 'Tab' !== event.key ) {
+				return;
+			}
+			var focusable = modal.querySelectorAll(
+				'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+			);
+			if ( ! focusable.length ) {
+				return;
+			}
+			var first = focusable[ 0 ];
+			var last = focusable[ focusable.length - 1 ];
+			if ( event.shiftKey && document.activeElement === first ) {
+				event.preventDefault();
+				last.focus();
+			} else if ( ! event.shiftKey && document.activeElement === last ) {
+				event.preventDefault();
+				first.focus();
 			}
 		} );
 		return modal;
@@ -423,7 +497,9 @@
 
 	// Intercept card clicks inside quick-view-enabled calendars.
 	document.addEventListener( 'click', function ( event ) {
-		var link = event.target.closest( '.luma-viewer__card a, .luma-viewer__cell-event' );
+		var link = event.target.closest(
+			'.luma-viewer__card a, .luma-viewer__cell-event, .luma-viewer__summary-link'
+		);
 		if ( ! link || ! link.getAttribute( 'href' ) ) {
 			return;
 		}

@@ -16,5 +16,6 @@
 	"attributes": {
 		"id": { "type": "string", "default": "" }
 	},
-	"editorScript": "file:./index.js"
+	"editorScript": "file:./index.js",
+	"style": "luma-viewer"
 }

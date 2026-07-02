@@ -31,7 +31,10 @@ class RateLimiter {
 			return true;
 		}
 
-		$key  = 'luma_viewer_rl_' . md5( (string) $bucket );
+		// Note: this prefix deliberately does NOT start with "luma_viewer_", so the
+		// cache flush (which sweeps luma_viewer_* transients) can't wipe the abuse
+		// counters. Uninstall cleans it up separately.
+		$key  = 'lv_ratelimit_' . md5( (string) $bucket );
 		$now  = time();
 		$data = get_transient( $key );
 

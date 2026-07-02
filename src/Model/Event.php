@@ -206,10 +206,20 @@ class Event {
 		$currency = (string) ( $ev['currency'] ?? '' );
 		$money    = ( '' !== $currency ? $currency . ' ' : '' ) . rtrim( rtrim( number_format( $amount, 2 ), '0' ), '.' );
 
-		return isset( $ev['min_price'] )
+		$label = isset( $ev['min_price'] )
 			/* translators: %s: formatted price. */
 			? sprintf( __( 'From %s', 'luma-viewer' ), $money )
 			: $money;
+
+		/**
+		 * Filters the price label. Luma's exact amount units (major vs. minor /
+		 * cents) should be confirmed against the live API; this hook lets a site
+		 * correct the formatting without patching the plugin.
+		 *
+		 * @param string $label The derived price label.
+		 * @param array  $ev    The raw event object.
+		 */
+		return (string) apply_filters( 'luma_viewer_price_label', $label, $ev );
 	}
 
 	/** @return string */

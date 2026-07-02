@@ -26,6 +26,7 @@ down to with `[luma_countdown]`.
 | `free` | `free` or `paid` | any | all |
 | `pagination` | `more` (load-more) or `numbers` | site default | list-style views |
 | `quickview` | `true` to open events in a popup | site default | all |
+| `chrome` | `0` to hide the view-switcher toolbar | shown | all |
 | `excerpt_words` | integer — excerpt length | site default (25) | List, Carousel |
 | `show_cover` / `show_location` / `show_host` / `show_price` / `show_excerpt` / `show_tags` / `show_relative` | `1` (show) or `0` (hide) | layout + site default | card views |
 

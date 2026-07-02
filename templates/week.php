@@ -29,7 +29,8 @@ $start = $start->setTime( 0, 0, 0 );
 $by_day = array();
 foreach ( $events as $event ) {
 	if ( $event->has_start() ) {
-		$by_day[ wp_date( 'Y-m-d', $event->start()->getTimestamp(), $tz ) ][] = $event;
+		// File under the event's own display day so it lines up with its shown time.
+		$by_day[ wp_date( 'Y-m-d', $event->start()->getTimestamp(), $formatter->display_tz( $event ) ) ][] = $event;
 	}
 }
 

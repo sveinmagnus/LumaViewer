@@ -538,14 +538,20 @@ class Renderer {
 		if ( 'numbers' === $style ) {
 			$current = (int) floor( $offset / $count ) + 1;
 			$links   = '';
-			for ( $page = 1; $page <= $pages; $page++ ) {
-				$links .= sprintf(
-					'<button type="button" class="luma-viewer__page%1$s" data-lv-action="page" data-lv-offset="%2$d" aria-current="%3$s">%4$d</button>',
-					$page === $current ? ' is-current' : '',
+			$prev    = 0;
+			foreach ( $this->page_window( $current, $pages ) as $page ) {
+				if ( $prev && $page > $prev + 1 ) {
+					$links .= '<span class="luma-viewer__page-gap" aria-hidden="true">&hellip;</span>';
+				}
+				$is_current = ( $page === $current );
+				$links     .= sprintf(
+					'<button type="button" class="luma-viewer__page%1$s" data-lv-action="page" data-lv-offset="%2$d"%3$s>%4$d</button>',
+					$is_current ? ' is-current' : '',
 					( $page - 1 ) * $count,
-					$page === $current ? 'page' : 'false',
+					$is_current ? ' aria-current="page"' : '',
 					$page
 				);
+				$prev       = $page;
 			}
 			return sprintf(
 				'<nav class="luma-viewer__pages" aria-label="%s">%s</nav>',
@@ -562,6 +568,26 @@ class Renderer {
 		}
 
 		return '';
+	}
+
+	/**
+	 * The page numbers to show for numbered pagination: first, last, and a window
+	 * around the current page (the JS/CSS renders "…" for the gaps).
+	 *
+	 * @param int $current Current page.
+	 * @param int $pages   Total pages.
+	 * @return int[]
+	 */
+	private function page_window( $current, $pages ) {
+		$set = array_filter(
+			array( 1, $pages, $current - 1, $current, $current + 1 ),
+			static function ( $page ) use ( $pages ) {
+				return $page >= 1 && $page <= $pages;
+			}
+		);
+		$set = array_values( array_unique( $set ) );
+		sort( $set );
+		return $set;
 	}
 
 	/**
@@ -629,10 +655,12 @@ class Renderer {
 			'carousel' => __( 'Carousel', 'luma-viewer' ),
 		);
 
+		// Plain toggle buttons (aria-pressed) rather than a role="tab" tablist,
+		// which would require full arrow-key roving-tabindex behavior to be valid.
 		$tabs = '';
 		foreach ( $labels as $key => $label ) {
 			$tabs .= sprintf(
-				'<button type="button" role="tab" class="luma-viewer__view-tab%1$s" data-lv-action="view" data-lv-view="%2$s" aria-selected="%3$s">%4$s</button>',
+				'<button type="button" class="luma-viewer__view-tab%1$s" data-lv-action="view" data-lv-view="%2$s" aria-pressed="%3$s">%4$s</button>',
 				$key === $view ? ' is-active' : '',
 				esc_attr( $key ),
 				$key === $view ? 'true' : 'false',
@@ -652,7 +680,7 @@ class Renderer {
 		}
 
 		return sprintf(
-			'<div class="luma-viewer__toolbar"><nav class="luma-viewer__views" role="tablist" aria-label="%1$s">%2$s</nav>%3$s</div>',
+			'<div class="luma-viewer__toolbar"><div class="luma-viewer__views" role="group" aria-label="%1$s">%2$s</div>%3$s</div>',
 			esc_attr__( 'Calendar views', 'luma-viewer' ),
 			$tabs,
 			$nav_html

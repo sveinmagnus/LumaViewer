@@ -45,11 +45,12 @@ $event_color = static function ( $event, $colors ) {
 	return '';
 };
 
-// Map events to their day in the site time zone.
+// Map events to their day in each event's display time zone, so the cell they
+// land in matches the time shown on the event.
 $by_day = array();
 foreach ( $events as $event ) {
 	if ( $event->has_start() ) {
-		$by_day[ wp_date( 'Y-m-d', $event->start()->getTimestamp(), $tz ) ][] = $event;
+		$by_day[ wp_date( 'Y-m-d', $event->start()->getTimestamp(), $formatter->display_tz( $event ) ) ][] = $event;
 	}
 }
 
@@ -106,7 +107,7 @@ $cell          = 0;
 												<?php if ( ! empty( $teaser_ids[ $event->id() ] ) ) : ?>
 													<span class="luma-viewer__cell-event luma-viewer__cell-event--teaser<?php echo esc_attr( $dot ); ?>" title="<?php echo esc_attr__( 'Members only', 'luma-viewer' ); ?>"<?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value escaped above. ?>><?php echo esc_html( $event->name() ); ?></span>
 												<?php else : ?>
-													<a class="luma-viewer__cell-event<?php echo esc_attr( $dot ); ?>" href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $formatter->link_attrs(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?> title="<?php echo esc_attr( $event->name() ); ?>"<?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value escaped above. ?>><?php echo esc_html( $event->name() ); ?></a>
+													<a class="luma-viewer__cell-event<?php echo esc_attr( $dot ); ?>" href="<?php echo esc_url( $event->luma_url() ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>"<?php echo $formatter->link_attrs(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?> title="<?php echo esc_attr( $event->name() ); ?>"<?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value escaped above. ?>><?php echo esc_html( $event->name() ); ?></a>
 												<?php endif; ?>
 											</li>
 										<?php endforeach; ?>

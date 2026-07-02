@@ -47,6 +47,20 @@ class SettingsPage {
 	private $cache;
 
 	/**
+	 * Per-request memo of fetched Luma tags.
+	 *
+	 * @var array<int,array{id:string,name:string}>|null
+	 */
+	private $tags_memo = null;
+
+	/**
+	 * Per-request memo of fetched Luma calendars.
+	 *
+	 * @var array<string,string>|null
+	 */
+	private $calendars_memo = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Endpoints   $endpoints   API endpoints.
@@ -112,23 +126,25 @@ class SettingsPage {
 		add_settings_field( 'default_view', __( 'Default view', 'luma-viewer' ), array( $this, 'field_default_view' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'default_layout', __( 'List layout', 'luma-viewer' ), array( $this, 'field_default_layout' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'default_group_by', __( 'Group list by', 'luma-viewer' ), array( $this, 'field_default_group_by' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'default_order', __( 'Default order', 'luma-viewer' ), array( $this, 'field_default_order' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'tag_filter', __( 'Tag visibility', 'luma-viewer' ), array( $this, 'field_tag_filter' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'category_colors', __( 'Category colors', 'luma-viewer' ), array( $this, 'field_category_colors' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'per_page', __( 'Events per page', 'luma-viewer' ), array( $this, 'field_per_page' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'pagination', __( 'Pagination', 'luma-viewer' ), array( $this, 'field_pagination' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'card_elements', __( 'Card elements', 'luma-viewer' ), array( $this, 'field_card_elements' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'excerpt_words', __( 'Excerpt length', 'luma-viewer' ), array( $this, 'field_excerpt_words' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'date_time_format', __( 'Date &amp; time format', 'luma-viewer' ), array( $this, 'field_date_time_format' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'timezone_mode', __( 'Time zone', 'luma-viewer' ), array( $this, 'field_timezone_mode' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'link_target', __( 'Open Luma links', 'luma-viewer' ), array( $this, 'field_link_target' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'quickview', __( 'Quick view', 'luma-viewer' ), array( $this, 'field_quickview' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'show_cancelled', __( 'Cancelled events', 'luma-viewer' ), array( $this, 'field_show_cancelled' ), self::MENU_SLUG, 'luma_viewer_display' );
-		add_settings_field( 'map_options', __( 'Map', 'luma-viewer' ), array( $this, 'field_map_options' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'empty_message', __( 'No-events message', 'luma-viewer' ), array( $this, 'field_empty_message' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'accent_color', __( 'Accent color', 'luma-viewer' ), array( $this, 'field_accent_color' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'cache_ttl', __( 'Cache lifetime', 'luma-viewer' ), array( $this, 'field_cache_ttl' ), self::MENU_SLUG, 'luma_viewer_display' );
 		add_settings_field( 'single_base', __( 'Single-event URL base', 'luma-viewer' ), array( $this, 'field_single_base' ), self::MENU_SLUG, 'luma_viewer_display' );
+
+		add_settings_section( 'luma_viewer_content', __( 'Content &amp; filtering', 'luma-viewer' ), '__return_false', self::MENU_SLUG );
+		add_settings_field( 'default_order', __( 'Default order', 'luma-viewer' ), array( $this, 'field_default_order' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'pagination', __( 'Pagination', 'luma-viewer' ), array( $this, 'field_pagination' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'tag_filter', __( 'Tag visibility', 'luma-viewer' ), array( $this, 'field_tag_filter' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'category_colors', __( 'Category colors', 'luma-viewer' ), array( $this, 'field_category_colors' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'card_elements', __( 'Card elements', 'luma-viewer' ), array( $this, 'field_card_elements' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'excerpt_words', __( 'Excerpt length', 'luma-viewer' ), array( $this, 'field_excerpt_words' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'quickview', __( 'Quick view', 'luma-viewer' ), array( $this, 'field_quickview' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'show_cancelled', __( 'Cancelled events', 'luma-viewer' ), array( $this, 'field_show_cancelled' ), self::MENU_SLUG, 'luma_viewer_content' );
+		add_settings_field( 'map_options', __( 'Map', 'luma-viewer' ), array( $this, 'field_map_options' ), self::MENU_SLUG, 'luma_viewer_content' );
 
 		add_settings_section( 'luma_viewer_membership', __( 'Membership access', 'luma-viewer' ), array( $this, 'membership_intro' ), self::MENU_SLUG );
 		add_settings_field( 'gating_behavior', __( 'For non-members', 'luma-viewer' ), array( $this, 'field_gating_behavior' ), self::MENU_SLUG, 'luma_viewer_membership' );
@@ -344,6 +360,14 @@ class SettingsPage {
 	 * @return array<string,string>
 	 */
 	private function fetch_calendars() {
+		if ( is_array( $this->calendars_memo ) ) {
+			return $this->calendars_memo;
+		}
+		$cached = get_transient( 'luma_viewer_admin_calendars' );
+		if ( is_array( $cached ) ) {
+			$this->calendars_memo = $cached;
+			return $cached;
+		}
 		if ( ! $this->endpoints->client()->has_key() ) {
 			return array();
 		}
@@ -362,6 +386,10 @@ class SettingsPage {
 			if ( '' !== $id ) {
 				$out[ $id ] = (string) ( $cal['name'] ?? $id );
 			}
+		}
+		$this->calendars_memo = $out;
+		if ( ! empty( $out ) ) {
+			set_transient( 'luma_viewer_admin_calendars', $out, 10 * MINUTE_IN_SECONDS );
 		}
 		return $out;
 	}
@@ -875,6 +903,14 @@ class SettingsPage {
 	 * @return array<int,array{id:string,name:string}>
 	 */
 	private function fetch_tags() {
+		if ( is_array( $this->tags_memo ) ) {
+			return $this->tags_memo;
+		}
+		$cached = get_transient( 'luma_viewer_admin_tags' );
+		if ( is_array( $cached ) ) {
+			$this->tags_memo = $cached;
+			return $cached;
+		}
 		if ( ! $this->endpoints->client()->has_key() ) {
 			return array();
 		}
@@ -908,6 +944,10 @@ class SettingsPage {
 				);
 			}
 		}
+		$this->tags_memo = $tags;
+		if ( ! empty( $tags ) ) {
+			set_transient( 'luma_viewer_admin_tags', $tags, 10 * MINUTE_IN_SECONDS );
+		}
 		return $tags;
 	}
 
@@ -917,7 +957,7 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function sync_intro() {
-		echo '<p>' . esc_html__( 'Events are cached and refreshed automatically every 15 minutes. Use the webhook for instant updates, or clear the cache manually.', 'luma-viewer' ) . '</p>';
+		echo '<p>' . esc_html__( 'Events are cached and refreshed automatically on the schedule below. Use the webhook for instant updates, or clear the cache manually.', 'luma-viewer' ) . '</p>';
 	}
 
 	/**

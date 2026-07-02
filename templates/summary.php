@@ -46,7 +46,7 @@ foreach ( $events as $event ) {
 						<?php if ( ! empty( $teaser_ids[ $event->id() ] ) ) : ?>
 							<span class="luma-viewer__summary-teaser"><?php echo esc_html( $event->name() ); ?></span>
 						<?php else : ?>
-							<a href="<?php echo esc_url( $event->luma_url() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>><?php echo esc_html( $event->name() ); ?></a>
+							<a class="luma-viewer__summary-link" href="<?php echo esc_url( $event->luma_url() ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>"<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed, safe attribute string. ?>><?php echo esc_html( $event->name() ); ?></a>
 						<?php endif; ?>
 					</li>
 				<?php endforeach; ?>

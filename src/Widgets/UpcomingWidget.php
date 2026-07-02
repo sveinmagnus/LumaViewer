@@ -94,7 +94,7 @@ class UpcomingWidget extends \WP_Widget {
 			esc_attr( $title )
 		);
 		printf(
-			'<p><label for="%1$s">%2$s</label> <input class="tiny-text" id="%1$s" name="%3$s" type="number" min="1" max="20" value="%4$d" /></p>',
+			'<p><label for="%1$s">%2$s</label> <input class="tiny-text" id="%1$s" name="%3$s" type="number" min="1" max="100" value="%4$d" /></p>',
 			esc_attr( $this->get_field_id( 'count' ) ),
 			esc_html__( 'Number of events:', 'luma-viewer' ),
 			esc_attr( $this->get_field_name( 'count' ) ),
@@ -115,7 +115,7 @@ class UpcomingWidget extends \WP_Widget {
 		unset( $old_instance );
 		return array(
 			'title' => sanitize_text_field( isset( $new_instance['title'] ) ? $new_instance['title'] : '' ),
-			'count' => max( 1, min( 20, (int) ( isset( $new_instance['count'] ) ? $new_instance['count'] : 5 ) ) ),
+			'count' => max( 1, min( 100, (int) ( isset( $new_instance['count'] ) ? $new_instance['count'] : 5 ) ) ),
 		);
 	}
 }

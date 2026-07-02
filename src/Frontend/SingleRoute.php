@@ -145,10 +145,11 @@ class SingleRoute {
 		);
 
 		$hide_description = ( Gate::TEASER === $decision );
+		$canonical        = home_url( '/' . $this->base() . '/' . $event->id() . '/' );
 		add_action(
 			'wp_head',
-			function () use ( $event, $hide_description ) {
-				$this->print_meta_tags( $event, $hide_description );
+			function () use ( $event, $hide_description, $canonical ) {
+				$this->print_meta_tags( $event, $hide_description, $canonical );
 				$this->print_json_ld( $event, $hide_description );
 			}
 		);
@@ -179,14 +180,20 @@ class SingleRoute {
 	 *
 	 * @param \LumaViewer\Model\Event $event            Event.
 	 * @param bool                    $hide_description Omit the description (teaser).
+	 * @param string                  $canonical        Canonical URL for this page.
 	 * @return void
 	 */
-	private function print_meta_tags( $event, $hide_description ) {
-		echo '<meta property="og:type" content="website" />' . "\n";
+	private function print_meta_tags( $event, $hide_description, $canonical = '' ) {
+		if ( '' !== $canonical ) {
+			printf( '<link rel="canonical" href="%s" />' . "\n", esc_url( $canonical ) );
+		}
+
+		echo '<meta property="og:type" content="event" />' . "\n";
 		printf( '<meta property="og:title" content="%s" />' . "\n", esc_attr( $event->name() ) );
 
-		if ( '' !== $event->luma_url() ) {
-			printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $event->luma_url() ) );
+		// og:url is this page (self-referential), not the off-site Luma URL.
+		if ( '' !== $canonical ) {
+			printf( '<meta property="og:url" content="%s" />' . "\n", esc_url( $canonical ) );
 		}
 		if ( '' !== $event->cover_url() ) {
 			printf( '<meta property="og:image" content="%s" />' . "\n", esc_url( $event->cover_url() ) );
@@ -244,6 +251,20 @@ class SingleRoute {
 					'name'    => $location->name(),
 					'address' => $location->address(),
 				)
+			);
+		}
+
+		if ( $event->is_cancelled() ) {
+			$schema['eventStatus'] = 'https://schema.org/EventCancelled';
+		}
+
+		if ( '' !== $event->luma_url() ) {
+			$schema['offers'] = array(
+				'@type'        => 'Offer',
+				'url'          => $event->luma_url(),
+				'availability' => $event->is_sold_out()
+					? 'https://schema.org/SoldOut'
+					: 'https://schema.org/InStock',
 			);
 		}
 
