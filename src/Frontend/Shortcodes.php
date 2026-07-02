@@ -75,6 +75,7 @@ class Shortcodes {
 				'free'          => '',
 				'tags'          => '',
 				'pagination'    => '',
+				'chrome'        => '',
 				'quickview'     => '',
 			),
 			$atts,
@@ -106,6 +107,7 @@ class Shortcodes {
 			'free'          => sanitize_key( $atts['free'] ),
 			'tags'          => sanitize_text_field( $atts['tags'] ),
 			'pagination'    => sanitize_key( $atts['pagination'] ),
+			'chrome'        => sanitize_text_field( $atts['chrome'] ),
 			'quickview'     => sanitize_text_field( $atts['quickview'] ),
 		);
 		if ( '' !== $atts['count'] ) {

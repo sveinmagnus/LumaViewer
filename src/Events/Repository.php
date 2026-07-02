@@ -102,6 +102,10 @@ class Repository {
 			}
 			if ( '' !== $to ) {
 				$before = $to;
+			} elseif ( $past ) {
+				// "Past" means events up to now (shown latest-first by default),
+				// not everything from a year ago into the far future.
+				$before = gmdate( 'Y-m-d\TH:00:00\Z' );
 			}
 		}
 

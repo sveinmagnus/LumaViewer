@@ -34,7 +34,7 @@ $has_cta    = ( 'minimal' !== $layout );
 $link_attrs = $formatter->link_attrs();
 $classes    = 'luma-viewer__card luma-viewer__card--' . $layout . ( $teaser ? ' luma-viewer__card--teaser' : '' );
 ?>
-<article class="<?php echo esc_attr( $classes ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>" data-lv-title="<?php echo esc_attr( strtolower( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( strtolower( implode( ' ', wp_list_pluck( $event->tags(), 'name' ) ) ) ); ?>">
+<article class="<?php echo esc_attr( $classes ); ?>" data-lv-id="<?php echo esc_attr( $event->id() ); ?>" data-lv-title="<?php echo esc_attr( $formatter->lc( $event->name() ) ); ?>" data-lv-tags="<?php echo esc_attr( $formatter->lc( implode( ' ', wp_list_pluck( $event->tags(), 'name' ) ) ) ); ?>">
 	<?php if ( $show( 'cover' ) && '' !== $event->cover_url() ) : ?>
 		<?php if ( $teaser ) : ?>
 			<span class="luma-viewer__card-cover">

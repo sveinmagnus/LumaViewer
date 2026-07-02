@@ -86,6 +86,7 @@ class Blocks {
 			'filters'       => empty( $attributes['filters'] ) ? '' : 'true',
 			'past'          => empty( $attributes['past'] ) ? '' : 'true',
 			'pagination'    => isset( $attributes['pagination'] ) ? sanitize_key( (string) $attributes['pagination'] ) : '',
+			'chrome'        => empty( $attributes['chrome'] ) ? '0' : '1',
 			'quickview'     => empty( $attributes['quickview'] ) ? '' : 'true',
 			'offset'        => isset( $attributes['offset'] ) ? absint( $attributes['offset'] ) : 0,
 			'from'          => isset( $attributes['from'] ) ? sanitize_text_field( (string) $attributes['from'] ) : '',

@@ -73,6 +73,18 @@ class Formatter {
 	}
 
 	/**
+	 * Unicode-aware lowercase, so search/filter keys match non-ASCII titles
+	 * (e.g. "Årsmøte") the same way the browser's toLowerCase() does.
+	 *
+	 * @param string $value Value.
+	 * @return string
+	 */
+	public function lc( $value ) {
+		$value = (string) $value;
+		return function_exists( 'mb_strtolower' ) ? mb_strtolower( $value, 'UTF-8' ) : strtolower( $value );
+	}
+
+	/**
 	 * The `target`/`rel` attributes for outbound Luma links, honoring the
 	 * "open links in" setting. Returns a fixed, safe attribute string (leading
 	 * space included) or an empty string for same-tab.

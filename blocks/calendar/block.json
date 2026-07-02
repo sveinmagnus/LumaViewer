@@ -24,6 +24,7 @@
 		"filters": { "type": "boolean", "default": false },
 		"past": { "type": "boolean", "default": false },
 		"pagination": { "type": "string", "default": "" },
+		"chrome": { "type": "boolean", "default": true },
 		"quickview": { "type": "boolean", "default": false },
 		"offset": { "type": "number", "default": 0 },
 		"from": { "type": "string", "default": "" },

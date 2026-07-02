@@ -191,6 +191,18 @@ class CalendarWidget extends Widget_Base {
 				'description' => __( 'Open an event summary in a popup instead of leaving the page.', 'luma-viewer' ),
 			)
 		);
+		$this->add_control(
+			'chrome',
+			array(
+				'label'        => __( 'Show view switcher', 'luma-viewer' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'label_on'     => __( 'Yes', 'luma-viewer' ),
+				'label_off'    => __( 'No', 'luma-viewer' ),
+				'return_value' => 'yes',
+				'description'  => __( 'The row of view tabs (List, Month, Map…) above the calendar.', 'luma-viewer' ),
+			)
+		);
 
 		$this->end_controls_section();
 
@@ -338,6 +350,7 @@ class CalendarWidget extends Widget_Base {
 			'filters'       => ( isset( $settings['filters'] ) && 'yes' === $settings['filters'] ) ? 'true' : '',
 			'past'          => ( isset( $settings['past'] ) && 'yes' === $settings['past'] ) ? 'true' : '',
 			'pagination'    => isset( $settings['pagination'] ) ? sanitize_key( (string) $settings['pagination'] ) : '',
+			'chrome'        => ( isset( $settings['chrome'] ) && 'yes' === $settings['chrome'] ) ? '1' : '0',
 			'quickview'     => ( isset( $settings['quickview'] ) && 'yes' === $settings['quickview'] ) ? 'true' : '',
 			'order'         => isset( $settings['order'] ) ? sanitize_key( (string) $settings['order'] ) : '',
 			'online'        => isset( $settings['online'] ) ? sanitize_key( (string) $settings['online'] ) : '',

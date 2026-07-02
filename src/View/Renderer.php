@@ -82,6 +82,13 @@ class Renderer {
 		$calendar     = isset( $atts['calendar'] ) ? (string) $atts['calendar'] : '';
 		$show_filters = isset( $atts['filters'] ) && in_array( (string) $atts['filters'], array( '1', 'true', 'yes', 'on' ), true );
 
+		// The view-switcher toolbar shows by default; a block/widget/shortcode can
+		// suppress it (e.g. a fixed sidebar list that shouldn't offer Map/Carousel).
+		$show_toolbar = true;
+		if ( isset( $atts['chrome'] ) && '' !== (string) $atts['chrome'] ) {
+			$show_toolbar = $this->truthy( $atts['chrome'] );
+		}
+
 		$offset = isset( $atts['offset'] ) ? max( 0, (int) $atts['offset'] ) : 0;
 		$past   = isset( $atts['past'] ) ? (string) $atts['past'] : '';
 		$from   = isset( $atts['from'] ) ? (string) $atts['from'] : '';
@@ -153,6 +160,13 @@ class Renderer {
 			);
 		} elseif ( 'map' === $view ) {
 			$args['count'] = 0;
+		}
+
+		// Date-bounded / whole-set views don't paginate, so a leftover offset from
+		// a previous list page must not silently drop their leading events.
+		if ( in_array( $view, array( 'month', 'day', 'week', 'map' ), true ) ) {
+			$offset         = 0;
+			$args['offset'] = 0;
 		}
 
 		/**
@@ -276,7 +290,8 @@ class Renderer {
 		// Filter + display state, threaded so AJAX re-renders (view switch, nav,
 		// load-more) preserve the configured options.
 		$data .= sprintf(
-			' data-lv-quickview="%s" data-lv-pagination="%s" data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			' data-lv-chrome="%s" data-lv-quickview="%s" data-lv-pagination="%s" data-lv-order="%s" data-lv-online="%s" data-lv-free="%s" data-lv-mtags="%s" data-lv-words="%s" data-lv-show-cover="%s" data-lv-show-location="%s" data-lv-show-host="%s" data-lv-show-price="%s" data-lv-show-excerpt="%s" data-lv-show-tags="%s" data-lv-show-relative="%s"',
+			esc_attr( $show_toolbar ? '1' : '0' ),
 			esc_attr( $quickview ? '1' : '' ),
 			esc_attr( $pagination ),
 			esc_attr( $resolved_order ),
@@ -298,7 +313,7 @@ class Renderer {
 			esc_attr( $view ),
 			esc_attr__( 'Events', 'luma-viewer' ),
 			$data,
-			$this->toolbar( $view, $nav ),
+			$show_toolbar ? $this->toolbar( $view, $nav ) : '',
 			$body
 		);
 
@@ -421,28 +436,48 @@ class Renderer {
 	 * @return array{event:Event|null,error:\WP_Error|null}
 	 */
 	private function lead_event( array $atts ) {
-		$id = isset( $atts['id'] ) ? (string) $atts['id'] : '';
+		$id      = isset( $atts['id'] ) ? (string) $atts['id'] : '';
+		$user_id = get_current_user_id();
+
 		if ( '' !== $id ) {
 			$result = $this->repo->get_event( $id );
 			$event  = $result['event'];
-			$error  = $result['error'];
-		} else {
-			$result = $this->repo->get_events( array( 'count' => 1 ) );
-			$error  = $result['error'];
-			$event  = empty( $result['events'] ) ? null : $result['events'][0];
+			if ( $event && '' !== $event->id() && ! $this->is_visible( $event, $user_id ) ) {
+				$event = null;
+			}
+			return array(
+				'event' => $event,
+				'error' => $result['error'],
+			);
 		}
 
-		if ( $event && '' !== $event->id() && $this->gate->is_enabled() ) {
-			$decision = $this->gate->resolve( $event, get_current_user_id() );
-			if ( Gate::VISIBLE !== $decision ) {
-				$event = null;
+		// Feature the next upcoming *visible* event, not just the very next one
+		// (which might be members-only).
+		$result = $this->repo->get_events( array( 'count' => 5 ) );
+		foreach ( $result['events'] as $candidate ) {
+			if ( '' !== $candidate->id() && $this->is_visible( $candidate, $user_id ) ) {
+				return array(
+					'event' => $candidate,
+					'error' => $result['error'],
+				);
 			}
 		}
 
 		return array(
-			'event' => $event,
-			'error' => $error,
+			'event' => null,
+			'error' => $result['error'],
 		);
+	}
+
+	/**
+	 * Whether an event is fully visible (not gated) to the given user.
+	 *
+	 * @param Event $event   Event.
+	 * @param int   $user_id User id.
+	 * @return bool
+	 */
+	private function is_visible( Event $event, $user_id ) {
+		return ! $this->gate->is_enabled() || Gate::VISIBLE === $this->gate->resolve( $event, (int) $user_id );
 	}
 
 	/**
@@ -657,7 +692,7 @@ class Renderer {
 		foreach ( $names as $name ) {
 			$chips .= sprintf(
 				'<button type="button" class="luma-viewer__chip" data-lv-chip="%1$s">%2$s</button>',
-				esc_attr( strtolower( $name ) ),
+				esc_attr( $this->formatter->lc( $name ) ),
 				esc_html( $name )
 			);
 		}

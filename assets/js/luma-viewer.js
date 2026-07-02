@@ -60,6 +60,7 @@
 		var past = container.getAttribute( 'data-lv-past' ) || '';
 		var from = container.getAttribute( 'data-lv-from' ) || '';
 		var to = container.getAttribute( 'data-lv-to' ) || '';
+		var chrome = container.getAttribute( 'data-lv-chrome' ) || '';
 		var quickview = container.getAttribute( 'data-lv-quickview' ) || '';
 		var pagination = container.getAttribute( 'data-lv-pagination' ) || '';
 		var order = container.getAttribute( 'data-lv-order' ) || '';
@@ -119,6 +120,9 @@
 		}
 		if ( offsetAttr && offsetAttr !== '0' ) {
 			url.searchParams.set( 'offset', offsetAttr );
+		}
+		if ( chrome === '0' ) {
+			url.searchParams.set( 'chrome', '0' );
 		}
 		if ( quickview ) {
 			url.searchParams.set( 'quickview', quickview );
@@ -264,6 +268,12 @@
 		}
 
 		var action = trigger.getAttribute( 'data-lv-action' );
+
+		// Switching view or navigating dates starts a fresh result set — drop any
+		// leftover pagination offset so page 1 is shown.
+		if ( 'view' === action || 'nav' === action ) {
+			container.setAttribute( 'data-lv-offset', '0' );
+		}
 
 		// "Include past" flips its state before the request is built.
 		if ( 'past' === action ) {

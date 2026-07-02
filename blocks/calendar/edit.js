@@ -22,6 +22,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		filters,
 		past,
 		pagination,
+		chrome,
 		quickview,
 		offset,
 		from,
@@ -141,6 +142,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						checked={ !! quickview }
 						onChange={ ( value ) => setAttributes( { quickview: value } ) }
 						help={ __( 'Open an event summary in a popup instead of leaving the page.', 'luma-viewer' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Show view switcher', 'luma-viewer' ) }
+						checked={ chrome !== false }
+						onChange={ ( value ) => setAttributes( { chrome: value } ) }
+						help={ __( 'The row of view tabs (List, Month, Map…) above the calendar.', 'luma-viewer' ) }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Filtering & order', 'luma-viewer' ) } initialOpen={ false }>

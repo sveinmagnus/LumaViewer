@@ -63,6 +63,7 @@ class UpcomingWidget extends \WP_Widget {
 				'view'   => 'list',
 				'layout' => 'minimal',
 				'count'  => $count,
+				'chrome' => '0',
 			)
 		);
 

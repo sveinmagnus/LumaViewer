@@ -126,6 +126,10 @@ class RestController {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
+					'chrome'        => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 					'pagination'    => array(
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_key',
@@ -241,6 +245,7 @@ class RestController {
 			'from'          => (string) $request->get_param( 'from' ),
 			'to'            => (string) $request->get_param( 'to' ),
 			'pagination'    => (string) $request->get_param( 'pagination' ),
+			'chrome'        => (string) $request->get_param( 'chrome' ),
 			'quickview'     => (string) $request->get_param( 'quickview' ),
 			'order'         => (string) $request->get_param( 'order' ),
 			'online'        => (string) $request->get_param( 'online' ),
