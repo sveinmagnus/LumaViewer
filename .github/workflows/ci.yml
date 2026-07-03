@@ -56,19 +56,42 @@ jobs:
         continue-on-error: true
 
   e2e:
-    name: E2E smoke (Playground + Playwright)
+    name: E2E smoke (wp-env + Playwright)
     runs-on: ubuntu-latest
-    # Best-effort smoke test: booting WordPress Playground from the CLI in CI is
-    # flaky (WASM boot time / @wp-playground/cli@latest drift), so it must not gate
-    # the pipeline. PHP quality + the block build are the authoritative gates.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+          coverage: none
+
+      - name: Install production Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-progress --optimize-autoloader
 
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
           node-version: '20'
+
+      - name: Build blocks
+        run: |
+          npm ci
+          npm run build
+
+      # wp-env (Docker) is reliable in CI, unlike booting the Playground CLI. It
+      # mounts this repo as an active plugin on http://localhost:8888.
+      - name: Start WordPress (wp-env)
+        run: npx --yes @wordpress/env start
+
+      - name: Seed the Events page
+        run: |
+          npx --yes @wordpress/env run cli wp rewrite structure '/%postname%/' --hard
+          npx --yes @wordpress/env run cli wp post create \
+            --post_type=page --post_title=Events --post_name=events \
+            --post_status=publish "--post_content=[luma_calendar]"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -80,16 +103,14 @@ jobs:
           pip install -r tests/e2e/requirements.txt
           python -m playwright install --with-deps chromium
 
-      - name: Boot WordPress Playground
-        run: |
-          npx --yes @wp-playground/cli@latest server \
-            --auto-mount --blueprint=./blueprint.json --port=9400 &
-          npx --yes wait-on http://127.0.0.1:9400 -t 300000
-
       - name: Run E2E smoke
         env:
-          PLAYWRIGHT_BASE_URL: http://127.0.0.1:9400
+          PLAYWRIGHT_BASE_URL: http://localhost:8888
         run: pytest -q tests/e2e
+
+      - name: wp-env debug log on failure
+        if: failure()
+        run: npx --yes @wordpress/env run cli wp option get siteurl || true
 
   integration:
     name: WordPress integration tests (wp-env)

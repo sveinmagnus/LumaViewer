@@ -1,22 +1,25 @@
 """End-to-end smoke test for Luma Viewer against a running WordPress site.
 
-Follows the `webapp-testing` skill: native Playwright. The server (a WordPress
-Playground instance booted from ../../blueprint.json, or any WP with this plugin
-active) is started outside this script — by CI, or locally via the
-webapp-testing helper:
+Native Playwright. The WordPress site (with this plugin active and an 'Events'
+page containing [luma_calendar]) is started outside this script. CI uses wp-env
+(Docker), which is reliable on GitHub Actions:
 
-    python <webapp-testing>/scripts/with_server.py \
-        --server "npx @wp-playground/cli@latest server --auto-mount --blueprint=./blueprint.json --port=9400" \
-        --port 9400 -- pytest -q tests/e2e
+    npx @wordpress/env start
+    npx @wordpress/env run cli wp rewrite structure '/%postname%/' --hard
+    npx @wordpress/env run cli wp post create --post_type=page \
+        --post_title=Events --post_name=events --post_status=publish \
+        "--post_content=[luma_calendar]"
+    PLAYWRIGHT_BASE_URL=http://localhost:8888 pytest -q tests/e2e
 
-Configure the base URL with PLAYWRIGHT_BASE_URL (default http://127.0.0.1:9400).
+Any WordPress with the plugin active works too — just point PLAYWRIGHT_BASE_URL
+at it (default http://localhost:8888).
 """
 
 import os
 
 from playwright.sync_api import sync_playwright
 
-BASE_URL = os.environ.get("PLAYWRIGHT_BASE_URL", "http://127.0.0.1:9400")
+BASE_URL = os.environ.get("PLAYWRIGHT_BASE_URL", "http://localhost:8888")
 
 
 def test_events_page_loads():
