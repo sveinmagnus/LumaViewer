@@ -114,8 +114,9 @@ jobs:
 
   integration:
     name: WordPress integration tests (wp-env)
-    # Manual: spins up the Docker-based wp-env test database. The plugin mount
-    # path below assumes the checkout dir is "luma-viewer"; adjust if it differs.
+    # Manual: spins up the Docker-based wp-env test database and runs the
+    # wp-phpunit integration suite. The plugin mount directory is derived at
+    # runtime (see below), so it works regardless of the checkout folder name.
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -140,7 +141,11 @@ jobs:
         run: npx --yes @wordpress/env start
 
       - name: Run integration tests
-        run: >-
-          npx --yes @wordpress/env run tests-cli
-          --env-cwd=wp-content/plugins/luma-viewer
-          vendor/bin/phpunit -c phpunit-integration.xml.dist
+        # wp-env mounts the checked-out repo at wp-content/plugins/<dir>, where
+        # <dir> is the workspace basename (the repo name). Derive it so this stays
+        # correct even if the repository/checkout folder is renamed.
+        run: |
+          plugin_dir="$(basename "$GITHUB_WORKSPACE")"
+          npx --yes @wordpress/env run tests-cli \
+            --env-cwd="wp-content/plugins/${plugin_dir}" \
+            vendor/bin/phpunit -c phpunit-integration.xml.dist

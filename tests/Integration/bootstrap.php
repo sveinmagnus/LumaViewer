@@ -2,10 +2,11 @@
 /**
  * Bootstrap for WordPress integration tests.
  *
- * Runs inside a real WordPress test environment — easiest via wp-env:
+ * Runs inside a real WordPress test environment — easiest via wp-env (the
+ * mount directory is the repo folder name, e.g. LumaViewer):
  *
  *   npx wp-env start
- *   npx wp-env run tests-cli --env-cwd=wp-content/plugins/luma-viewer \
+ *   npx wp-env run tests-cli --env-cwd=wp-content/plugins/LumaViewer \
  *       vendor/bin/phpunit -c phpunit-integration.xml.dist
  *
  * @package LumaViewer\Tests
