@@ -12,7 +12,13 @@
  * @package LumaViewer\Tests
  */
 
-$_tests_dir = getenv( 'WP_PHPUNIT__DIR' );
+// Prefer the test suite wp-env provides (WP_TESTS_DIR) — it ships the
+// wp-tests-config.php that defines WP_TESTS_DOMAIN, DB creds, WP_PHP_BINARY, etc.
+// Fall back to the vendored wp-phpunit for other runners.
+$_tests_dir = getenv( 'WP_TESTS_DIR' );
+if ( ! $_tests_dir ) {
+	$_tests_dir = getenv( 'WP_PHPUNIT__DIR' );
+}
 if ( ! $_tests_dir ) {
 	$_tests_dir = dirname( __DIR__, 2 ) . '/vendor/wp-phpunit/wp-phpunit';
 }
